@@ -1,0 +1,149 @@
+import "server-only";
+
+import {
+  RiDiscordFill,
+  RiGithubFill,
+  RiTwitterXFill,
+  RiYoutubeFill,
+} from "@remixicon/react";
+import Link from "next/link";
+
+import { Logo } from "@/components/logo";
+import { FooterArtwork } from "@/home/components/footer-artwork";
+
+const menuItems = [
+  {
+    label: "Developers",
+    items: [
+      {
+        label: "Documentation",
+        href: "/docs",
+      },
+      {
+        label: "Changelog",
+        href: "/changelog",
+      },
+    ],
+  },
+  {
+    label: "Resources",
+    items: [
+      {
+        label: "News",
+        href: "/news",
+      },
+      {
+        label: "FAQs",
+        href: "#faqs",
+      },
+    ],
+  },
+  {
+    label: "Company",
+    items: [
+      {
+        label: "Contact",
+        href: "mailto:hello@atom.ai",
+      },
+      {
+        label: "Privacy",
+        href: "/privacy",
+      },
+      {
+        label: "Terms",
+        href: "/terms",
+      },
+    ],
+  },
+];
+
+const socialItems = [
+  {
+    label: "X",
+    href: "https://x.com",
+    Icon: RiTwitterXFill,
+  },
+  {
+    label: "GitHub",
+    href: "https://github.com",
+    Icon: RiGithubFill,
+  },
+  {
+    label: "Discord",
+    href: "https://discord.com",
+    Icon: RiDiscordFill,
+  },
+  {
+    label: "YouTube",
+    href: "https://youtube.com",
+    Icon: RiYoutubeFill,
+  },
+];
+
+export function Footer() {
+  return (
+    <footer className="relative mt-12 pt-14 pb-12">
+      <FooterArtwork />
+
+      <div className="container">
+        <div className="flex flex-wrap justify-between gap-x-24 gap-y-12">
+          <Logo size={24} />
+          <FooterMenu />
+        </div>
+        <div className="mt-16 flex flex-wrap-reverse items-center justify-between gap-x-12 gap-y-6">
+          <FooterCopyright />
+          <FooterSocial />
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+function FooterMenu() {
+  return (
+    <ul className="flex flex-wrap gap-x-24 gap-y-12">
+      {menuItems.map(({ label, items }) => (
+        <li key={label}>
+          <h3 className="text-sm font-medium">{label}</h3>
+          <ul>
+            {items.map(({ label, href }) => (
+              <li key={label}>
+                <Link
+                  href={href}
+                  className="not-hover:text-muted-foreground mt-4 block text-sm transition-colors"
+                >
+                  {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function FooterCopyright() {
+  return (
+    <p className="text-muted-foreground text-sm">
+      &copy; {new Date().getFullYear()} All rights reserved.
+    </p>
+  );
+}
+
+function FooterSocial() {
+  return (
+    <ul className="flex items-center gap-x-6">
+      {socialItems.map(({ label, href, Icon }) => (
+        <li key={label}>
+          <Link
+            href={href}
+            className="not-hover:text-muted-foreground transition-colors"
+          >
+            <Icon size={20} />
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
