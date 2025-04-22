@@ -43,7 +43,7 @@ const paragraphVariants: Variants = {
   two: { opacity: 1, y: 0 },
 };
 
-export function TasterTabs() {
+export function DemoTabs() {
   const [tab, setTab] = React.useState<Tab["id"]>(1);
 
   const handleClick = (id: Tab["id"]) => {

@@ -1,8 +1,8 @@
 import "server-only";
 
-import { TasterTabs } from "@/home/components/taster-tabs";
+import { DemoTabs } from "@/home/components/demo-tabs";
 
-export function Taster() {
+export function Demo() {
   return (
     <section className="container">
       <div className="py-12 md:pt-38 md:pb-24">
@@ -12,7 +12,7 @@ export function Taster() {
         <p className="text-muted-foreground mb-4 text-center text-xl font-medium tracking-tight">
           Know what your users want most right now.
         </p>
-        <TasterTabs />
+        <DemoTabs />
       </div>
     </section>
   );
