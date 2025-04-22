@@ -1,13 +1,22 @@
+import "server-only";
+
 import { Logo } from "@/components/logo";
+import { HeaderEndContent } from "@/home/components/header-end-content";
+import { HeaderLayout } from "@/home/components/header-layout";
 
 export function Header() {
   return (
-    <header className="bg-background after:border-border fixed inset-0 bottom-auto after:absolute after:inset-0 after:top-auto after:border-b">
-      <div className="container">
-        <div className="flex h-16 items-center justify-between">
-          <Logo />
+    <HeaderLayout>
+      <header className="container">
+        <div className="pt-6">
+          <div className="flex h-14 items-center justify-between">
+            <div className="inline-flex items-center gap-x-2.5">
+              <Logo />
+            </div>
+            <HeaderEndContent />
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+    </HeaderLayout>
   );
 }

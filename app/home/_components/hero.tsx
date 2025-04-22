@@ -11,11 +11,11 @@ export function Hero() {
         <div className="flex flex-col items-center gap-9">
           <HeroBackgroundArtwork />
           <HeroArtwork />
-          <div className="flex flex-col items-center gap-4">
-            <h1 className="text-5xl/14 font-semibold tracking-tighter">
+          <div className="flex flex-col items-center gap-4 text-center text-balance">
+            <h1 className="text-4xl/12 font-semibold tracking-tighter md:text-5xl/14">
               Get your app out faster
             </h1>
-            <p className="text-muted-foreground text-xl">
+            <p className="text-muted-foreground text-lg md:text-xl">
               Collect feedback, iterate and ship products people love.
             </p>
           </div>

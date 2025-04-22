@@ -2,9 +2,11 @@
 
 import { motion } from "motion/react";
 
-export function Separator() {
+import { cn } from "@/lib/utils";
+
+export function Separator({ className }: { className?: string }) {
   return (
-    <div className="px-4 md:px-12">
+    <div className={cn("px-4 md:px-12", className)}>
       <svg
         fill="none"
         xmlns="http://www.w3.org/2000/svg"

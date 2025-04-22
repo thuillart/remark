@@ -47,7 +47,7 @@ export function Logo({ size = 20 }: { size?: number }) {
   return (
     <Link
       href="/"
-      className="inline-flex h-fit items-center gap-2"
+      className="inline-flex h-fit items-center gap-2 transition-opacity hover:opacity-70"
       onMouseEnter={() => {
         setIsHovered(true);
       }}
@@ -86,7 +86,7 @@ export function Logo({ size = 20 }: { size?: number }) {
           initial={{ pathLength: 1, pathOffset: 0 }}
         />
       </svg>
-      <span className="mb-0.5 font-mono text-lg/5 font-medium">atom</span>
+      <span className="mb-0.5 font-mono text-lg/5 font-medium">remark</span>
     </Link>
   );
 }
