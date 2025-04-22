@@ -90,7 +90,7 @@ export function Logo({ size = 20 }: { size?: number }) {
           initial={{ pathLength: 1, pathOffset: 1 }}
         />
       </svg>
-      <span className="mb-0.5 font-mono text-lg/5 font-medium">remark</span>
+      <span className="mb-0.5 font-mono text-lg/5 font-medium">nucleon</span>
     </Link>
   );
 }
