@@ -10,7 +10,7 @@ export default function HomePage() {
   return (
     <>
       <Header />
-      <main className="px-8 py-16 md:px-0 md:pt-32">
+      <main className="overflow-x-hidden py-16 md:pt-32">
         <Hero />
         <Separator />
         <Taster />

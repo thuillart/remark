@@ -16,21 +16,13 @@ const tabs: Tab[] = [
   {
     id: 1,
     title: "Analyze",
-    artwork: (
-      <div className="flex size-full items-center justify-center">
-        You should see the feedbacks table here
-      </div>
-    ),
+    artwork: <div />,
     description: "See who's asking for what.",
   },
   {
     id: 2,
     title: "Prioritize",
-    artwork: (
-      <div className="flex size-full items-center justify-center">
-        You should see the voting table here
-      </div>
-    ),
+    artwork: <div />,
     description: "Most asked features come first.",
   },
 ];
@@ -61,109 +53,9 @@ export function TasterTabs() {
 
   return (
     <>
-      <div className="relative mb-12 h-112 w-full px-6 pt-12">
-        <div className="absolute -inset-x-12 top-12">
-          <svg
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            width="100%"
-            height={1}
-            preserveAspectRatio="none"
-          >
-            <motion.line
-              x1={0}
-              y1={0.5}
-              x2="100%"
-              y2={0.5}
-              stroke="var(--color-border)"
-              className="w-full"
-              animate={{ strokeDashoffset: [0, -10] }}
-              transition={{ repeat: Infinity, duration: 1.5 }}
-              strokeWidth={1}
-              vectorEffect="non-scaling-stroke"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeDasharray="4 6"
-            />
-          </svg>
-        </div>
-
-        <div className="absolute top-0 -bottom-12 left-0">
-          <svg
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            width={1}
-            height="100%"
-            preserveAspectRatio="none"
-          >
-            <motion.line
-              x1={0.5}
-              y1={0}
-              x2={0.5}
-              y2="100%"
-              stroke="var(--color-border)"
-              animate={{ strokeDashoffset: [0, -10] }}
-              transition={{ repeat: Infinity, duration: 1.5 }}
-              strokeWidth={1}
-              vectorEffect="non-scaling-stroke"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeDasharray="4 6"
-            />
-          </svg>
-        </div>
-
-        <div className="absolute -inset-x-12 bottom-0">
-          <svg
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            width="100%"
-            height={1}
-            preserveAspectRatio="none"
-          >
-            <motion.line
-              x1={0}
-              y1={0.5}
-              x2="100%"
-              y2={0.5}
-              stroke="var(--color-border)"
-              animate={{ strokeDashoffset: [0, -10] }}
-              transition={{ repeat: Infinity, duration: 1.5 }}
-              strokeWidth={1}
-              vectorEffect="non-scaling-stroke"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeDasharray="4 6"
-            />
-          </svg>
-        </div>
-
-        <div className="absolute top-0 right-0 -bottom-12">
-          <svg
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            width={1}
-            height="100%"
-            preserveAspectRatio="none"
-          >
-            <motion.line
-              x1={0.5}
-              y1={0}
-              x2={0.5}
-              y2="100%"
-              stroke="var(--color-border)"
-              animate={{ strokeDashoffset: [0, -10] }}
-              transition={{ repeat: Infinity, duration: 1.5 }}
-              strokeWidth={1}
-              vectorEffect="non-scaling-stroke"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeDasharray="4 6"
-            />
-          </svg>
-        </div>
-
-        <div className="bg-background size-full">{tabs[tab - 1].artwork}</div>
+      <div className="relative mb-12 h-112 w-full pt-12">
+        <Frame />
+        <Browser>{tabs[tab - 1].artwork}</Browser>
       </div>
 
       <div>
@@ -209,5 +101,83 @@ export function TasterTabs() {
         </motion.div>
       </div>
     </>
+  );
+}
+
+function Browser({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="bg-background relative -z-1 size-full p-6 pb-0">
+      {/* Frame */}
+      <div className="relative size-full">
+        <div className="absolute inset-x-0 top-0">
+          <Line />
+        </div>
+        <div className="absolute inset-0 right-auto">
+          <Line vertical />
+        </div>
+        <div className="absolute inset-0 left-auto">
+          <Line vertical />
+        </div>
+        {/* Artwork */}
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function Frame() {
+  return (
+    <>
+      <div className="absolute -inset-x-12 top-12">
+        <Line />
+      </div>
+      <div className="absolute top-0 -bottom-12 left-0">
+        <Line vertical />
+      </div>
+      <div className="absolute -inset-x-12 bottom-0">
+        <Line />
+      </div>
+      <div className="absolute top-0 right-0 -bottom-12">
+        <Line vertical />
+      </div>
+    </>
+  );
+}
+
+function Line({
+  width = "100%",
+  height = 1,
+  vertical = false,
+  className,
+}: {
+  width?: string | number;
+  height?: string | number;
+  vertical?: boolean;
+  className?: string;
+}) {
+  return (
+    <svg
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      width={vertical ? 1 : width}
+      height={vertical ? "100%" : height}
+      preserveAspectRatio="none"
+      className={className}
+    >
+      <motion.line
+        x1={vertical ? 0.5 : 0}
+        y1={vertical ? 0 : 0.5}
+        x2={vertical ? 0.5 : "100%"}
+        y2={vertical ? "100%" : 0.5}
+        stroke="var(--color-border)"
+        animate={{ strokeDashoffset: [0, -10] }}
+        transition={{ repeat: Infinity, duration: 1.5 }}
+        strokeWidth={1}
+        vectorEffect="non-scaling-stroke"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeDasharray="4 6"
+      />
+    </svg>
   );
 }
