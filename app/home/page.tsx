@@ -1,5 +1,6 @@
 import "server-only";
 
+import { Features } from "@/home/components/features";
 import { Footer } from "@/home/components/footer";
 import { Header } from "@/home/components/header";
 import { Hero } from "@/home/components/hero";
@@ -14,6 +15,8 @@ export default function HomePage() {
         <Hero />
         <Separator />
         <Taster />
+        <Separator />
+        <Features />
         <Separator />
       </main>
       <Footer />
