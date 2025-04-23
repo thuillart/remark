@@ -2,13 +2,13 @@ import "server-only";
 
 import { Demo } from "@/home/components/demo";
 import { FAQs } from "@/home/components/faqs";
-import { Features } from "@/home/components/features";
 import { Footer } from "@/home/components/footer";
 import { Header } from "@/home/components/header";
 import { Hero } from "@/home/components/hero";
 import { Pricing } from "@/home/components/pricing";
 import { Benefits } from "@/home/components/proof";
 import { Separator } from "@/home/components/separator";
+import { Tools } from "@/home/components/tools";
 
 export default function HomePage() {
   return (
@@ -19,7 +19,7 @@ export default function HomePage() {
         <Separator />
         <Demo />
         <Separator />
-        <Features />
+        <Tools />
         <Separator />
         <Benefits />
         <Separator />

@@ -8,7 +8,7 @@ export function Benefits() {
     <section className="container">
       <div className="space-y-12 py-24">
         <h2 className="text-4xl/14 font-semibold tracking-tight md:px-6">
-          We make it easy.
+          Easy by design.
         </h2>
 
         <div className="grid gap-x-10 gap-y-12 md:grid-cols-2">
