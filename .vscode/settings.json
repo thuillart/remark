@@ -3,7 +3,6 @@
   "files.exclude": {
     "**.mjs": true, // CommonJS modules
     "**.lock": true, // Bun lock file
-
     "**/.next": true, // Next.js build folder
     ".prettierrc": true, // Prettier config
     "next-env.d.ts": true, // Next.js internal types

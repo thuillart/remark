@@ -53,16 +53,16 @@ export function DemoTabs() {
 
   return (
     <>
-      <div className="relative mb-12 h-56 w-full pt-12 md:h-112">
-        <Frame />
+      <div className="relative mb-12 h-56 w-full pt-6 pb-0 md:h-112">
         <View>{tabs[tab - 1].artwork}</View>
       </div>
 
-      <div>
+      <div className="overflow-hidden">
         <motion.div
+          layout="preserve-aspect"
           animate={tab === 1 ? "one" : "two"}
           variants={gridVariants}
-          className="-mt-6 grid grid-cols-[6fr_4fr] gap-12 md:px-6"
+          className="grid grid-cols-[6fr_4fr] gap-12 md:px-6"
           transition={gridTransition}
         >
           {tabs.map(({ id, title, description }) => (
@@ -106,9 +106,8 @@ export function DemoTabs() {
 
 function View({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bg-background size-full md:p-6 md:pb-0">
-      <div className="relative size-full rounded-2xl border md:rounded-t-md md:rounded-b-none md:border-b-0">
-        {/* Artwork */}
+    <div className="bg-background after:from-background relative size-full overflow-hidden rounded-2xl border p-4 after:absolute after:inset-0 after:bg-gradient-to-t after:to-transparent md:p-6 md:pb-0">
+      <div className="relative size-full rounded-2xl rounded-t-lg rounded-b-none border border-b-0 shadow-xs">
         {children}
       </div>
     </div>

@@ -9,7 +9,7 @@ export function Demo() {
         <h2 className="mb-3 text-center text-4xl/14 font-semibold tracking-tight">
           True superpowers.
         </h2>
-        <p className="text-muted-foreground mb-4 text-center text-xl font-medium tracking-tight">
+        <p className="text-muted-foreground mb-12 text-center text-xl font-medium tracking-tight">
           Know what your users want most right now.
         </p>
         <DemoTabs />
