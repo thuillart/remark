@@ -7,7 +7,7 @@ import { FAQsCollapsible } from "@/home/components/faqs-collapsible";
 
 export function FAQs() {
   return (
-    <section className="mx-auto w-full max-w-5xl px-6 md:px-12">
+    <section id="faqs" className="container">
       <div className="py-12 md:pt-24 md:pb-32">
         <div className="grid w-full grid-cols-1 gap-8 md:grid-cols-[1fr_2fr] md:gap-18">
           <h2 className="text-4xl/14 font-semibold tracking-tight">FAQs.</h2>

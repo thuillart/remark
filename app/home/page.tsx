@@ -6,6 +6,7 @@ import { Features } from "@/home/components/features";
 import { Footer } from "@/home/components/footer";
 import { Header } from "@/home/components/header";
 import { Hero } from "@/home/components/hero";
+import { Pricing } from "@/home/components/pricing";
 import { Benefits } from "@/home/components/proof";
 import { Separator } from "@/home/components/separator";
 
@@ -13,7 +14,7 @@ export default function HomePage() {
   return (
     <>
       <Header />
-      <main className="overflow-x-hidden py-16 md:pt-32">
+      <main className="py-16 md:pt-32">
         <Hero />
         <Separator />
         <Demo />
@@ -22,6 +23,7 @@ export default function HomePage() {
         <Separator />
         <Benefits />
         <Separator />
+        <Pricing />
         <FAQs />
       </main>
       <Footer />
