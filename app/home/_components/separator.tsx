@@ -1,3 +1,5 @@
+import "server-only";
+
 export function Separator() {
   return (
     <div className="px-4 md:px-12">
