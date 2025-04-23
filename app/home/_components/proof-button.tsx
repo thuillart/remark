@@ -1,0 +1,31 @@
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+
+import { CircleArrow } from "@/components/circle-arrow";
+import { Button } from "@/components/ui/button";
+
+export function ProofButton() {
+  const [isHovering, setIsHovering] = useState(false);
+
+  return (
+    <Button
+      size="sm"
+      asChild
+      variant="outline"
+      className="group/button shrink-0 self-start rounded-lg"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
+    >
+      <Link href="https://bundlephobia.com/" target="_blank">
+        Check it out
+        <CircleArrow
+          variant="outline"
+          direction="up-right"
+          isHovering={isHovering}
+        />
+      </Link>
+    </Button>
+  );
+}

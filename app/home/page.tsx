@@ -1,11 +1,12 @@
 import "server-only";
 
 import { Demo } from "@/home/components/demo";
+import { FAQs } from "@/home/components/faqs";
 import { Features } from "@/home/components/features";
 import { Footer } from "@/home/components/footer";
 import { Header } from "@/home/components/header";
 import { Hero } from "@/home/components/hero";
-import { Proof } from "@/home/components/proof";
+import { Benefits } from "@/home/components/proof";
 import { Separator } from "@/home/components/separator";
 
 export default function HomePage() {
@@ -19,7 +20,9 @@ export default function HomePage() {
         <Separator />
         <Features />
         <Separator />
-        <Proof />
+        <Benefits />
+        <Separator />
+        <FAQs />
       </main>
       <Footer />
     </>

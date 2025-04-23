@@ -107,7 +107,7 @@ export function DemoTabs() {
 function View({ children }: { children: React.ReactNode }) {
   return (
     <div className="bg-background after:from-background relative size-full overflow-hidden rounded-2xl border p-4 after:absolute after:inset-0 after:bg-gradient-to-t after:to-transparent md:p-6 md:pb-0">
-      <div className="relative size-full rounded-2xl rounded-t-lg rounded-b-none border border-b-0 shadow-xs">
+      <div className="relative size-full rounded-2xl rounded-t-lg rounded-b-none border border-b-0 shadow-sm">
         {children}
       </div>
     </div>

@@ -13,7 +13,7 @@ export function Hero() {
           <HeroArtwork />
           <div className="flex flex-col items-center gap-4 text-center text-balance">
             <h1 className="text-4xl/12 font-semibold tracking-tighter md:text-5xl/14">
-              Get your app out faster
+              Ship faster, build better
             </h1>
             <p className="text-muted-foreground text-lg md:text-xl">
               Collect feedback, iterate and ship products people love.
