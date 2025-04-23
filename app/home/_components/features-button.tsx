@@ -6,7 +6,7 @@ import { useState } from "react";
 import { CircleArrow } from "@/components/circle-arrow";
 import { Button } from "@/components/ui/button";
 
-export function ProofButton() {
+export function FeaturesButton() {
   const [isHovering, setIsHovering] = useState(false);
 
   return (
