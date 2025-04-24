@@ -1,5 +1,7 @@
 import "server-only";
 
+import { ContactsMarquee } from "@/home/components/contacts-marquee";
+
 type Node = {
   title: string;
   artwork: React.ReactNode;
@@ -24,7 +26,7 @@ let nodes: Node[] = [
   },
   {
     title: "Contacts.",
-    artwork: <div />,
+    artwork: <ContactsMarquee />,
     description: "See who's behind every event.",
   },
 ];
