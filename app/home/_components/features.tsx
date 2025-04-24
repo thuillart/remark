@@ -49,7 +49,7 @@ const example = ts`
 export function Features() {
   return (
     <section className="container">
-      <div className="space-y-12 py-24">
+      <div className="space-y-12 py-12 md:py-24">
         <h2 className="text-4xl/14 font-semibold tracking-tight md:px-6">
           As it should be.
         </h2>

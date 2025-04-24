@@ -3,7 +3,7 @@
 import Autoplay from "embla-carousel-autoplay";
 import React from "react";
 
-import { Card, CardHeader } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
   Carousel,
   type CarouselApi,
@@ -81,17 +81,18 @@ export function LogsCarousel() {
       plugins={[plugin.current]}
       orientation="vertical"
     >
-      <CarouselContent className="h-50 px-6 md:h-64 md:px-10">
+      <CarouselContent className="-mt-1.5 h-50 px-6 md:-mt-2 md:h-64 md:px-10">
         {logs.map((log, index) => (
-          <CarouselItem key={log.name} className="basis-14">
+          <CarouselItem
+            key={log.name}
+            className="basis-10 pt-2 md:basis-14 md:pt-4"
+          >
             <Card
               className={cn(
-                "h-14 rounded-lg transition-shadow",
+                "h-10 rounded-lg transition-shadow max-md:p-0 md:h-14",
                 current - 1 !== index && "shadow-none",
               )}
-            >
-              <CardHeader className="flex items-center gap-4"></CardHeader>
-            </Card>
+            />
           </CarouselItem>
         ))}
       </CarouselContent>
