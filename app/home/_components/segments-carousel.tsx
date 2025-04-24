@@ -79,7 +79,6 @@ export function SegmentsCarousel() {
       opts={{ loop: true, align: "center" }}
       setApi={setApi}
       plugins={[plugin.current]}
-      className="h-full [&>*]:h-full"
       onMouseLeave={() => plugin.current.play()}
     >
       <CarouselContent className="h-50 py-6 md:h-64 md:py-10">

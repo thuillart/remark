@@ -79,15 +79,14 @@ export function LogsCarousel() {
       opts={{ loop: true, align: "center" }}
       setApi={setApi}
       plugins={[plugin.current]}
-      className="h-full [&>*]:h-full"
       orientation="vertical"
     >
-      <CarouselContent className="-mt-2 h-full px-6 md:px-10">
+      <CarouselContent className="h-50 px-6 md:h-64 md:px-10">
         {logs.map((log, index) => (
-          <CarouselItem key={log.name} className="md:basis-16">
+          <CarouselItem key={log.name} className="basis-14">
             <Card
               className={cn(
-                "h-16 transition-shadow",
+                "h-14 rounded-lg transition-shadow",
                 current - 1 !== index && "shadow-none",
               )}
             >

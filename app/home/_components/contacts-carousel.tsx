@@ -79,11 +79,10 @@ export function ContactsCarousel() {
       opts={{ loop: true, align: "center" }}
       setApi={setApi}
       plugins={[plugin.current]}
-      className="h-full [&>*]:h-full"
       orientation="vertical"
       onMouseLeave={() => plugin.current.play()}
     >
-      <CarouselContent className="-mt-2 h-50 px-6 md:h-64 md:px-10">
+      <CarouselContent className="h-50 px-6 md:h-64 md:px-10">
         {feedbacks.map((contact, index) => (
           <CarouselItem key={contact.name} className="basis-1/2">
             <Card
