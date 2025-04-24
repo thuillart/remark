@@ -84,10 +84,10 @@ export function LogsCarousel() {
     >
       <CarouselContent className="-mt-2 h-full px-6 md:px-10">
         {logs.map((log, index) => (
-          <CarouselItem key={log.name} className="md:basis-14">
+          <CarouselItem key={log.name} className="md:basis-16">
             <Card
               className={cn(
-                "h-14 transition-shadow",
+                "h-16 transition-shadow",
                 current - 1 !== index && "shadow-none",
               )}
             >
