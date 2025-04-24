@@ -49,7 +49,7 @@ export function Features() {
             </h5>
             <div className="from-background absolute inset-0 -z-1 bg-gradient-to-t from-20% to-transparent"></div>
             <div className="-z-2 flex flex-col items-start gap-5 overflow-hidden rounded-xl border border-b-0 px-8 pt-6 shadow-xs md:inset-8">
-              <Logo className="-ml-3 scale-80" />
+              <Logo className="-ml-2.5 scale-80" />
               <div className="grid w-full grid-cols-[1fr_3fr] gap-2">
                 <div className="flex h-full flex-col gap-2">
                   {[7, 9, 5, 8, 6].map((width) => (
