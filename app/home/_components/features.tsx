@@ -61,7 +61,10 @@ export function Features() {
                 </div>
                 <div className="grid grid-cols-3 grid-rows-3 gap-3">
                   {Array.from({ length: 9 }).map((_, index) => (
-                    <div key={index} className="h-13 rounded-md border"></div>
+                    <div
+                      key={index}
+                      className="aspect-4/3 rounded-md border"
+                    ></div>
                   ))}
                 </div>
               </div>
