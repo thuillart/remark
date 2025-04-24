@@ -85,7 +85,7 @@ function CodeExample({
   showLineNumbers?: boolean;
 }) {
   return (
-    <div className={cn("rounded-xl bg-neutral-950", className)} {...props}>
+    <div className={cn("bg-background rounded-xl", className)} {...props}>
       <div className="dark:inset-ring-border rounded-xl p-1 text-sm dark:inset-ring">
         {filename && (
           <div className="dark text-muted-foreground px-3 pt-1 pb-1.5 text-xs">

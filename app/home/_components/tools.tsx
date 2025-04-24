@@ -1,37 +1,39 @@
 import "server-only";
 
-import { ContactsMarquee } from "@/home/components/contacts-marquee";
+import { ContactsCarousel } from "@/home/components/contacts-carousel";
+import { LogsCarousel } from "@/home/components/logs-carousel";
+import { SegmentsCarousel } from "@/home/components/segments-carousel";
 
-type Node = {
+type Card = {
   title: string;
   artwork: React.ReactNode;
   description: string;
 };
 
-let nodes: Node[] = [
+let cards: Card[] = [
   {
     title: "Test mode.",
     artwork: <div />,
     description: "Any event, no limits, for free.",
   },
   {
-    title: "Webhooks.",
-    artwork: <div />,
+    title: "Logs.",
+    artwork: <LogsCarousel />,
     description: "As soon as an event happens.",
   },
   {
     title: "Segments.",
-    artwork: <div />,
+    artwork: <SegmentsCarousel />,
     description: "By tier, or any way you want.",
   },
   {
     title: "Contacts.",
-    artwork: <ContactsMarquee />,
-    description: "See who's behind every event.",
+    artwork: <ContactsCarousel />,
+    description: "See who's behind every feedback.",
   },
 ];
 
-export function Tools() {
+function Tools() {
   return (
     <section className="container">
       <div className="py-12 md:py-24">
@@ -46,7 +48,7 @@ export function Tools() {
             </p>
           </div>
           <div className="flex flex-col gap-17">
-            {nodes.map(({ title, artwork, description }) => (
+            {cards.map(({ title, artwork, description }) => (
               <ToolCard
                 key={title}
                 title={title}
@@ -61,14 +63,14 @@ export function Tools() {
   );
 }
 
-function ToolCard({ title, artwork, description }: Node) {
+function ToolCard({ title, artwork, description }: Card) {
   return (
     <div className="space-y-8">
       <div className="relative h-50 overflow-hidden rounded-2xl border md:h-64">
         {artwork}
       </div>
       <p className="text-muted-foreground flex flex-col items-baseline gap-3 md:flex-row">
-        <span className="text-foreground w-full max-w-32 text-2xl/[1.05] font-semibold tracking-tight">
+        <span className="text-foreground text-2xl/[1.05] font-semibold tracking-tight">
           {title}
         </span>
         {description}
@@ -76,3 +78,5 @@ function ToolCard({ title, artwork, description }: Node) {
     </div>
   );
 }
+
+export { Tools };
