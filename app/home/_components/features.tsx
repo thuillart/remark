@@ -61,7 +61,7 @@ export function Features() {
               <span>Developer documentation the way it should be.</span>
             </h5>
             <div className="from-background absolute inset-0 -z-1 bg-gradient-to-t from-20% to-transparent" />
-            <div className="-z-2 flex flex-col items-start gap-5 overflow-hidden rounded-xl border border-b-0 px-8 pt-6 shadow-xs md:inset-8">
+            <div className="-z-2 flex flex-col items-start gap-5 overflow-hidden rounded-xl border border-b-0 px-6 pt-4 shadow-xs md:inset-8 md:px-8 md:pt-6">
               <Logo className="-ml-2.5 scale-80" />
               <div className="grid w-full grid-cols-[1fr_3fr] gap-2">
                 <div className="flex h-full flex-col gap-2">
@@ -89,7 +89,6 @@ export function Features() {
             </h5>
             <FeaturesButton />
             <div className="dark bg-background relative -mr-8 -mb-8 h-full overflow-hidden rounded-tl-xl shadow-xs">
-              {/* <HighlightedCode className="mt-2 **:text-sm md:-ml-[80%]" /> */}
               <CodeExample example={example} className="*:md:w-min" />
             </div>
           </div>

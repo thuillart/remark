@@ -12,11 +12,6 @@ type Card = {
 
 let cards: Card[] = [
   {
-    title: "Test mode.",
-    artwork: <div />,
-    description: "Any event, no limits, for free.",
-  },
-  {
     title: "Logs.",
     artwork: <LogsCarousel />,
     description: "As soon as an event happens.",
