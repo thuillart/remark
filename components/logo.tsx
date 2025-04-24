@@ -4,7 +4,15 @@ import { motion, useAnimate } from "framer-motion";
 import Link from "next/link";
 import React from "react";
 
-export function Logo({ size = 20 }: { size?: number }) {
+import { cn } from "@/lib/utils";
+
+export function Logo({
+  size = 20,
+  className,
+}: {
+  size?: number;
+  className?: string;
+}) {
   const [isHovered, setIsHovered] = React.useState(false);
   const [isAnimating, setIsAnimating] = React.useState(false);
 
@@ -51,7 +59,10 @@ export function Logo({ size = 20 }: { size?: number }) {
   return (
     <Link
       href="/"
-      className="inline-flex h-fit items-center gap-2 transition-opacity hover:opacity-70"
+      className={cn(
+        "inline-flex h-fit items-center gap-2 transition-opacity hover:opacity-70",
+        className,
+      )}
       onMouseEnter={() => {
         setIsHovered(true);
       }}

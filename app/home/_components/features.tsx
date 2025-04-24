@@ -2,6 +2,7 @@ import "server-only";
 
 import { CodeIcon, LockOpenIcon, LucideIcon, TypeIcon } from "lucide-react";
 
+import { Logo } from "@/components/logo";
 import { FeaturesButton } from "@/home/components/features-button";
 import { cn } from "@/lib/utils";
 
@@ -37,7 +38,7 @@ export function Features() {
     <section className="container">
       <div className="space-y-12 py-24">
         <h2 className="text-4xl/14 font-semibold tracking-tight md:px-6">
-          Easy by design.
+          As it should be.
         </h2>
 
         <div className="grid gap-x-10 gap-y-12 md:grid-cols-2">
@@ -47,7 +48,24 @@ export function Features() {
               <span>Developer documentation the way it should be.</span>
             </h5>
             <div className="from-background absolute inset-0 -z-1 bg-gradient-to-t from-20% to-transparent"></div>
-            <div className="-z-2 h-full rounded-xl border border-b-0 shadow-xs md:inset-8"></div>
+            <div className="-z-2 flex flex-col items-start gap-5 overflow-hidden rounded-xl border border-b-0 px-8 pt-6 shadow-xs md:inset-8">
+              <Logo className="-ml-3 scale-80" />
+              <div className="grid w-full grid-cols-[1fr_3fr] gap-2">
+                <div className="flex h-full flex-col gap-2">
+                  {[7, 9, 5, 8, 6].map((width) => (
+                    <div
+                      key={width}
+                      className={`bg-border h-2 w-${width}/12 rounded-full`}
+                    />
+                  ))}
+                </div>
+                <div className="grid grid-cols-3 grid-rows-3 gap-3">
+                  {Array.from({ length: 9 }).map((_, index) => (
+                    <div key={index} className="h-13 rounded-md border"></div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="relative flex h-75 flex-col gap-4 overflow-hidden rounded-2xl border p-4 md:p-8">
