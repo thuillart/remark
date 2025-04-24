@@ -82,7 +82,7 @@ export function SegmentsCarousel() {
       className="h-full [&>*]:h-full"
       onMouseLeave={() => plugin.current.play()}
     >
-      <CarouselContent className="h-64 py-6 md:py-10">
+      <CarouselContent className="h-50 py-6 md:h-64 md:py-10">
         {segments.map((segment, index) => (
           <CarouselItem
             key={segment.name}

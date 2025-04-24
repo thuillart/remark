@@ -3,7 +3,7 @@
 import Autoplay from "embla-carousel-autoplay";
 import React from "react";
 
-import { Card, CardHeader } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
   Carousel,
   type CarouselApi,
@@ -81,18 +81,17 @@ export function ContactsCarousel() {
       plugins={[plugin.current]}
       className="h-full [&>*]:h-full"
       orientation="vertical"
+      onMouseLeave={() => plugin.current.play()}
     >
-      <CarouselContent className="-mt-1 h-64 px-6 md:px-10">
+      <CarouselContent className="-mt-2 h-50 px-6 md:h-64 md:px-10">
         {feedbacks.map((contact, index) => (
-          <CarouselItem key={contact.name} className="md:basis-1/2">
+          <CarouselItem key={contact.name} className="basis-1/2">
             <Card
               className={cn(
-                "h-[calc(16rem-3rem-1rem)] transition-shadow md:h-[calc(16rem-5rem-1rem)]",
+                "h-[calc(12.5rem-3rem-1rem)] rounded-lg transition-shadow md:h-[calc(16rem-5rem-1rem)]",
                 current - 1 !== index && "shadow-none",
               )}
-            >
-              <CardHeader className="flex items-center gap-4"></CardHeader>
-            </Card>
+            ></Card>
           </CarouselItem>
         ))}
       </CarouselContent>
