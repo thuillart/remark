@@ -2,6 +2,7 @@ import "server-only";
 
 import { CodeIcon, LockOpenIcon, LucideIcon, TypeIcon } from "lucide-react";
 
+import { CodeExample, ts } from "@/components/code-example";
 import { Logo } from "@/components/logo";
 import { FeaturesButton } from "@/home/components/features-button";
 import { cn } from "@/lib/utils";
@@ -33,6 +34,18 @@ let nodes: Node[] = [
   },
 ];
 
+const example = ts`
+  // [!code highlight:1]
+  import { ... } from '...' // 2.5k (gzipped: 950)
+
+  const nucleon = new Nucleon(...)
+
+  async function send() {
+    "use server";
+    // ...
+  }
+`;
+
 export function Features() {
   return (
     <section className="container">
@@ -47,15 +60,16 @@ export function Features() {
               Clear and comprehensive docs.{" "}
               <span>Developer documentation the way it should be.</span>
             </h5>
-            <div className="from-background absolute inset-0 -z-1 bg-gradient-to-t from-20% to-transparent"></div>
+            <div className="from-background absolute inset-0 -z-1 bg-gradient-to-t from-20% to-transparent" />
             <div className="-z-2 flex flex-col items-start gap-5 overflow-hidden rounded-xl border border-b-0 px-8 pt-6 shadow-xs md:inset-8">
               <Logo className="-ml-2.5 scale-80" />
               <div className="grid w-full grid-cols-[1fr_3fr] gap-2">
                 <div className="flex h-full flex-col gap-2">
-                  {[7, 9, 5, 8, 6].map((width) => (
+                  {[70, 90, 50, 80, 60].map((width) => (
                     <div
                       key={width}
-                      className={`bg-border h-2 w-${width}/12 rounded-full`}
+                      style={{ width: `${width}%` }}
+                      className="bg-border h-2 rounded-full"
                     />
                   ))}
                 </div>
@@ -74,8 +88,10 @@ export function Features() {
               <span>So lightweight your bundle size will shrink.</span>
             </h5>
             <FeaturesButton />
-            <div className="from-background absolute inset-0 -z-1 bg-gradient-to-t to-transparent to-40%" />
-            <div className="-z-2 -mr-8 -mb-8 h-full rounded-tl-xl border-t border-l shadow-xs"></div>
+            <div className="dark bg-background relative -mr-8 -mb-8 h-full overflow-hidden rounded-tl-xl shadow-xs">
+              {/* <HighlightedCode className="mt-2 **:text-sm md:-ml-[80%]" /> */}
+              <CodeExample example={example} className="*:md:w-min" />
+            </div>
           </div>
         </div>
 
