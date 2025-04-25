@@ -14,40 +14,40 @@ export function CircleArrow({
   direction,
   isHovering,
 }: CircleArrowProps) {
-  const [isAnimating, setIsAnimating] = React.useState(false);
-
   const [scope1, animate1] = useAnimate();
   const [scope2, animate2] = useAnimate();
 
   React.useEffect(() => {
-    if (isHovering && !isAnimating) {
-      setIsAnimating(true);
-      Promise.all([
-        animate1(scope1.current, {
-          translateX:
-            direction === "right"
-              ? [0, 20]
-              : direction === "left"
-                ? [-20, 0]
-                : direction === "up-right"
-                  ? [0, 20]
-                  : [-20, 0],
-        }),
-        animate2(scope2.current, {
-          translateX:
-            direction === "right"
-              ? [-20, 0]
-              : direction === "left"
-                ? [0, 20]
-                : direction === "up-right"
-                  ? [-20, 0]
-                  : [0, 20],
-        }),
-      ]).finally(() => {
-        setIsAnimating(false);
-      });
+    if (!isHovering) {
+      // Reset positions instantly when not hovering
+      animate1(scope1.current, { translateX: 0 }, { duration: 0 });
+      animate2(scope2.current, { translateX: 0 }, { duration: 0 });
+      return;
     }
-  }, [isHovering, isAnimating, animate1, animate2, scope1, scope2, direction]);
+
+    Promise.all([
+      animate1(scope1.current, {
+        translateX:
+          direction === "right"
+            ? [0, 20]
+            : direction === "left"
+              ? [-20, 0]
+              : direction === "up-right"
+                ? [0, 20]
+                : [-20, 0],
+      }),
+      animate2(scope2.current, {
+        translateX:
+          direction === "right"
+            ? [-20, 0]
+            : direction === "left"
+              ? [0, 20]
+              : direction === "up-right"
+                ? [-20, 0]
+                : [0, 20],
+      }),
+    ]);
+  }, [isHovering, animate1, animate2, scope1, scope2, direction]);
 
   return (
     <svg
