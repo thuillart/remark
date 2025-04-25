@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
 
-let feedbacks = [
+const feedbacks = [
   {
     name: "Aaliyah",
     email: "aaliyah.ng@example.org",
@@ -90,7 +90,7 @@ export function ContactsCarousel() {
                 "h-[calc(12.5rem-3rem-1rem)] rounded-lg transition-shadow md:h-[calc(16rem-5rem-1rem)]",
                 current - 1 !== index && "shadow-none",
               )}
-            ></Card>
+            />
           </CarouselItem>
         ))}
       </CarouselContent>

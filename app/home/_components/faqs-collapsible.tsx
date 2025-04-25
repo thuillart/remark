@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, Transition } from "motion/react";
+import { type Transition, motion } from "motion/react";
 import { useState } from "react";
 
 const transition: Transition = {
@@ -20,8 +20,12 @@ export function FAQsCollapsible({
   return (
     <div>
       {items.map((item, index) => (
-        <div key={index} className="border-border mb-2 rounded-xl border">
+        <div
+          key={crypto.randomUUID()}
+          className="border-border mb-2 rounded-xl border"
+        >
           <button
+            type="button"
             onClick={() => setOpen(open === index ? null : index)}
             className="flex w-full cursor-pointer items-center justify-between pr-2 pl-6 text-start focus-visible:outline-none max-md:py-2.5 md:h-18"
           >
@@ -35,6 +39,7 @@ export function FAQsCollapsible({
               viewBox="0 0 52 52"
               className="shrink-0"
             >
+              <title>{open === index ? "Close" : "Open"}</title>
               <motion.path
                 d="M19 25.5H26L33 25.5"
                 stroke="currentColor"

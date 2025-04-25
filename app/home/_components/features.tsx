@@ -1,6 +1,11 @@
 import "server-only";
 
-import { CodeIcon, LockOpenIcon, LucideIcon, TypeIcon } from "lucide-react";
+import {
+  CodeIcon,
+  LockOpenIcon,
+  type LucideIcon,
+  TypeIcon,
+} from "lucide-react";
 
 import { CodeExample, ts } from "@/components/code-example";
 import { Logo } from "@/components/logo";
@@ -13,7 +18,7 @@ type Node = {
   description: string;
 };
 
-let nodes: Node[] = [
+const nodes: Node[] = [
   {
     Icon: LockOpenIcon,
     title: "Open-source.",
@@ -74,8 +79,11 @@ export function Features() {
                   ))}
                 </div>
                 <div className="grid grid-cols-3 grid-rows-3 gap-3">
-                  {Array.from({ length: 9 }).map((_, index) => (
-                    <div key={index} className="aspect-4/3 rounded-md border" />
+                  {Array.from({ length: 9 }).map(() => (
+                    <div
+                      key={crypto.randomUUID()}
+                      className="aspect-4/3 rounded-md border"
+                    />
                   ))}
                 </div>
               </div>

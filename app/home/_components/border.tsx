@@ -22,6 +22,7 @@ export function Border({
       preserveAspectRatio="none"
       className={className}
     >
+      <title>Border</title>
       <motion.line
         x1={vertical ? 0.5 : 0}
         y1={vertical ? 0 : 0.5}

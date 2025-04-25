@@ -1,10 +1,10 @@
 "use client";
 
 import {
-  motion,
   type TargetAndTransition,
   type Transition,
   type Variants,
+  motion,
 } from "motion/react";
 
 const randomYAnimation: TargetAndTransition = {
@@ -52,6 +52,7 @@ export function FooterArtwork() {
       xmlns="http://www.w3.org/2000/svg"
       className="absolute top-0 left-0 -z-1 size-full"
     >
+      <title>Footer Artwork</title>
       <rect width="100%" height="100%" fill="url(#footer-pattern)" />
 
       <defs>
@@ -61,8 +62,8 @@ export function FooterArtwork() {
           height="472"
           patternUnits="userSpaceOnUse"
         >
-          {shapes.map((shape, index) => (
-            <Shape key={index}>
+          {shapes.map((shape) => (
+            <Shape key={crypto.randomUUID()}>
               {shape.type === "path" ? (
                 <path d={shape.d} stroke="var(--color-border)" />
               ) : (
@@ -81,17 +82,17 @@ export function FooterArtwork() {
             {dots.map((dot, index) => (
               <circle
                 r={dot.r}
-                key={index}
                 cx={dot.cx}
                 cy={dot.cy}
+                key={crypto.randomUUID()}
                 fill="var(--color-border)"
               />
             ))}
 
             {lines.map((line, index) => (
               <motion.path
-                key={index}
                 d={line.d}
+                key={crypto.randomUUID()}
                 stroke="var(--color-border)"
                 animate={{ strokeDashoffset: [0, -10] }}
                 transition={lineTransition}

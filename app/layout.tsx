@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, Inter, Open_Sans } from "next/font/google";
+import { IBM_Plex_Mono, Inter } from "next/font/google";
 
 import "@/app/globals.css";
 import { ThemeProvider } from "@/components/theme-provider";

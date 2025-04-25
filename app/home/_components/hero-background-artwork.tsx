@@ -81,8 +81,7 @@ const BackgroundAnimation = (props: BackgroundAnimationProps) => {
     renderer.setSize(width, height);
     renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 1);
 
-    containerRef.current &&
-      containerRef.current.appendChild(renderer.domElement);
+    containerRef.current?.appendChild(renderer.domElement);
 
     // Handle resize
     const handleResize = () => {
@@ -212,14 +211,12 @@ const BackgroundAnimation = (props: BackgroundAnimationProps) => {
     return () => {
       cancelAnimationFrame(cancelFrame);
       window.removeEventListener("resize", handleResize);
-      containerRef.current &&
-        containerRef.current.removeChild(renderer.domElement);
+      containerRef.current?.removeChild(renderer.domElement);
       renderer.dispose();
     };
   }, [
     seed,
     lineFrequency,
-    lineColor,
     meshColor,
     cameraPosition,
     panX,

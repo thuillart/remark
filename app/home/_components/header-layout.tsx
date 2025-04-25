@@ -1,10 +1,10 @@
 "use client";
 
 import {
+  type Transition,
   motion,
   useMotionValueEvent,
   useScroll,
-  type Transition,
 } from "motion/react";
 import React from "react";
 

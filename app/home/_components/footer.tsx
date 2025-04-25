@@ -82,7 +82,7 @@ const socialItems = [
 
 export function Footer() {
   return (
-    <footer className="relative mt-12 pt-14 pb-12">
+    <footer className="relative mt-12 pt-24 pb-12">
       <FooterArtwork />
 
       <div className="container">

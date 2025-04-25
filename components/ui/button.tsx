@@ -38,16 +38,19 @@ const buttonVariants = cva(
   },
 );
 
+interface ButtonProps extends React.ComponentProps<"button"> {
+  size?: VariantProps<typeof buttonVariants>["size"];
+  variant?: VariantProps<typeof buttonVariants>["variant"];
+  asChild?: boolean;
+}
+
 function Button({
-  className,
-  variant,
   size,
+  variant,
   asChild = false,
+  className,
   ...props
-}: React.ComponentProps<"button"> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean;
-  }) {
+}: ButtonProps) {
   const Comp = asChild ? Slot : "button";
 
   return (

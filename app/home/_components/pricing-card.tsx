@@ -50,9 +50,9 @@ export function PricingCard({
           </span>
         )}
         <ul className="space-y-3">
-          {features.map((feature, index) => (
+          {features.map((feature) => (
             <li
-              key={index}
+              key={crypto.randomUUID()}
               className="flex items-center gap-x-2 text-sm text-pretty [&_bold]:font-medium"
             >
               <CheckIcon size={16} className="shrink-0" />
@@ -70,7 +70,7 @@ export function PricingCard({
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
         >
-          {id === "free" ? "Start Building" : "Upgrade to " + name}
+          {id === "free" ? "Start Building" : `Upgrade to ${name}`}
           <CircleArrow
             variant={id === "pro" ? "outline" : "default"}
             direction="up-right"

@@ -4,7 +4,6 @@
     "**.mjs": true, // CommonJS modules
     "**.lock": true, // Bun lock file
     "**/.next": true, // Next.js build folder
-    ".prettierrc": true, // Prettier config
     "next-env.d.ts": true, // Next.js internal types
     "**/node_modules": true // Node.js modules
   },
@@ -12,9 +11,10 @@
   "typescript.tsdk": "node_modules/typescript/lib",
 
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.defaultFormatter": "biomejs.biome",
   "editor.codeActionsOnSave": {
-    "source.fixAll": "explicit",
-    "source.organizeImports": "explicit"
+    "quickfix.biome": "explicit",
+    "source.fixAll.biome": "explicit",
+    "source.organizeImports.biome": "explicit"
   }
 }

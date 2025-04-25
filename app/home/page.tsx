@@ -14,7 +14,7 @@ export default function HomePage() {
   return (
     <>
       <Header />
-      <main className="py-16 md:pt-32">
+      <main className="pt-16 md:pt-32">
         <Hero />
         <Separator />
         <Demo />
@@ -25,6 +25,7 @@ export default function HomePage() {
         <Separator />
         <Pricing />
         <FAQs />
+        <Separator />
       </main>
       <Footer />
     </>

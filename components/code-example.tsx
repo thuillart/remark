@@ -5,9 +5,9 @@ import {
 } from "@shikijs/transformers";
 import dedent from "dedent";
 import {
-  createHighlighter,
-  ShikiTransformer,
+  type ShikiTransformer,
   type ThemeRegistration,
+  createHighlighter,
 } from "shiki";
 
 import { cn } from "@/lib/utils";
@@ -63,11 +63,11 @@ const highlighter = await createHighlighter({
   themes: [theme],
 });
 
-function ts(strings: TemplateStringsArray, ...args: any[]) {
+function ts(strings: TemplateStringsArray, ...args: string[]) {
   return { lang: "ts", code: dedent(strings, ...args) };
 }
 
-function tsx(strings: TemplateStringsArray, ...args: any[]) {
+function tsx(strings: TemplateStringsArray, ...args: string[]) {
   return { lang: "tsx", code: dedent(strings, ...args) };
 }
 
@@ -115,7 +115,7 @@ function HighlightedCode({
   example: { code: string; lang: string };
   showLineNumbers?: boolean;
 }) {
-  let output = highlighter
+  const output = highlighter
     .codeToHtml(example.code, {
       lang: example.lang,
       theme,
@@ -148,6 +148,7 @@ function HighlightedCode({
           "[&_.line]:before:text-muted-foreground/40 [&_.line]:ml-9 [&_.line]:[counter-increment:line] [&_.line]:before:absolute [&_.line]:before:left-0 [&_.line]:before:w-6 [&_.line]:before:text-right [&_.line]:before:font-mono [&_.line]:before:content-[counter(line)] [&_.line]:before:select-none max-sm:[&_.line]:ml-0 max-sm:[&_.line]:before:hidden [&_code]:relative [&_code]:[counter-reset:line]",
         className,
       )}
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: Sanitized by shiki
       dangerouslySetInnerHTML={{ __html: output }}
     />
   );

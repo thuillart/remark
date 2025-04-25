@@ -44,5 +44,5 @@ function DesktopMenu() {
 }
 
 function MobileMenu() {
-  return <Button size="icon" className="md:hidden"></Button>;
+  return <></>;
 }

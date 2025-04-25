@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, type Transition, type Variants } from "motion/react";
+import { type Transition, type Variants, motion } from "motion/react";
 import React from "react";
 
 import { cn } from "@/lib/utils";
@@ -47,7 +47,7 @@ export function DemoTabs() {
   const [tab, setTab] = React.useState<Tab["id"]>(1);
 
   const handleClick = (id: Tab["id"]) => {
-    if (id == tab) return;
+    if (id === tab) return;
     setTab(id);
   };
 
@@ -68,6 +68,7 @@ export function DemoTabs() {
           {tabs.map(({ id, title, description }) => (
             <button
               key={title}
+              type="button"
               onClick={() => handleClick(id)}
               className="flex cursor-pointer flex-col gap-4 text-start focus-visible:outline-none"
             >

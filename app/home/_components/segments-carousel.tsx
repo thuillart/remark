@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
 
-let segments = [
+const segments = [
   {
     name: "Aaliyah",
     email: "aaliyah.ng@example.org",
@@ -92,9 +92,7 @@ export function SegmentsCarousel() {
                 "relative h-full",
                 current - 1 !== index && "shadow-none",
               )}
-            >
-              <CardHeader className="flex items-center gap-4"></CardHeader>
-            </Card>
+            />
           </CarouselItem>
         ))}
       </CarouselContent>

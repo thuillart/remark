@@ -10,7 +10,7 @@ type Card = {
   description: string;
 };
 
-let cards: Card[] = [
+const cards: Card[] = [
   {
     title: "Logs.",
     artwork: <LogsCarousel />,

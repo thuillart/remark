@@ -1,11 +1,11 @@
 import "server-only";
 
-import { ReactNode, Suspense } from "react";
+import { type ReactNode, Suspense } from "react";
 
 import { PricingCard } from "@/home/components/pricing-card";
 import { PricingSkeleton } from "@/home/components/pricing-skeleton";
 
-type Node = {
+type Plan = {
   id: "free" | "plus" | "pro";
   name: string;
   price: number;
@@ -13,7 +13,7 @@ type Node = {
   description: string;
 };
 
-let nodes: Node[] = [
+const plans: Plan[] = [
   {
     id: "free",
     name: "Free",
@@ -50,19 +50,19 @@ let nodes: Node[] = [
 export async function Pricing() {
   return (
     <section className="container">
-      <div className="py-12 md:py-24">
+      <div className="py-12 md:pt-24 md:pb-12">
         <div className="space-y-3 md:px-6">
           <h2 className="text-4xl/14 font-semibold tracking-tight">
             Forget about your bill.
           </h2>
-          <p className="text-muted-foreground mb-12 text-xl font-medium tracking-tight">
+          <p className="text-muted-foreground text-xl font-medium tracking-tight">
             Use the core product for free, forever.
           </p>
         </div>
         <div className="mt-18 grid gap-4 md:grid-cols-3">
           <Suspense fallback={<PricingSkeleton />}>
-            {nodes.map(({ id, ...node }) => (
-              <PricingCard id={id} key={id} {...node} />
+            {plans.map(({ id, ...plan }) => (
+              <PricingCard id={id} key={id} {...plan} />
             ))}
           </Suspense>
         </div>

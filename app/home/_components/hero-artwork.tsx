@@ -66,6 +66,7 @@ export function HeroArtwork() {
     ellipse2,
     ellipse3,
     ellipse4,
+    isAnimating,
   ]);
 
   return (
@@ -79,6 +80,7 @@ export function HeroArtwork() {
       strokeWidth={0.75}
       strokeLinecap="round"
     >
+      <title>Artwork</title>
       <motion.path
         d="M13.7872 13.7853C15.0093 12.5632 13.3885 8.961 10.167 5.73952C6.9455 2.51803 3.34329 0.897191 2.12121 2.11927C0.899135 3.34134 2.51998 6.94356 5.74146 10.165C8.96294 13.3865 12.5652 15.0074 13.7872 13.7853Z"
         ref={ellipse1}

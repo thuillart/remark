@@ -1,6 +1,6 @@
 "use client";
 
-import { cva, VariantProps } from "class-variance-authority";
+import { type VariantProps, cva } from "class-variance-authority";
 import { motion, useAnimate } from "framer-motion";
 import React from "react";
 
@@ -47,7 +47,7 @@ export function CircleArrow({
         setIsAnimating(false);
       });
     }
-  }, [isHovering]);
+  }, [isHovering, isAnimating, animate1, animate2, scope1, scope2, direction]);
 
   return (
     <svg
@@ -58,6 +58,7 @@ export function CircleArrow({
       viewBox="0 0 16 16"
       className={circleArrowVariants({ variant })}
     >
+      <title>A circle arrow</title>
       <rect rx={8} width={16} height={16} />
       <motion.path
         d="M4.75 8L11.25 8M11.25 8L8.75 5.5M11.25 8L8.75 10.5"
