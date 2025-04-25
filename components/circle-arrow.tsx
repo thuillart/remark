@@ -25,6 +25,7 @@ export function CircleArrow({
       return;
     }
 
+    // Animate the paths
     Promise.all([
       animate1(scope1.current, {
         translateX:
