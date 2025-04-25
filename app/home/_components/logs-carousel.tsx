@@ -97,11 +97,11 @@ export function LogsCarousel() {
             >
               <Badge
                 variant={
-                  log.status === 403 || log.status === 500
+                  log.status === 500
                     ? "destructive"
                     : log.status === 200
                       ? "success"
-                      : "default"
+                      : "warning"
                 }
               >
                 {log.status}
