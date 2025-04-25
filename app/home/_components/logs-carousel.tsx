@@ -81,10 +81,9 @@ export function LogsCarousel() {
       setApi={setApi}
       plugins={[plugin.current]}
       orientation="vertical"
+      className="relative before:absolute before:inset-0 before:top-auto before:z-1 before:h-10 before:bg-gradient-to-t before:from-background before:to-transparent after:absolute after:inset-0 after:bottom-auto after:z-1 after:h-10 after:bg-gradient-to-b after:from-background after:to-transparent"
     >
-      <div className="absolute inset-0 z-1 bg-gradient-to-b from-background to-25% to-transparent" />
-      <div className="absolute inset-0 z-1 bg-gradient-to-t from-background to-25% to-transparent" />
-      <CarouselContent className="-z-2 -mt-1.5 md:-mt-2 h-50 px-6 md:h-64 md:px-10">
+      <CarouselContent className="-mt-1.5 md:-mt-2 h-50 px-6 md:h-64 md:px-10">
         {logs.map((log, index) => (
           <CarouselItem
             key={log.uuid}
