@@ -85,10 +85,10 @@ function CodeExample({
   showLineNumbers?: boolean;
 }) {
   return (
-    <div className={cn("bg-background rounded-xl", className)} {...props}>
-      <div className="dark:inset-ring-border rounded-xl p-1 text-sm dark:inset-ring">
+    <div className={cn("rounded-xl bg-background", className)} {...props}>
+      <div className="rounded-xl p-1 text-sm dark:inset-ring dark:inset-ring-border">
         {filename && (
-          <div className="dark text-muted-foreground px-3 pt-1 pb-1.5 text-xs">
+          <div className="dark px-3 pt-1 pb-1.5 text-muted-foreground text-xs">
             {filename}
           </div>
         )}
@@ -143,9 +143,9 @@ function HighlightedCode({
   return (
     <div
       className={cn(
-        "dark:*:inset-ring-border *:bg-background/2.5! *:flex *:*:max-w-none *:*:shrink-0 *:*:grow *:overflow-auto *:rounded-lg *:p-5 *:inset-ring *:focus-visible:outline-none **:[.line]:isolate **:[.line]:not-last:min-h-[1lh]",
+        "*:inset-ring *:flex *:*:max-w-none *:*:shrink-0 *:*:grow *:overflow-auto *:rounded-lg *:bg-background/2.5! *:p-5 *:focus-visible:outline-none dark:*:inset-ring-border **:[.line]:isolate **:[.line]:not-last:min-h-[1lh]",
         showLineNumbers &&
-          "[&_.line]:before:text-muted-foreground/40 [&_.line]:ml-9 [&_.line]:[counter-increment:line] [&_.line]:before:absolute [&_.line]:before:left-0 [&_.line]:before:w-6 [&_.line]:before:text-right [&_.line]:before:font-mono [&_.line]:before:content-[counter(line)] [&_.line]:before:select-none max-sm:[&_.line]:ml-0 max-sm:[&_.line]:before:hidden [&_code]:relative [&_code]:[counter-reset:line]",
+          "[&_.line]:ml-9 [&_.line]:[counter-increment:line] [&_.line]:before:absolute [&_.line]:before:left-0 [&_.line]:before:w-6 [&_.line]:before:select-none [&_.line]:before:text-right [&_.line]:before:font-mono [&_.line]:before:text-muted-foreground/40 [&_.line]:before:content-[counter(line)] max-sm:[&_.line]:ml-0 max-sm:[&_.line]:before:hidden [&_code]:relative [&_code]:[counter-reset:line]",
         className,
       )}
       // biome-ignore lint/security/noDangerouslySetInnerHtml: Sanitized by shiki

@@ -90,9 +90,9 @@ const circleArrowVariants = cva("overflow-hidden rounded-full", {
   variants: {
     variant: {
       default:
-        "[&_rect]:fill-primary-foreground/10 [&_path]:stroke-primary-foreground",
+        "[&_path]:stroke-primary-foreground [&_rect]:fill-primary-foreground/10",
       outline:
-        "[&_rect]:fill-primary/3 group-hover/button:[&_rect]:fill-primary/6 [&_path]:stroke-primary/30 group-hover/button:[&_path]:stroke-primary/60",
+        "[&_path]:stroke-primary/30 group-hover/button:[&_path]:stroke-primary/60 [&_rect]:fill-primary/3 group-hover/button:[&_rect]:fill-primary/6",
     },
   },
   defaultVariants: {

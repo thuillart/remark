@@ -22,14 +22,14 @@ export function FAQsCollapsible({
       {items.map((item, index) => (
         <div
           key={crypto.randomUUID()}
-          className="border-border mb-2 rounded-xl border"
+          className="mb-2 rounded-xl border border-border"
         >
           <button
             type="button"
             onClick={() => setOpen(open === index ? null : index)}
             className="flex w-full cursor-pointer items-center justify-between pr-2 pl-6 text-start focus-visible:outline-none max-md:py-2.5 md:h-18"
           >
-            <h3 className="text-lg/6 font-medium tracking-tight">
+            <h3 className="font-medium text-lg/6 tracking-tight">
               {item.question}
             </h3>
             <svg
@@ -72,7 +72,7 @@ export function FAQsCollapsible({
               stiffness: 280,
             }}
           >
-            <motion.div className="text-muted-foreground max-w-9/10 pb-4 pl-6 md:pb-5.5">
+            <motion.div className="max-w-9/10 pb-4 pl-6 text-muted-foreground md:pb-5.5">
               <p>{item.answer}</p>
             </motion.div>
           </motion.div>

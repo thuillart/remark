@@ -236,7 +236,7 @@ export function HeroBackgroundArtwork() {
   const { theme } = useTheme();
 
   return (
-    <div className="absolute bottom-0 left-1/2 -z-1 size-full -translate-x-1/2 [mask:radial-gradient(ellipse_at_center_calc(100%_-_100px),var(--color-background),transparent_75%)]">
+    <div className="-z-1 -translate-x-1/2 absolute bottom-0 left-1/2 size-full [mask:radial-gradient(ellipse_at_center_calc(100%_-_100px),var(--color-background),transparent_75%)]">
       <div className="relative size-full">
         <BackgroundAnimation
           seed={8}

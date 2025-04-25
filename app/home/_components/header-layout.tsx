@@ -25,7 +25,7 @@ export function HeaderLayout({ children }: { children: React.ReactNode }) {
   return (
     <motion.div
       animate={{ y: hasScrolled ? -24 : 0 }}
-      className="bg-background fixed inset-0 bottom-auto z-50"
+      className="fixed inset-0 bottom-auto z-50 bg-background"
       transition={transition}
     >
       {children}

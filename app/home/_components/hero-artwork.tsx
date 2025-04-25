@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useAnimate } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export function HeroArtwork() {
   const [isAnimating, setIsAnimating] = useState(false);
@@ -10,53 +10,39 @@ export function HeroArtwork() {
   const [ellipse3, animate3] = useAnimate();
   const [ellipse4, animate4] = useAnimate();
 
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-    const startAnimation = async () => {
-      if (isAnimating) return;
+  const startAnimation = useCallback(async () => {
+    if (isAnimating) return;
+    setIsAnimating(true);
 
-      setIsAnimating(true);
-
-      try {
-        await Promise.all([
-          animate1(
-            ellipse1.current,
-            { pathLength: [1, 0] },
-            { ease: "easeInOut", duration: 0.35 },
-          ),
-          animate2(
-            ellipse2.current,
-            { pathOffset: [1, 0] },
-            { delay: 0.175, duration: 0.35, ease: "easeInOut" },
-          ),
-          animate3(
-            ellipse3.current,
-            { pathLength: [1, 0] },
-            { delay: 0.175, duration: 0.35, ease: "easeInOut" },
-          ),
-          animate4(
-            ellipse4.current,
-            { pathOffset: [1, 0] },
-            { delay: 0.35, duration: 0.35, ease: "easeInOut" },
-          ),
-        ]);
-      } finally {
-        setIsAnimating(false);
-      }
-    };
-
-    // Initial animation
-    startAnimation();
-
-    // Set up recurring animations with a fixed 5-second interval
-    const intervalId = setInterval(() => {
-      startAnimation();
-    }, 5000);
-
-    return () => {
-      clearInterval(intervalId);
-    };
+    try {
+      await Promise.all([
+        animate1(
+          ellipse1.current,
+          { pathLength: [1, 0] },
+          { ease: "easeInOut", duration: 0.35 },
+        ),
+        animate2(
+          ellipse2.current,
+          { pathOffset: [1, 0] },
+          { delay: 0.175, duration: 0.35, ease: "easeInOut" },
+        ),
+        animate3(
+          ellipse3.current,
+          { pathLength: [1, 0] },
+          { delay: 0.175, duration: 0.35, ease: "easeInOut" },
+        ),
+        animate4(
+          ellipse4.current,
+          { pathOffset: [1, 0] },
+          { delay: 0.35, duration: 0.35, ease: "easeInOut" },
+        ),
+      ]);
+    } finally {
+      setIsAnimating(false);
+    }
   }, [
     animate1,
     animate2,
@@ -68,6 +54,16 @@ export function HeroArtwork() {
     ellipse4,
     isAnimating,
   ]);
+
+  useEffect(() => {
+    timeoutRef.current = setTimeout(startAnimation, 3000);
+    intervalRef.current = setInterval(startAnimation, 8000);
+
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [startAnimation]);
 
   return (
     <svg

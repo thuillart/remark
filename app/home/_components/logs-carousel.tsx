@@ -57,7 +57,7 @@ export function LogsCarousel() {
       plugins={[plugin.current]}
       orientation="vertical"
     >
-      <CarouselContent className="-mt-1.5 h-50 px-6 md:-mt-2 md:h-64 md:px-10">
+      <CarouselContent className="-mt-1.5 md:-mt-2 h-50 px-6 md:h-64 md:px-10">
         {logs.map((log, index) => (
           <CarouselItem
             key={log.uuid}

@@ -3,7 +3,8 @@
     "dev": "next dev",
     "lint": "biome check .",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "format": "biome format ."
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.0",

@@ -87,7 +87,7 @@ export function ContactsCarousel() {
           <CarouselItem key={contact.name} className="basis-1/2">
             <Card
               className={cn(
-                "h-[calc(12.5rem-3rem-1rem)] rounded-lg transition-shadow md:h-[calc(16rem-5rem-1rem)]",
+                "h-[calc(12.5rem-3rem-1rem)] transition-shadow md:h-[calc(16rem-5rem-1rem)]",
                 current - 1 !== index && "shadow-none",
               )}
             />

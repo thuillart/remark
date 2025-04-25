@@ -52,10 +52,10 @@ export async function Pricing() {
     <section className="container">
       <div className="py-12 md:pt-24 md:pb-12">
         <div className="space-y-3 md:px-6">
-          <h2 className="text-4xl/14 font-semibold tracking-tight">
+          <h2 className="font-semibold text-4xl/14 tracking-tight">
             Forget about your bill.
           </h2>
-          <p className="text-muted-foreground text-xl font-medium tracking-tight">
+          <p className="font-medium text-muted-foreground text-xl tracking-tight">
             Use the core product for free, forever.
           </p>
         </div>

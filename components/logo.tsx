@@ -113,7 +113,7 @@ export function Logo({
           initial={{ pathLength: 1, pathOffset: 1 }}
         />
       </svg>
-      <span className="mb-0.5 font-mono text-lg/5 font-medium">nucleon</span>
+      <span className="mb-0.5 font-medium font-mono text-lg/5">nucleon</span>
     </Link>
   );
 }
