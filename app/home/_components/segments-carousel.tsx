@@ -121,9 +121,11 @@ export function SegmentsCarousel() {
                 <div className="absolute inset-0 bg-gradient-to-b from-background/60 backdrop-filter" />
               </div>
 
-              <div className="space-y-3">
-                <h3 className="font-medium uppercase tracking-wide">{title}</h3>
-                <p className="font-medium text-3xl/6">{count}%</p>
+              <div className="space-y-1.5 md:space-y-3">
+                <h3 className="font-medium text-xs uppercase tracking-wide">
+                  {title}
+                </h3>
+                <p className="font-medium text-2xl/6 md:text-3xl/6">{count}%</p>
               </div>
 
               <div className="mt-auto">

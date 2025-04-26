@@ -104,7 +104,7 @@ export function ContactsCarousel() {
       orientation="vertical"
       onMouseLeave={() => plugin.current.play()}
     >
-      <CarouselContent className="h-50 px-6 md:h-64 md:px-10">
+      <CarouselContent className="h-52 px-6 md:h-64 md:px-10">
         {feedbacks.map((contact, index) => (
           <CarouselItem key={contact.name} className="basis-1/2">
             <FeedbackCard

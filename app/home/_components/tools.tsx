@@ -61,7 +61,7 @@ function Tools() {
 function ToolCard({ title, artwork, description }: Card) {
   return (
     <div className="space-y-8">
-      <div className="relative h-50 overflow-hidden rounded-2xl border md:h-64">
+      <div className="relative h-52 overflow-hidden rounded-2xl border md:h-64">
         {artwork}
       </div>
       <p className="flex flex-col items-baseline gap-3 text-muted-foreground md:flex-row">
