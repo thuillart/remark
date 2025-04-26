@@ -1,6 +1,7 @@
 "use client";
 
 import Autoplay from "embla-carousel-autoplay";
+import { type Transition, type Variants, motion } from "motion/react";
 import React, { Fragment } from "react";
 
 import {
@@ -64,6 +65,21 @@ const segments = [
     ],
   },
 ];
+
+const pingVariants: Variants = {
+  animate: {
+    scale: [1, 2, 1],
+    opacity: [0, 0.25, 0],
+  },
+};
+
+const pingTransition = (index: number): Transition => ({
+  ease: "easeOut",
+  delay: index * 50,
+  repeat: Infinity,
+  duration: 3,
+  repeatDelay: 0,
+});
 
 export function SegmentsCarousel() {
   const [api, setApi] = React.useState<CarouselApi>();
@@ -141,6 +157,16 @@ export function SegmentsCarousel() {
                             style={{ backgroundColor }}
                             className="absolute inset-0 rounded-full"
                           />
+                          {["ping-outer", "ping-inner"].map((key) => (
+                            <motion.div
+                              key={key}
+                              style={{ backgroundColor }}
+                              animate="animate"
+                              variants={pingVariants}
+                              className="absolute inset-0 rounded-full"
+                              transition={pingTransition(index)}
+                            />
+                          ))}
                         </div>
                         <span>{title}</span>
                       </div>
