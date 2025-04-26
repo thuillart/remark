@@ -63,7 +63,9 @@ export function FooterArtwork() {
           patternUnits="userSpaceOnUse"
         >
           {shapes.map((shape) => (
-            <Shape key={crypto.randomUUID()}>
+            <Shape
+              key={shape.type === "path" ? shape.d : `${shape.cx}-${shape.cy}`}
+            >
               {shape.type === "path" ? (
                 <path d={shape.d} stroke="var(--color-border)" />
               ) : (
@@ -79,20 +81,20 @@ export function FooterArtwork() {
           ))}
 
           <motion.g variants={linesVariants}>
-            {dots.map((dot, index) => (
+            {dots.map((dot) => (
               <circle
                 r={dot.r}
                 cx={dot.cx}
                 cy={dot.cy}
-                key={crypto.randomUUID()}
+                key={`${dot.cx}-${dot.cy}`}
                 fill="var(--color-border)"
               />
             ))}
 
-            {lines.map((line, index) => (
+            {lines.map((line) => (
               <motion.path
                 d={line.d}
-                key={crypto.randomUUID()}
+                key={line.d}
                 stroke="var(--color-border)"
                 animate={{ strokeDashoffset: [0, -10] }}
                 transition={lineTransition}

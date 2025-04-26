@@ -21,7 +21,7 @@ export function FAQsCollapsible({
     <div>
       {items.map((item, index) => (
         <div
-          key={crypto.randomUUID()}
+          key={item.question}
           className="mb-2 rounded-xl border border-border"
         >
           <button

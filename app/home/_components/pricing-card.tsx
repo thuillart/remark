@@ -17,7 +17,7 @@ export function PricingCard({
   id: "free" | "plus" | "pro";
   name: string;
   price: number;
-  features: (React.ReactNode | string)[];
+  features: { id: string; content: React.ReactNode | string }[];
   description: string;
 }) {
   const [isHovering, setIsHovering] = useState(false);
@@ -50,13 +50,13 @@ export function PricingCard({
           </span>
         )}
         <ul className="space-y-3">
-          {features.map((feature) => (
+          {features.map(({ id, content }) => (
             <li
-              key={crypto.randomUUID()}
+              key={id}
               className="flex items-center gap-x-2 text-pretty text-sm [&_bold]:font-medium"
             >
               <CheckIcon size={16} className="shrink-0" />
-              {feature}
+              {content}
             </li>
           ))}
         </ul>

@@ -9,7 +9,7 @@ type Plan = {
   id: "free" | "plus" | "pro";
   name: string;
   price: number;
-  features: (string | ReactNode)[];
+  features: { id: string; content: string | ReactNode }[];
   description: string;
 };
 
@@ -19,10 +19,10 @@ const plans: Plan[] = [
     name: "Free",
     price: 0,
     features: [
-      "No credit card required",
-      "Up to 250 feedbacks a month",
-      "Daily & monthly feedbacks limits",
-      "Core features, including:",
+      { id: "free-1", content: "No credit card required" },
+      { id: "free-2", content: "Up to 250 feedbacks a month" },
+      { id: "free-3", content: "Daily & monthly feedbacks limits" },
+      { id: "free-4", content: "Core features, including:" },
     ],
     description: "For getting started.",
   },
@@ -31,10 +31,10 @@ const plans: Plan[] = [
     name: "Plus",
     price: 20,
     features: [
-      "10-20x more feedbacks a month",
-      "No daily feedbacks limits",
-      "Votes & ranking",
-      "AI-powered features, including:",
+      { id: "plus-1", content: "10-20x more feedbacks a month" },
+      { id: "plus-2", content: "No daily feedbacks limits" },
+      { id: "plus-3", content: "Votes & ranking" },
+      { id: "plus-4", content: "AI-powered features, including:" },
     ],
     description: "For more feedbacks.",
   },
@@ -42,7 +42,10 @@ const plans: Plan[] = [
     id: "pro",
     name: "Pro",
     price: 200,
-    features: ["30-50x more feedbacks a month", "No daily feedbacks limits"],
+    features: [
+      { id: "pro-1", content: "30-50x more feedbacks a month" },
+      { id: "pro-2", content: "No daily feedbacks limits" },
+    ],
     description: "For power users.",
   },
 ];

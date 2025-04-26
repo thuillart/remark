@@ -100,7 +100,7 @@ export function ContactsCarousel() {
       opts={{ loop: true, align: "center" }}
       setApi={setApi}
       plugins={[plugin.current]}
-      className="relative before:absolute before:inset-0 before:top-auto before:z-1 before:h-10 before:bg-gradient-to-t before:from-background before:to-transparent after:absolute after:inset-0 after:bottom-auto after:z-1 after:h-10 after:bg-gradient-to-b after:from-background after:to-transparent"
+      className="relative select-none before:absolute before:inset-0 before:top-auto before:z-1 before:h-10 before:bg-gradient-to-t before:from-background before:to-transparent after:absolute after:inset-0 after:bottom-auto after:z-1 after:h-10 after:bg-gradient-to-b after:from-background after:to-transparent"
       orientation="vertical"
       onMouseLeave={() => plugin.current.play()}
     >
