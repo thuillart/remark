@@ -18,31 +18,14 @@ const segments = [
     gradientColor: "from-cyan-400 to-cyan-500",
     items: [
       {
-        title: "Opened",
+        title: "Free",
         count: 1304,
         backgroundColor: "var(--color-sky-400)",
       },
       {
-        title: "Clicked",
+        title: "Plus",
         count: 304,
         backgroundColor: "var(--color-purple-400)",
-      },
-    ],
-  },
-  {
-    title: "Opt-out",
-    count: 1,
-    gradientColor: "from-red-400 to-red-500",
-    items: [
-      {
-        title: "Unsubscribed",
-        count: 30,
-        backgroundColor: "var(--color-red-400)",
-      },
-      {
-        title: "Complained",
-        count: 3,
-        backgroundColor: "var(--color-yellow-400)",
       },
     ],
   },
@@ -52,18 +35,36 @@ const segments = [
     gradientColor: "from-green-400 to-green-500",
     items: [
       {
-        title: "Docs",
+        title: "Popover",
         count: 408,
         backgroundColor: "var(--color-green-400)",
       },
       {
-        title: "Legal",
+        title: "Form",
         count: 10,
         backgroundColor: "var(--color-blue-400)",
       },
     ],
   },
+  {
+    title: "Requests",
+    count: 14,
+    gradientColor: "from-red-400 to-red-500",
+    items: [
+      {
+        title: "Free",
+        count: 30,
+        backgroundColor: "var(--color-red-400)",
+      },
+      {
+        title: "Plus",
+        count: 3,
+        backgroundColor: "var(--color-yellow-400)",
+      },
+    ],
+  },
 ];
+
 export function SegmentsCarousel() {
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
