@@ -93,7 +93,7 @@ export function SegmentsCarousel() {
       opts={{ loop: true, align: "center" }}
       setApi={setApi}
       plugins={[plugin.current]}
-      className="relative before:absolute before:inset-0 before:left-auto before:z-1 before:w-10 before:bg-gradient-to-l before:from-background before:to-transparent after:absolute after:inset-0 after:right-auto after:z-1 after:w-10 after:bg-gradient-to-r after:from-background after:to-transparent"
+      className="relative before:absolute before:inset-0 before:left-auto before:z-1 before:w-4 before:bg-gradient-to-l before:from-background before:to-transparent after:absolute after:inset-0 after:right-auto after:z-1 after:w-4 after:bg-gradient-to-r after:from-background after:to-transparent after:md:w-10 before:md:w-10"
       onMouseLeave={() => plugin.current.play()}
     >
       <CarouselContent className="h-50 py-6 md:h-64 md:py-10">
