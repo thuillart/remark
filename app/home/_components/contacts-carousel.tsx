@@ -4,7 +4,7 @@ import Autoplay from "embla-carousel-autoplay";
 import React from "react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge, type BadgeProps } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import {
   Carousel,
@@ -120,9 +120,6 @@ function FeedbackCard({
   contact: (typeof feedbacks)[0];
   isActive: boolean;
 }) {
-  const variant: BadgeProps["variant"] =
-    plan === "enterprise" ? "indigo" : plan === "pro" ? "blue" : "secondary";
-
   return (
     <Card
       className={cn("gap-2 p-0 transition-shadow", !isActive && "shadow-none")}
@@ -136,8 +133,8 @@ function FeedbackCard({
             {contact.name}
             <Badge
               size="sm"
-              variant={variant}
-              className="text-[10px] uppercase"
+              variant="secondary"
+              className="rounded-sm text-[9px] uppercase"
             >
               {plan}
             </Badge>
