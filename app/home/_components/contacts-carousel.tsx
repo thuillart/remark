@@ -19,7 +19,6 @@ type Feedback = {
   plan: "free" | "pro" | "enterprise";
   body: string;
   email: string;
-  gradient: string;
 };
 
 const feedbacks: Feedback[] = [
@@ -28,49 +27,42 @@ const feedbacks: Feedback[] = [
     plan: "pro",
     body: "Love the app, but I wish there was an option to sort my items by date added. Would make organizing so much easier!",
     email: "yuki.tanaka@example.org",
-    gradient: "bg-gradient-to-r from-teal-200 to-teal-500",
   },
   {
     name: "Mohammed",
     plan: "free",
     body: "Everything works great, but can you add a 'dark mode'? My eyes get tired using the bright interface after a while.",
     email: "m.abdullah@fastmail.com",
-    gradient: "bg-gradient-to-r from-pink-500 to-rose-500",
   },
   {
     name: "Isabella",
     plan: "enterprise",
     body: "I'm missing a way to export my data as CSV or PDF. That feature would be really helpful for sharing reports.",
     email: "isa.rodriguez@gmail.com",
-    gradient: "bg-gradient-to-r from-blue-600 to-violet-600",
   },
   {
     name: "Chen Wei",
     plan: "free",
     email: "chenwei.liu@outlook.cn",
     body: "The new update is smooth, but sometimes notifications don't show up. Any chance of a fix in the next patch?",
-    gradient: "bg-gradient-to-r from-orange-400 to-rose-400",
   },
   {
     name: "Aisha",
     plan: "free",
     email: "aisha.patel@mail.com",
     body: "Could you add custom tags for items? I'd love more flexibility in how I categorize things.",
-    gradient: "bg-gradient-to-r from-emerald-500 to-lime-600",
   },
   {
     name: "Kwame",
     plan: "pro",
     email: "kwame.mensah@inbox.gh",
     body: "App is fast, but syncing between devices is slow. Would appreciate an offline mode or faster sync.",
-    gradient: "bg-gradient-to-r from-blue-400 to-emerald-400",
   },
   {
     name: "Sofia",
     plan: "free",
     email: "sofia.kowalski@yahoo.com",
     body: "The tutorial was helpful, but a contextual help button on each page would save time for new users.",
-    gradient: "bg-gradient-to-r from-amber-200 to-yellow-500",
   },
 ];
 
@@ -137,11 +129,7 @@ function FeedbackCard({
     >
       <div className="flex items-center gap-2 p-4 pb-0">
         <Avatar className="mt-0.5">
-          <AvatarFallback
-            className={cn("not-dark:text-background", contact.gradient)}
-          >
-            {contact.name.slice(0, 1)}
-          </AvatarFallback>
+          <AvatarFallback>{contact.name.slice(0, 1)}</AvatarFallback>
         </Avatar>
         <div>
           <div className="inline-flex items-center gap-1 text-sm">

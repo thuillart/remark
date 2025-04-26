@@ -16,7 +16,7 @@ const segments = [
   {
     title: "Engagement",
     count: 41,
-    gradientColor: "from-cyan-400 to-cyan-500",
+
     items: [
       {
         title: "Free",
@@ -33,7 +33,7 @@ const segments = [
   {
     title: "Source",
     count: 98,
-    gradientColor: "from-green-400 to-green-500",
+
     items: [
       {
         title: "Popover",
@@ -50,7 +50,7 @@ const segments = [
   {
     title: "Requests",
     count: 14,
-    gradientColor: "from-red-400 to-red-500",
+
     items: [
       {
         title: "Free",
@@ -114,7 +114,7 @@ export function SegmentsCarousel() {
       onMouseLeave={() => plugin.current.play()}
     >
       <CarouselContent className="h-50 py-6 md:h-64 md:py-10">
-        {segments.map(({ title, count, items, gradientColor }, index) => (
+        {segments.map(({ title, count, items }, index) => (
           <CarouselItem
             key={title}
             className="basis-[calc(100%-3rem)] md:basis-[calc(100%-5rem)]"
@@ -129,8 +129,7 @@ export function SegmentsCarousel() {
               <div className="-z-1 pointer-events-none absolute inset-0">
                 <div
                   className={cn(
-                    "-right-3 -top-3 absolute aspect-square w-28 rounded-full bg-gradient-to-b opacity-75 blur-2xl",
-                    gradientColor,
+                    "-right-3 -top-3 absolute aspect-square w-28 rounded-full bg-gradient-to-b from-muted-foreground to-muted opacity-75 blur-2xl",
                   )}
                 />
                 <div className="absolute inset-0 bg-gradient-to-tl from-background/5" />
@@ -145,7 +144,7 @@ export function SegmentsCarousel() {
               </div>
 
               <div className="mt-auto">
-                {items.map(({ title, count, backgroundColor }, index) => (
+                {items.map(({ title, count }, index) => (
                   <Fragment key={title}>
                     <div
                       key={title}
@@ -153,17 +152,13 @@ export function SegmentsCarousel() {
                     >
                       <div className="inline-flex items-center gap-3">
                         <div className="relative size-2">
-                          <div
-                            style={{ backgroundColor }}
-                            className="absolute inset-0 rounded-full"
-                          />
+                          <div className="absolute inset-0 rounded-full bg-muted-foreground/50" />
                           {["ping-outer", "ping-inner"].map((key) => (
                             <motion.div
                               key={key}
-                              style={{ backgroundColor }}
                               animate="animate"
                               variants={pingVariants}
-                              className="absolute inset-0 rounded-full"
+                              className="absolute inset-0 rounded-full bg-muted-foreground/50"
                               transition={pingTransition(index)}
                             />
                           ))}
