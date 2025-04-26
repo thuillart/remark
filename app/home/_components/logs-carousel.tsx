@@ -106,18 +106,7 @@ export function LogsCarousel() {
                   current - 1 !== index && "shadow-none",
                 )}
               >
-                <Badge
-                  variant={
-                    log.status === 500
-                      ? "destructive"
-                      : log.status === 200
-                        ? "green"
-                        : "yellow"
-                  }
-                >
-                  {log.status}
-                </Badge>
-
+                <Badge variant="secondary">{log.status}</Badge>
                 <div className="overflow-hidden">
                   <p className="w-full truncate font-mono text-muted-foreground text-sm">
                     {`{ id: ${log.uuid} }`}
