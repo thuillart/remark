@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
@@ -237,23 +238,29 @@ export function HeroBackgroundArtwork() {
 
   return (
     <div className="-z-1 -translate-x-1/2 absolute bottom-0 left-1/2 size-full [mask:radial-gradient(ellipse_at_center_calc(100%_-_100px),var(--color-background),transparent_75%)]">
-      <div className="relative size-full">
-        <BackgroundAnimation
-          seed={8}
-          panX={0}
-          panY={0}
-          panZ={0}
-          theme={theme as "light" | "dark" | "system"}
-          speed={0.4}
-          lineColor={0}
-          meshColor={16777215}
-          lineOpacity={0.3}
-          lineFrequency={2}
-          cameraPosition={{ x: 0, z: 0, y: 100 }}
-          noiseFrequency={200}
-          reverseDirection={false}
-        />
-      </div>
+      <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="relative size-full"
+        >
+          <BackgroundAnimation
+            seed={8}
+            panX={0}
+            panY={0}
+            panZ={0}
+            theme={theme as "light" | "dark" | "system"}
+            speed={0.4}
+            lineColor={0}
+            meshColor={16777215}
+            lineOpacity={0.3}
+            lineFrequency={2}
+            cameraPosition={{ x: 0, z: 0, y: 100 }}
+            noiseFrequency={200}
+            reverseDirection={false}
+          />
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

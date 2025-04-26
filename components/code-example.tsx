@@ -4,6 +4,8 @@ import {
   transformerNotationWordHighlight,
 } from "@shikijs/transformers";
 import dedent from "dedent";
+import type React from "react";
+import { Suspense } from "react";
 import {
   type ShikiTransformer,
   type ThemeRegistration,
@@ -58,10 +60,16 @@ const theme: ThemeRegistration = {
   ],
 };
 
-const highlighter = await createHighlighter({
-  langs: ["ts", "tsx", "vue", "sh"],
-  themes: [theme],
-});
+let highlighter: Awaited<ReturnType<typeof createHighlighter>> | null = null;
+
+// Initialize the highlighter synchronously
+if (typeof window === "undefined") {
+  // Server-side initialization
+  highlighter = await createHighlighter({
+    langs: ["ts", "tsx", "vue", "sh"],
+    themes: [theme],
+  });
+}
 
 function ts(strings: TemplateStringsArray, ...args: string[]) {
   return { lang: "ts", code: dedent(strings, ...args) };
@@ -92,7 +100,14 @@ function CodeExample({
             {filename}
           </div>
         )}
-        <HighlightedCode example={example} showLineNumbers={showLineNumbers} />
+        <Suspense
+          fallback={<div className="h-8 animate-pulse rounded bg-muted" />}
+        >
+          <HighlightedCode
+            example={example}
+            showLineNumbers={showLineNumbers}
+          />
+        </Suspense>
       </div>
     </div>
   );
@@ -107,14 +122,22 @@ function linesToDiv(): ShikiTransformer {
   };
 }
 
-function HighlightedCode({
+async function HighlightedCode({
   example,
-  showLineNumbers = false,
   className,
+  showLineNumbers = false,
 }: React.HTMLAttributes<HTMLDivElement> & {
   example: { code: string; lang: string };
   showLineNumbers?: boolean;
 }) {
+  if (!highlighter) {
+    // Client-side initialization
+    highlighter = await createHighlighter({
+      langs: ["ts", "tsx", "vue", "sh"],
+      themes: [theme],
+    });
+  }
+
   const output = highlighter
     .codeToHtml(example.code, {
       lang: example.lang,

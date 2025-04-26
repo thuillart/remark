@@ -15,6 +15,7 @@
   "editor.codeActionsOnSave": {
     "quickfix.biome": "always",
     "source.fixAll.biome": "always",
+    "source.removeUnusedImports": "always",
     "source.organizeImports.biome": "always"
   }
 }

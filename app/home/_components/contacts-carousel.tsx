@@ -3,6 +3,8 @@
 import Autoplay from "embla-carousel-autoplay";
 import React from "react";
 
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import {
   Carousel,
@@ -12,41 +14,63 @@ import {
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
 
-const feedbacks = [
+type Feedback = {
+  name: string;
+  plan: "free" | "pro" | "enterprise";
+  body: string;
+  email: string;
+  gradient: string;
+};
+
+const feedbacks: Feedback[] = [
   {
-    name: "Aaliyah",
-    email: "aaliyah.ng@example.org",
+    name: "Yuki",
+    plan: "pro",
     body: "Love the app, but I wish there was an option to sort my items by date added. Would make organizing so much easier!",
+    email: "yuki.tanaka@example.org",
+    gradient: "bg-gradient-to-r from-teal-200 to-teal-500",
   },
   {
-    name: "Carlos",
-    email: "carlito89@fastmail.com",
+    name: "Mohammed",
+    plan: "free",
     body: "Everything works great, but can you add a 'dark mode'? My eyes get tired using the bright interface after a while.",
+    email: "m.abdullah@fastmail.com",
+    gradient: "bg-gradient-to-r from-pink-500 to-rose-500",
   },
   {
-    name: "Fatima",
-    email: "fatima_hassan@gmail.com",
+    name: "Isabella",
+    plan: "enterprise",
     body: "I'm missing a way to export my data as CSV or PDF. That feature would be really helpful for sharing reports.",
+    email: "isa.rodriguez@gmail.com",
+    gradient: "bg-gradient-to-r from-blue-600 to-violet-600",
   },
   {
-    name: "Liam",
-    email: "liam_o.conner@outlook.co.uk",
+    name: "Chen Wei",
+    plan: "free",
+    email: "chenwei.liu@outlook.cn",
     body: "The new update is smooth, but sometimes notifications don't show up. Any chance of a fix in the next patch?",
+    gradient: "bg-gradient-to-r from-orange-400 to-rose-400",
   },
   {
-    name: "Sophia",
-    email: "sophialovescode@mail.com",
+    name: "Aisha",
+    plan: "free",
+    email: "aisha.patel@mail.com",
     body: "Could you add custom tags for items? I'd love more flexibility in how I categorize things.",
+    gradient: "bg-gradient-to-r from-emerald-500 to-lime-600",
   },
   {
-    name: "Raj",
-    email: "raj.patel123@inbox.lv",
+    name: "Kwame",
+    plan: "pro",
+    email: "kwame.mensah@inbox.gh",
     body: "App is fast, but syncing between devices is slow. Would appreciate an offline mode or faster sync.",
+    gradient: "bg-gradient-to-r from-blue-400 to-emerald-400",
   },
   {
-    name: "Emily",
-    email: "e_m_thompson@yahoo.com",
+    name: "Sofia",
+    plan: "free",
+    email: "sofia.kowalski@yahoo.com",
     body: "The tutorial was helpful, but a contextual help button on each page would save time for new users.",
+    gradient: "bg-gradient-to-r from-amber-200 to-yellow-500",
   },
 ];
 
@@ -56,19 +80,16 @@ export function ContactsCarousel() {
 
   const plugin = React.useRef(
     Autoplay({
-      delay: 3000,
+      delay: 5000,
       stopOnMouseEnter: true,
       stopOnInteraction: true,
     }),
   );
 
   React.useEffect(() => {
-    if (!api) {
-      return;
-    }
+    if (!api) return;
 
     setCurrent(api.selectedScrollSnap() + 1);
-
     api.on("select", () => {
       setCurrent(api.selectedScrollSnap() + 1);
     });
@@ -79,21 +100,68 @@ export function ContactsCarousel() {
       opts={{ loop: true, align: "center" }}
       setApi={setApi}
       plugins={[plugin.current]}
+      className="relative before:absolute before:inset-0 before:top-auto before:z-1 before:h-10 before:bg-gradient-to-t before:from-background before:to-transparent after:absolute after:inset-0 after:bottom-auto after:z-1 after:h-10 after:bg-gradient-to-b after:from-background after:to-transparent"
       orientation="vertical"
       onMouseLeave={() => plugin.current.play()}
     >
       <CarouselContent className="h-50 px-6 md:h-64 md:px-10">
         {feedbacks.map((contact, index) => (
           <CarouselItem key={contact.name} className="basis-1/2">
-            <Card
-              className={cn(
-                "h-[calc(12.5rem-3rem-1rem)] transition-shadow md:h-[calc(16rem-5rem-1rem)]",
-                current - 1 !== index && "shadow-none",
-              )}
+            <FeedbackCard
+              plan={contact.plan}
+              contact={contact}
+              isActive={current - 1 === index}
             />
           </CarouselItem>
         ))}
       </CarouselContent>
     </Carousel>
+  );
+}
+
+function FeedbackCard({
+  plan,
+  contact,
+  isActive,
+}: {
+  plan: Feedback["plan"];
+  contact: (typeof feedbacks)[0];
+  isActive: boolean;
+}) {
+  const variant: BadgeProps["variant"] =
+    plan === "enterprise" ? "indigo" : plan === "pro" ? "blue" : "secondary";
+
+  return (
+    <Card
+      className={cn("gap-2 p-0 transition-shadow", !isActive && "shadow-none")}
+    >
+      <div className="flex items-center gap-2 p-4 pb-0">
+        <Avatar className="mt-0.5">
+          <AvatarFallback
+            className={cn("not-dark:text-background", contact.gradient)}
+          >
+            {contact.name.slice(0, 1)}
+          </AvatarFallback>
+        </Avatar>
+        <div>
+          <div className="inline-flex items-center gap-1 text-sm">
+            {contact.name}
+            <Badge
+              size="sm"
+              variant={variant}
+              className="text-[10px] uppercase"
+            >
+              {plan}
+            </Badge>
+          </div>
+          <div className="text-xs">{contact.email}</div>
+        </div>
+      </div>
+      <div className="p-4 pt-0">
+        <blockquote className="mt-2 border-l-2 pl-3 text-sm italic">
+          "{contact.body}"
+        </blockquote>
+      </div>
+    </Card>
   );
 }
