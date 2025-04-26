@@ -154,7 +154,7 @@ function FeedbackCard({
               {plan}
             </Badge>
           </div>
-          <div className="text-xs">{contact.email}</div>
+          <div className="text-muted-foreground text-xs">{contact.email}</div>
         </div>
       </div>
       <div className="p-4 pt-0">

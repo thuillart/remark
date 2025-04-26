@@ -1,9 +1,8 @@
 "use client";
 
 import Autoplay from "embla-carousel-autoplay";
-import React from "react";
+import React, { Fragment } from "react";
 
-import { Card, CardHeader } from "@/components/ui/card";
 import {
   Carousel,
   type CarouselApi,
@@ -14,42 +13,57 @@ import { cn } from "@/lib/utils";
 
 const segments = [
   {
-    name: "Aaliyah",
-    email: "aaliyah.ng@example.org",
-    body: "Love the app, but I wish there was an option to sort my items by date added. Would make organizing so much easier!",
+    title: "Engagement",
+    count: 41,
+    gradientColor: "from-cyan-400 to-cyan-500",
+    items: [
+      {
+        title: "Opened",
+        count: 1304,
+        backgroundColor: "var(--color-sky-400)",
+      },
+      {
+        title: "Clicked",
+        count: 304,
+        backgroundColor: "var(--color-purple-400)",
+      },
+    ],
   },
   {
-    name: "Carlos",
-    email: "carlito89@fastmail.com",
-    body: "Everything works great, but can you add a 'dark mode'? My eyes get tired using the bright interface after a while.",
+    title: "Opt-out",
+    count: 1,
+    gradientColor: "from-red-400 to-red-500",
+    items: [
+      {
+        title: "Unsubscribed",
+        count: 30,
+        backgroundColor: "var(--color-red-400)",
+      },
+      {
+        title: "Complained",
+        count: 3,
+        backgroundColor: "var(--color-yellow-400)",
+      },
+    ],
   },
   {
-    name: "Fatima",
-    email: "fatima_hassan@gmail.com",
-    body: "I'm missing a way to export my data as CSV or PDF. That feature would be really helpful for sharing reports.",
-  },
-  {
-    name: "Liam",
-    email: "liam_o.conner@outlook.co.uk",
-    body: "The new update is smooth, but sometimes notifications don't show up. Any chance of a fix in the next patch?",
-  },
-  {
-    name: "Sophia",
-    email: "sophialovescode@mail.com",
-    body: "Could you add custom tags for items? I'd love more flexibility in how I categorize things.",
-  },
-  {
-    name: "Raj",
-    email: "raj.patel123@inbox.lv",
-    body: "App is fast, but syncing between devices is slow. Would appreciate an offline mode or faster sync.",
-  },
-  {
-    name: "Emily",
-    email: "e_m_thompson@yahoo.com",
-    body: "The tutorial was helpful, but a contextual help button on each page would save time for new users.",
+    title: "Source",
+    count: 98,
+    gradientColor: "from-green-400 to-green-500",
+    items: [
+      {
+        title: "Docs",
+        count: 408,
+        backgroundColor: "var(--color-green-400)",
+      },
+      {
+        title: "Legal",
+        count: 10,
+        backgroundColor: "var(--color-blue-400)",
+      },
+    ],
   },
 ];
-
 export function SegmentsCarousel() {
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
@@ -83,17 +97,58 @@ export function SegmentsCarousel() {
       onMouseLeave={() => plugin.current.play()}
     >
       <CarouselContent className="h-50 py-6 md:h-64 md:py-10">
-        {segments.map((segment, index) => (
+        {segments.map(({ title, count, items, gradientColor }, index) => (
           <CarouselItem
-            key={segment.name}
+            key={title}
             className="basis-[calc(100%-3rem)] md:basis-[calc(100%-5rem)]"
           >
-            <Card
+            <div
+              key={title}
               className={cn(
-                "relative h-full",
+                "relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border px-6 py-5 text-xs",
                 current - 1 !== index && "shadow-none",
               )}
-            />
+            >
+              <div className="-z-1 pointer-events-none absolute inset-0">
+                <div
+                  className={cn(
+                    "-right-3 -top-3 absolute aspect-square w-28 rounded-full bg-gradient-to-b opacity-75 blur-2xl",
+                    gradientColor,
+                  )}
+                />
+                <div className="absolute inset-0 bg-gradient-to-tl from-background/5" />
+                <div className="absolute inset-0 bg-gradient-to-b from-background/60 backdrop-filter" />
+              </div>
+
+              <div className="space-y-3">
+                <h3 className="font-medium uppercase tracking-wide">{title}</h3>
+                <p className="font-medium text-3xl/6">{count}%</p>
+              </div>
+
+              <div className="mt-auto">
+                {items.map(({ title, count, backgroundColor }, index) => (
+                  <Fragment key={title}>
+                    <div
+                      key={title}
+                      className="flex w-full items-center justify-between pt-3 not-last:pb-3 text-slate-12"
+                    >
+                      <div className="inline-flex items-center gap-3">
+                        <div className="relative size-2">
+                          <div
+                            style={{ backgroundColor }}
+                            className="absolute inset-0 rounded-full"
+                          />
+                        </div>
+                        <span>{title}</span>
+                      </div>
+                      <span className="opacity-80">{count}</span>
+                    </div>
+
+                    {index !== items.length - 1 && <hr />}
+                  </Fragment>
+                ))}
+              </div>
+            </div>
           </CarouselItem>
         ))}
       </CarouselContent>
