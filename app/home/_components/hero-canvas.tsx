@@ -88,15 +88,8 @@ export function HeroCanvas() {
     animate();
 
     return () => {
-      cancelAnimationFrame(cancelFrame);
       window.removeEventListener("resize", handleResize);
       renderer.dispose();
-      material.dispose();
-      planeGeometry.dispose();
-      scene.remove(mesh);
-      if (containerRef.current) {
-        containerRef.current.removeChild(renderer.domElement);
-      }
     };
   }, [scheme]);
 

@@ -1,6 +1,6 @@
 import "server-only";
 
-import { AuthForm } from "@/auth/components/auth-form";
+import { AuthForm } from "@/auth/components/form";
 import { Logo } from "@/components/logo";
 
 export default function SignUpPage() {

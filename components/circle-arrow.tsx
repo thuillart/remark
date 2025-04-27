@@ -4,6 +4,17 @@ import { type VariantProps, cva } from "class-variance-authority";
 import { useAnimate } from "framer-motion";
 import React from "react";
 
+const getRotationClass = (direction: CircleArrowProps["direction"]) => {
+  switch (direction) {
+    case "up-right":
+      return "-rotate-45";
+    case "left":
+      return "rotate-180";
+    default:
+      return "";
+  }
+};
+
 interface CircleArrowProps extends VariantProps<typeof circleArrowVariants> {
   direction: "right" | "left" | "up-right" | "up-left";
   isHovering: boolean;
@@ -64,6 +75,8 @@ export function CircleArrow({
     ]);
   }, [isHovering, animate1, animate2, arrow1, arrow2, direction]);
 
+  const rotationClass = getRotationClass(direction);
+
   return (
     <svg
       fill="none"
@@ -80,7 +93,7 @@ export function CircleArrow({
         ref={arrow1}
         style={{ transformOrigin: "8px 8px" }}
         stroke="var(--muted-foreground)"
-        className={direction === "up-right" ? "-rotate-45" : ""}
+        className={rotationClass}
         strokeWidth={1.5}
         strokeOpacity={0.8}
         strokeLinecap="round"
@@ -91,7 +104,7 @@ export function CircleArrow({
         ref={arrow2}
         style={{ transformOrigin: "8px 8px" }}
         stroke="var(--muted-foreground)"
-        className={direction === "up-right" ? "-rotate-45" : ""}
+        className={rotationClass}
         strokeWidth={1.5}
         strokeOpacity={0.8}
         strokeLinecap="round"

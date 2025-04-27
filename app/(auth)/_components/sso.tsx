@@ -2,17 +2,17 @@
 
 import { RiGithubFill, RiGitlabFill } from "@remixicon/react";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import React from "react";
 
 import type { OAuthProvider } from "@/auth/lib/types";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 
-export function SocialSignOns() {
+export function SSO() {
   const pathname = usePathname();
   const isSignIn = pathname.includes("sign-in");
 
-  const [loading, setLoading] = useState<OAuthProvider | null>(null);
+  const [loading, setLoading] = React.useState<OAuthProvider | null>(null);
 
   async function signInWithOAuthProvider(provider: OAuthProvider) {
     setLoading(provider);

@@ -5,7 +5,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { emailSchema } from "@/auth/lib/schema";
+import { emailSchema, nameSchema, passwordSchema } from "@/auth/lib/schema";
 import { CircleArrow } from "@/components/circle-arrow";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,8 +19,9 @@ import {
 import { Input } from "@/components/ui/input";
 
 const signUpSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: nameSchema,
   email: emailSchema,
+  password: passwordSchema,
 });
 
 type FormValues = z.infer<typeof signUpSchema>;
