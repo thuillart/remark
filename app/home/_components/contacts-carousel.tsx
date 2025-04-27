@@ -1,11 +1,11 @@
 "use client";
 
 import Autoplay from "embla-carousel-autoplay";
+import { AnimatePresence, motion } from "motion/react";
 import React from "react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 import {
   Carousel,
   type CarouselApi,
@@ -97,15 +97,17 @@ export function ContactsCarousel() {
       onMouseLeave={() => plugin.current.play()}
     >
       <CarouselContent className="h-52 px-6 md:h-64 md:px-10">
-        {feedbacks.map((contact, index) => (
-          <CarouselItem key={contact.name} className="basis-1/2">
-            <FeedbackCard
-              plan={contact.plan}
-              contact={contact}
-              isActive={current - 1 === index}
-            />
-          </CarouselItem>
-        ))}
+        <AnimatePresence>
+          {feedbacks.map((contact, index) => (
+            <CarouselItem key={contact.name} className="basis-1/2">
+              <FeedbackCard
+                plan={contact.plan}
+                contact={contact}
+                isActive={current - 1 === index}
+              />
+            </CarouselItem>
+          ))}
+        </AnimatePresence>
       </CarouselContent>
     </Carousel>
   );
@@ -121,8 +123,13 @@ function FeedbackCard({
   isActive: boolean;
 }) {
   return (
-    <Card
-      className={cn("gap-2 p-0 transition-shadow", !isActive && "shadow-none")}
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className={cn(
+        "gap-2 rounded-xl border p-0 transition-shadow",
+        !isActive && "shadow-none",
+      )}
     >
       <div className="flex items-center gap-2 p-4 pb-0">
         <Avatar className="mt-0.5">
@@ -147,6 +154,6 @@ function FeedbackCard({
           "{contact.body}"
         </blockquote>
       </div>
-    </Card>
+    </motion.div>
   );
 }

@@ -1,7 +1,12 @@
 "use client";
 
 import Autoplay from "embla-carousel-autoplay";
-import { type Transition, type Variants, motion } from "motion/react";
+import {
+  AnimatePresence,
+  type Transition,
+  type Variants,
+  motion,
+} from "motion/react";
 import React, { Fragment } from "react";
 
 import {
@@ -114,67 +119,73 @@ export function SegmentsCarousel() {
       onMouseLeave={() => plugin.current.play()}
     >
       <CarouselContent className="h-50 py-6 md:h-64 md:py-10">
-        {segments.map(({ title, count, items }, index) => (
-          <CarouselItem
-            key={title}
-            className="basis-[calc(100%-3rem)] md:basis-[calc(100%-5rem)]"
-          >
-            <div
+        <AnimatePresence>
+          {segments.map(({ title, count, items }, index) => (
+            <CarouselItem
               key={title}
-              className={cn(
-                "relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border px-6 py-5 text-xs",
-                current - 1 !== index && "shadow-none",
-              )}
+              className="basis-[calc(100%-3rem)] md:basis-[calc(100%-5rem)]"
             >
-              <div className="-z-1 pointer-events-none absolute inset-0">
-                <div
-                  className={cn(
-                    "-right-3 -top-3 absolute aspect-square w-28 rounded-full bg-gradient-to-b from-muted-foreground to-muted opacity-75 blur-2xl",
-                  )}
-                />
-                <div className="absolute inset-0 bg-gradient-to-tl from-background/5" />
-                <div className="absolute inset-0 bg-gradient-to-b from-background/60 backdrop-filter" />
-              </div>
+              <motion.div
+                key={title}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className={cn(
+                  "relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border px-6 py-5 text-xs",
+                  current - 1 !== index && "shadow-none",
+                )}
+              >
+                <div className="-z-1 pointer-events-none absolute inset-0">
+                  <div
+                    className={cn(
+                      "-right-3 -top-3 absolute aspect-square w-28 rounded-full bg-gradient-to-b from-muted-foreground to-muted opacity-75 blur-2xl",
+                    )}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-tl from-background/5" />
+                  <div className="absolute inset-0 bg-gradient-to-b from-background/60 backdrop-filter" />
+                </div>
 
-              <div className="space-y-1.5 md:space-y-3">
-                <h3 className="font-medium text-xs uppercase tracking-wide">
-                  {title}
-                </h3>
-                <p className="font-medium text-2xl/6 md:text-3xl/6">{count}%</p>
-              </div>
+                <div className="space-y-1.5 md:space-y-3">
+                  <h3 className="font-medium text-xs uppercase tracking-wide">
+                    {title}
+                  </h3>
+                  <p className="font-medium text-2xl/6 md:text-3xl/6">
+                    {count}%
+                  </p>
+                </div>
 
-              <div className="mt-auto">
-                {items.map(({ title, count }, index) => (
-                  <Fragment key={title}>
-                    <div
-                      key={title}
-                      className="flex w-full items-center justify-between pt-3 not-last:pb-3 text-slate-12"
-                    >
-                      <div className="inline-flex items-center gap-3">
-                        <div className="relative size-2">
-                          <div className="absolute inset-0 rounded-full bg-muted-foreground/50" />
-                          {["ping-outer", "ping-inner"].map((key) => (
-                            <motion.div
-                              key={key}
-                              animate="animate"
-                              variants={pingVariants}
-                              className="absolute inset-0 rounded-full bg-muted-foreground/50"
-                              transition={pingTransition(index)}
-                            />
-                          ))}
+                <motion.div className="mt-auto">
+                  {items.map(({ title, count }, index) => (
+                    <Fragment key={title}>
+                      <div
+                        key={title}
+                        className="flex w-full items-center justify-between pt-3 not-last:pb-3 text-slate-12"
+                      >
+                        <div className="inline-flex items-center gap-3">
+                          <div className="relative size-2">
+                            <div className="absolute inset-0 rounded-full bg-muted-foreground/50" />
+                            {["ping-outer", "ping-inner"].map((key) => (
+                              <motion.div
+                                key={key}
+                                animate="animate"
+                                variants={pingVariants}
+                                className="absolute inset-0 rounded-full bg-muted-foreground/50"
+                                transition={pingTransition(index)}
+                              />
+                            ))}
+                          </div>
+                          <span>{title}</span>
                         </div>
-                        <span>{title}</span>
+                        <span className="opacity-80">{count}</span>
                       </div>
-                      <span className="opacity-80">{count}</span>
-                    </div>
 
-                    {index !== items.length - 1 && <hr />}
-                  </Fragment>
-                ))}
-              </div>
-            </div>
-          </CarouselItem>
-        ))}
+                      {index !== items.length - 1 && <hr />}
+                    </Fragment>
+                  ))}
+                </motion.div>
+              </motion.div>
+            </CarouselItem>
+          ))}
+        </AnimatePresence>
       </CarouselContent>
     </Carousel>
   );

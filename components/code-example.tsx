@@ -63,12 +63,19 @@ const theme: ThemeRegistration = {
 let highlighter: Awaited<ReturnType<typeof createHighlighter>> | null = null;
 
 // Initialize the highlighter synchronously
+const getHighlighter = async () => {
+  if (!highlighter) {
+    highlighter = await createHighlighter({
+      langs: ["ts", "tsx", "vue", "sh"],
+      themes: [theme],
+    });
+  }
+  return highlighter;
+};
+
+// Initialize on server
 if (typeof window === "undefined") {
-  // Server-side initialization
-  highlighter = await createHighlighter({
-    langs: ["ts", "tsx", "vue", "sh"],
-    themes: [theme],
-  });
+  getHighlighter();
 }
 
 function ts(strings: TemplateStringsArray, ...args: string[]) {
@@ -130,13 +137,7 @@ async function HighlightedCode({
   example: { code: string; lang: string };
   showLineNumbers?: boolean;
 }) {
-  if (!highlighter) {
-    // Client-side initialization
-    highlighter = await createHighlighter({
-      langs: ["ts", "tsx", "vue", "sh"],
-      themes: [theme],
-    });
-  }
+  const highlighter = await getHighlighter();
 
   const output = highlighter
     .codeToHtml(example.code, {
