@@ -13,7 +13,9 @@ export function Hero() {
     <section className="container">
       <div className="relative flex flex-col items-center gap-6 pt-14 pb-25">
         <div className="flex flex-col items-center gap-9">
-          <HeroCanvas />
+          <div className="-z-1 -translate-x-1/2 absolute bottom-0 left-1/2 size-full [mask:radial-gradient(ellipse_at_center_calc(100%_-_100px),var(--color-background),transparent_75%)]">
+            <HeroCanvas />
+          </div>
           <div className="mt-24 flex flex-col items-center gap-4 text-balance text-center">
             <h1 className="font-semibold text-4xl/12 tracking-tighter md:text-5xl/14">
               Ship faster, build better

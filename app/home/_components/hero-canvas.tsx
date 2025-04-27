@@ -7,20 +7,25 @@ import * as THREE from "three";
 import { ImprovedNoise } from "three/examples/jsm/math/ImprovedNoise";
 
 export function HeroCanvas() {
-  return (
-    <div className="-z-1 -translate-x-1/2 absolute bottom-0 left-1/2 size-full [mask:radial-gradient(ellipse_at_center_calc(100%_-_100px),var(--color-background),transparent_75%)]">
-      <Canvas />
-    </div>
-  );
-}
-function Canvas() {
   const { theme, resolvedTheme } = useTheme();
+  const materialRef = React.useRef<THREE.ShaderMaterial | null>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
 
   // If the theme is not light or dark, use the resolvedTheme
   const currentTheme =
     theme === "light" || theme === "dark" ? theme : resolvedTheme;
 
+  // Effect to update material color when theme changes
+  React.useEffect(() => {
+    if (!materialRef.current) return;
+
+    const white = new THREE.Color(0xffffff);
+    const black = new THREE.Color(0x000000);
+    materialRef.current.uniforms.lineColor.value =
+      currentTheme === "dark" ? white : black;
+  }, [currentTheme]);
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: No need to run on every render
   React.useEffect(() => {
     if (!containerRef.current) return;
 
@@ -47,7 +52,9 @@ function Canvas() {
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
     // 3. Renderer-setup
-    const renderer = new THREE.WebGLRenderer({ alpha: true });
+    const renderer = new THREE.WebGLRenderer({
+      alpha: true, // Transparent background
+    });
 
     renderer.setSize(width, height);
     renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 1); // Higher for retina displays
@@ -87,8 +94,8 @@ function Canvas() {
     // Recalculate normals after modifying geometry for proper lighting
     planeGeometry.computeVertexNormals();
 
-    const white = new THREE.Color(0xffffff);
-    const black = new THREE.Color(0x000000);
+    const black: THREE.Color = new THREE.Color(0x000000);
+    const white: THREE.Color = new THREE.Color(0xffffff);
 
     // 6. Material-parameters setup
     const uniforms: THREE.ShaderMaterialParameters["uniforms"] = {
@@ -116,15 +123,18 @@ function Canvas() {
         uniform vec3 lineColor;
         uniform float lineOpacity;
         varying vec3 vPos;
-
+  
         void main() {
-          // Create a grid pattern that moves with time
-          // 2.0 controls line frequency, 0.4 controls animation speed
+          // 1. Calculate coordinate for grid pattern animation
           float coord = (vPos.y * 2.0 + time * 0.4) / 2.0;
-          // Create sharp lines using fract and fwidth
+  
+          // 2. Generate sharp grid lines
           float grid = abs(fract(coord - 0.5) - 0.5) / fwidth(coord);
+  
+          // 3. Limit line intensity to maximum of 1.0
           float line = min(grid, 1.0);
-          // Output color with opacity based on line pattern
+  
+          // 4. Output final color
           gl_FragColor = vec4(lineColor, lineOpacity * (1.0 - line));
         }
       `;
@@ -134,6 +144,8 @@ function Canvas() {
       vertexShader,
       fragmentShader,
     });
+
+    materialRef.current = material;
 
     // 7. Mesh-setup (merges geometry & material into a single object)
     const mesh = new THREE.Mesh(planeGeometry, material);
@@ -154,8 +166,11 @@ function Canvas() {
     return () => {
       cancelAnimationFrame(cancelFrame);
       renderer.dispose();
+      scene.remove(mesh);
+      mesh.geometry.dispose();
+      materialRef.current?.dispose();
     };
-  }, [currentTheme]);
+  }, []);
 
   return (
     <motion.div
