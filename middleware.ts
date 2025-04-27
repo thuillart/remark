@@ -1,0 +1,37 @@
+import { getSessionCookie } from "better-auth/cookies";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+
+export function middleware(request: NextRequest) {
+  const sessionCookie = getSessionCookie(request);
+  const path = request.nextUrl.pathname;
+
+  if (sessionCookie) {
+    if (path === "/") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/feedbacks";
+      return NextResponse.rewrite(url);
+    }
+
+    if (path === "/login" || path === "/register") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/feedbacks";
+      return NextResponse.redirect(url);
+    }
+  }
+
+  if (path === "/") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/home";
+    return NextResponse.rewrite(url);
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: [
+    // Matches everything except api, _next, and static files
+    "/((?!api|_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+  ],
+};

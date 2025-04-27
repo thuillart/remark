@@ -9,7 +9,13 @@
 
   "files": {
     "ignoreUnknown": false,
-    "ignore": [".next", "node_modules"]
+    "ignore": [
+      ".next",
+      "bun.lock",
+      "generated",
+      "node_modules",
+      "next-env.d.ts"
+    ]
   },
 
   "formatter": {
