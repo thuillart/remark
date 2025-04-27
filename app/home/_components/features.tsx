@@ -128,7 +128,7 @@ const example = ts`
 function BundleSizeCard() {
   return (
     <div className="relative flex h-75 flex-col gap-4 overflow-hidden rounded-2xl border p-4 md:p-8">
-      <h3 className="-tracking-[.015em] self-start font-medium text-lg/6 [&_span]:opacity-50">
+      <h3 className="-tracking-[.015em] self-start font-medium text-lg/6 [&_span]:text-muted-foreground">
         Tiny by design.{" "}
         <span>So lightweight your bundle size will shrink.</span>
       </h3>

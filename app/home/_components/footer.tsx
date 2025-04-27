@@ -136,6 +136,7 @@ function FooterSocial() {
             href={href}
             className="not-hover:text-muted-foreground transition-colors"
           >
+            <span className="sr-only">{label}</span>
             <Icon size={20} />
           </Link>
         </li>

@@ -74,15 +74,15 @@ export function DemoTabs() {
             >
               <hr
                 className={cn(
-                  "rounded-full border-primary border-t-3 transition-opacity duration-200 ease-in-out",
-                  { "opacity-20": id !== tab },
+                  "rounded-full border-primary border-t-3 transition-colors duration-200 ease-in-out",
+                  { "border-muted-foreground": id !== tab },
                 )}
               />
 
               <h3
                 className={cn(
-                  "font-semibold text-2xl/8 tracking-tight transition-opacity duration-200 ease-in-out",
-                  { "opacity-20": id !== tab },
+                  "font-semibold text-2xl/8 tracking-tight transition-colors duration-200 ease-in-out",
+                  { "text-muted-foreground": id !== tab },
                 )}
               >
                 {title}
