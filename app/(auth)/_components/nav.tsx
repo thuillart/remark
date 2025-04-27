@@ -8,6 +8,7 @@ import React from "react";
 
 export function Nav() {
   const pathname = usePathname();
+  const isSignIn = pathname === "/sign-in";
 
   const [isHovering, setIsHovering] = React.useState<"left" | "right" | null>(
     null,
@@ -39,8 +40,8 @@ export function Nav() {
         onMouseEnter={() => setIsHovering("right")}
         onMouseLeave={() => setIsHovering(null)}
       >
-        <Link href={pathname === "/sign-in" ? "/sign-up" : "/sign-in"}>
-          {pathname === "/sign-in" ? "Sign up" : "Sign in"}
+        <Link href={isSignIn ? "/sign-up" : "/sign-in"}>
+          Sign {isSignIn ? "Up" : "In"}
           <CircleArrow
             variant="outline"
             direction="right"
