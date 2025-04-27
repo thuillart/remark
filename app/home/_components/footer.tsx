@@ -19,10 +19,6 @@ const menuItems = [
         label: "Documentation",
         href: "/docs",
       },
-      {
-        label: "Changelog",
-        href: "/changelog",
-      },
     ],
   },
   {
@@ -33,7 +29,7 @@ const menuItems = [
         href: "/news",
       },
       {
-        label: "FAQs",
+        label: "Q&A",
         href: "#faqs",
       },
     ],

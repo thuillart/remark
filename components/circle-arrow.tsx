@@ -1,7 +1,7 @@
 "use client";
 
 import { type VariantProps, cva } from "class-variance-authority";
-import { motion, useAnimate } from "framer-motion";
+import { useAnimate } from "framer-motion";
 import React from "react";
 
 interface CircleArrowProps extends VariantProps<typeof circleArrowVariants> {
@@ -14,41 +14,55 @@ export function CircleArrow({
   direction,
   isHovering,
 }: CircleArrowProps) {
-  const [scope1, animate1] = useAnimate();
-  const [scope2, animate2] = useAnimate();
+  const [arrow1, animate1] = useAnimate();
+  const [arrow2, animate2] = useAnimate();
 
   React.useEffect(() => {
     if (!isHovering) {
       // Reset positions instantly when not hovering
-      animate1(scope1.current, { translateX: 0 }, { duration: 0 });
-      animate2(scope2.current, { translateX: 0 }, { duration: 0 });
+      animate1(arrow1.current, { translateX: 0 }, { duration: 0 });
+      animate2(arrow2.current, { translateX: 0 }, { duration: 0 });
       return;
     }
 
     // Animate the paths
     Promise.all([
-      animate1(scope1.current, {
-        translateX:
-          direction === "right"
-            ? [0, 20]
-            : direction === "left"
-              ? [-20, 0]
-              : direction === "up-right"
-                ? [0, 20]
-                : [-20, 0],
-      }),
-      animate2(scope2.current, {
-        translateX:
-          direction === "right"
-            ? [-20, 0]
-            : direction === "left"
+      animate1(
+        arrow1.current,
+        {
+          x:
+            direction === "right"
               ? [0, 20]
-              : direction === "up-right"
+              : direction === "left"
                 ? [-20, 0]
-                : [0, 20],
-      }),
+                : direction === "up-right"
+                  ? [0, 20]
+                  : [-20, 0],
+        },
+        {
+          ease: "easeOut",
+          duration: 0.22,
+        },
+      ),
+      animate2(
+        arrow2.current,
+        {
+          x:
+            direction === "right"
+              ? [-20, 0]
+              : direction === "left"
+                ? [0, 20]
+                : direction === "up-right"
+                  ? [-20, 0]
+                  : [0, 20],
+        },
+        {
+          ease: "easeOut",
+          duration: 0.22,
+        },
+      ),
     ]);
-  }, [isHovering, animate1, animate2, scope1, scope2, direction]);
+  }, [isHovering, animate1, animate2, arrow1, arrow2, direction]);
 
   return (
     <svg
@@ -61,9 +75,9 @@ export function CircleArrow({
     >
       <title>A circle arrow</title>
       <rect rx={8} width={16} height={16} />
-      <motion.path
+      <path
         d="M4.75 8L11.25 8M11.25 8L8.75 5.5M11.25 8L8.75 10.5"
-        ref={scope1}
+        ref={arrow1}
         style={{ transformOrigin: "8px 8px" }}
         stroke="var(--muted-foreground)"
         className={direction === "up-right" ? "-rotate-45" : ""}
@@ -72,9 +86,9 @@ export function CircleArrow({
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <motion.path
+      <path
         d="M4.75 8L11.25 8M11.25 8L8.75 5.5M11.25 8L8.75 10.5"
-        ref={scope2}
+        ref={arrow2}
         style={{ transformOrigin: "8px 8px" }}
         stroke="var(--muted-foreground)"
         className={direction === "up-right" ? "-rotate-45" : ""}
