@@ -13,7 +13,7 @@ export function middleware(request: NextRequest) {
       return NextResponse.rewrite(url);
     }
 
-    if (path === "/login" || path === "/register") {
+    if (path === "/sign-in" || path === "/sign-up") {
       const url = request.nextUrl.clone();
       url.pathname = "/feedbacks";
       return NextResponse.redirect(url);

@@ -27,7 +27,7 @@ function DesktopMenu() {
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
       >
-        <Link href="/login">
+        <Link href="/sign-in">
           Sign In
           <CircleArrow
             variant="outline"
@@ -37,7 +37,7 @@ function DesktopMenu() {
         </Link>
       </Button>
       <Button size="sm" asChild className="rounded-lg">
-        <Link href="/register">Create Account</Link>
+        <Link href="/sign-up">Create Account</Link>
       </Button>
     </div>
   );

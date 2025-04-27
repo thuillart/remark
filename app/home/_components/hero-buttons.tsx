@@ -36,7 +36,7 @@ export function HeroButtons() {
         onMouseEnter={() => setIsHovered2(true)}
         onMouseLeave={() => setIsHovered2(false)}
       >
-        <Link href="/register">
+        <Link href="/sign-up">
           Start Building
           <CircleArrow
             variant="default"
