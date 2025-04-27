@@ -1,19 +1,20 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import React from "react";
+
+import { Button } from "@/components/ui/button";
 
 export function TermsAgreement() {
   const pathname = usePathname();
-
   const isSignIn = pathname.includes("sign-in");
   if (isSignIn) return null;
 
   return (
     <p className="text-center text-muted-foreground text-xs">
       By signing up you agree to our{" "}
-      <Button variant="link" asChild className="pr-3 [&_svg]:mt-1 [&_svg]:ml-0">
+      <Button asChild variant="link" className="text-xs">
         <Link href="/terms" target="_blank">
           terms
         </Link>

@@ -23,12 +23,12 @@ function DesktopMenu() {
       <Button
         asChild
         variant="link"
-        className="group/button not-hover:text-muted-foreground hover:no-underline"
+        className="not-hover:text-muted-foreground"
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
       >
         <Link href="/sign-in">
-          Sign In
+          Sign In{" "}
           <CircleArrow
             variant="outline"
             direction="up-right"

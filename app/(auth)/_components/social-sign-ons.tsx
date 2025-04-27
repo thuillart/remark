@@ -35,7 +35,7 @@ export function SocialSignOns() {
       <div className="flex flex-col items-center gap-4 sm:flex-row">
         <Button
           variant="outline"
-          loading={true}
+          loading={loading === "github"}
           onClick={() => signInWithOAuthProvider("github")}
           className="w-full"
         >

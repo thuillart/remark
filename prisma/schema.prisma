@@ -1,6 +1,5 @@
 generator client {
   provider        = "prisma-client-js"
-  output          = "../generated/prisma"
   previewFeatures = ["driverAdapters"]
 }
 
@@ -10,17 +9,16 @@ datasource db {
 }
 
 model User {
-  id            Int       @id @default(autoincrement())
+  id            String    @id
+  name          String
   email         String    @unique
-  name          String?
   emailVerified Boolean
   image         String?
   createdAt     DateTime
   updatedAt     DateTime
-  sessions      Session[]
   accounts      Account[]
-
-  passkeys Passkey[]
+  passkeys      Passkey[]
+  sessions      Session[]
 
   @@map("user")
 }
@@ -28,15 +26,14 @@ model User {
 model Session {
   id        String   @id
   expiresAt DateTime
-  token     String
+  token     String   @unique
   createdAt DateTime
   updatedAt DateTime
   ipAddress String?
   userAgent String?
-  userId    Int
+  userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([token])
   @@map("session")
 }
 
@@ -44,8 +41,7 @@ model Account {
   id                    String    @id
   accountId             String
   providerId            String
-  userId                Int
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId                String
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -55,6 +51,7 @@ model Account {
   password              String?
   createdAt             DateTime
   updatedAt             DateTime
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("account")
 }
@@ -74,14 +71,14 @@ model Passkey {
   id           String    @id
   name         String?
   publicKey    String
-  userId       Int
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
   credentialID String
   counter      Int
   deviceType   String
   backedUp     Boolean
   transports   String?
   createdAt    DateTime?
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("passkey")
 }

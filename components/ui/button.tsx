@@ -1,11 +1,11 @@
 import { Slot, Slottable } from "@radix-ui/react-slot";
 import { type VariantProps, cva } from "class-variance-authority";
-import { ArrowUpRightIcon, Loader2Icon } from "lucide-react";
+import { Loader2Icon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "whitespace-nowrap rounded-md font-medium outline-none transition-[color] focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "group/button inline-flex items-center gap-2 whitespace-nowrap rounded-md font-medium text-sm outline-none transition-[color] focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -16,7 +16,7 @@ const buttonVariants = cva(
         secondary:
           "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "group/link relative inline-block whitespace-nowrap pr-4.5 text-foreground underline decoration-border underline-offset-5 transition-[color,text-decoration-color] duration-150 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] hover:decoration-current dark:hover:decoration-current",
+        link: "whitespace-nowrap text-foreground",
       },
       loading: {
         true: "text-transparent",
@@ -36,7 +36,7 @@ const buttonVariants = cva(
       },
       {
         variant: ["default", "outline", "secondary"],
-        className: "inline-flex items-center justify-center gap-2 text-sm",
+        className: " justify-center",
       },
     ],
     defaultVariants: {
@@ -66,15 +66,6 @@ function Button({
   const Comp = asChild ? Slot : "button";
   const isLink = variant === "link";
 
-  const content = isLink ? (
-    <span>
-      {children}
-      <ArrowUpRightIcon className="group-hover/link:-translate-y-px absolute mt-1.25 ml-0.5 inline-block size-[1em] text-muted-foreground no-underline transition duration-[inherit] ease-[inherit] group-hover/link:translate-x-px group-hover/link:text-primary" />
-    </span>
-  ) : (
-    children
-  );
-
   return (
     <Comp
       disabled={disabled || loading}
@@ -92,7 +83,7 @@ function Button({
           )}
         />
       )}
-      <Slottable>{content}</Slottable>
+      <Slottable>{children}</Slottable>
     </Comp>
   );
 }

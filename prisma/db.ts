@@ -12,14 +12,17 @@ neonConfig.poolQueryViaFetch = true;
 
 // Type definitions
 declare global {
-  var prisma: PrismaClient | undefined;
+  var db: PrismaClient | undefined;
 }
 
 const connectionString = `${process.env.DATABASE_URL}`;
 
 const adapter = new PrismaNeon({ connectionString });
-const prismaClient = global.prisma || new PrismaClient({ adapter });
+// biome-ignore lint/suspicious/noRedeclare: leave this as is
+const db = global.db || new PrismaClient({ adapter });
 
-if (process.env.NODE_ENV === "development") global.prisma = prismaClient;
+if (process.env.NODE_ENV !== "production") {
+  global.db = db;
+}
 
-export default prismaClient;
+export default db;

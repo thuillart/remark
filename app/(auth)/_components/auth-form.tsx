@@ -33,6 +33,7 @@ export function AuthForm({ mode }: { mode: "sign-in" | "sign-up" }) {
     defaultValues: {
       name: "",
       email: "",
+      password: "",
     },
   });
 
