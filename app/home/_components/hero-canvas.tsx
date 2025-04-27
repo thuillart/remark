@@ -137,9 +137,8 @@ export function HeroCanvas() {
 
       void main() {
         float coord = (vPos.y * 2.0 + time * 0.4) / 2.0;
-        float grid = abs(fract(coord - 0.5) - 0.5) / fwidth(coord);
-        float line = min(grid, 1.0);
-        gl_FragColor = vec4(lineColor, lineOpacity * (1.0 - line));
+        float line = 1.0 - smoothstep(0.0, 0.008, abs(fract(coord - 0.5) - 0.5));
+        gl_FragColor = vec4(lineColor, lineOpacity * line);
       }
     `;
 
@@ -154,7 +153,7 @@ export function HeroCanvas() {
     <motion.div
       ref={containerRef}
       initial={{ opacity: 0 }}
-      animate={{ opacity: 0.2 }}
+      animate={{ opacity: 0.3 }}
       className="size-full"
     />
   );
