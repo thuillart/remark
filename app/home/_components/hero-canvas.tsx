@@ -153,8 +153,6 @@ function Canvas() {
     // 9. Cleanup (prevents memory leaks on resize)
     return () => {
       cancelAnimationFrame(cancelFrame);
-      window.removeEventListener("resize", handleResize);
-      containerRef.current?.removeChild(renderer.domElement);
       renderer.dispose();
     };
   }, [currentTheme]);
@@ -165,7 +163,6 @@ function Canvas() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 0.15 }}
       className="size-full"
-      transition={{ delay: 0.2 }}
     />
   );
 }
