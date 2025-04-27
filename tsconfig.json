@@ -17,7 +17,9 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["*"],
-      "@/home/components/*": ["app/home/_components/*"]
+      "@/home/components/*": ["app/home/_components/*"],
+      "@/auth/components/*": ["app/(auth)/_components/*"],
+      "@/auth/lib/*": ["app/(auth)/_lib/*"]
     }
   },
   "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],

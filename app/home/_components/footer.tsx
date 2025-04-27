@@ -8,7 +8,7 @@ import {
 } from "@remixicon/react";
 import Link from "next/link";
 
-import { Logo } from "@/components/logo";
+import { LogoLink } from "@/components/logo";
 import { FooterArtwork } from "@/home/components/footer-artwork";
 
 const menuItems = [
@@ -83,7 +83,7 @@ export function Footer() {
 
       <div className="container">
         <div className="flex flex-wrap justify-between gap-x-24 gap-y-12">
-          <Logo size={24} />
+          <LogoLink size={24} />
           <FooterMenu />
         </div>
         <div className="mt-16 flex flex-wrap-reverse items-center justify-between gap-x-12 gap-y-6">

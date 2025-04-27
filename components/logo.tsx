@@ -6,14 +6,17 @@ import React from "react";
 
 import { cn } from "@/lib/utils";
 
-export function Logo({
+function Logo({
   size = 20,
+  variant = "wordmark",
+  isHovered,
   className,
 }: {
   size?: number;
+  variant?: "wordmark" | "icon";
   className?: string;
+  isHovered?: boolean;
 }) {
-  const [isHovered, setIsHovered] = React.useState(false);
   const [isAnimating, setIsAnimating] = React.useState(false);
 
   const [ellipse1, animate1] = useAnimate();
@@ -68,19 +71,7 @@ export function Logo({
   ]);
 
   return (
-    <Link
-      href="/"
-      className={cn(
-        "inline-flex h-fit items-center gap-2 transition-opacity hover:opacity-70",
-        className,
-      )}
-      onMouseEnter={() => {
-        setIsHovered(true);
-      }}
-      onMouseLeave={() => {
-        setIsHovered(false);
-      }}
-    >
+    <>
       <svg
         fill="none"
         width={size}
@@ -113,7 +104,39 @@ export function Logo({
           initial={{ pathLength: 1, pathOffset: 1 }}
         />
       </svg>
-      <span className="mb-0.5 font-medium font-mono text-lg/5">nucleon</span>
+      {variant === "wordmark" && (
+        <span className="mb-0.5 font-medium font-mono text-lg/5">nucleon</span>
+      )}
+    </>
+  );
+}
+
+function LogoLink({
+  variant = "wordmark",
+  className,
+}: {
+  variant?: "wordmark" | "icon";
+  className?: string;
+}) {
+  const [isHovered, setIsHovered] = React.useState(false);
+
+  return (
+    <Link
+      href="/"
+      className={cn(
+        "inline-flex h-fit items-center gap-2 transition-opacity hover:opacity-70",
+        className,
+      )}
+      onMouseEnter={() => {
+        setIsHovered(true);
+      }}
+      onMouseLeave={() => {
+        setIsHovered(false);
+      }}
+    >
+      <Logo variant={variant} isHovered={isHovered} />
     </Link>
   );
 }
+
+export { Logo, LogoLink };
