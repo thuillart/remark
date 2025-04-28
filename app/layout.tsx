@@ -2,6 +2,7 @@ import "server-only";
 
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, Inter } from "next/font/google";
+import { Toaster } from "sonner";
 
 import "@/app/globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -26,7 +27,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn(inter.variable, plexMono.variable)}>
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          {children} <Toaster className="![--width:420px]" />
+        </ThemeProvider>
       </body>
     </html>
   );

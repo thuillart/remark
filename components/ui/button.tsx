@@ -19,7 +19,7 @@ const buttonVariants = cva(
         link: "whitespace-nowrap text-foreground",
       },
       loading: {
-        true: "text-transparent",
+        true: "text-transparent has-[>svg:is(.loading)]:[&_svg]:not-first:opacity-0",
       },
       size: {
         default: "",
@@ -64,7 +64,6 @@ function Button({
   ...props
 }: ButtonProps) {
   const Comp = asChild ? Slot : "button";
-  const isLink = variant === "link";
 
   return (
     <Comp
@@ -77,7 +76,7 @@ function Button({
         <Loader2Icon
           size={20}
           className={cn(
-            "absolute animate-spin text-foreground",
+            "absolute animate-spin text-primary-foreground",
             // Used for conditional styling when button is loading
             "loading",
           )}
