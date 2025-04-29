@@ -2,6 +2,8 @@ import { getSessionCookie } from "better-auth/cookies";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
+const protectedPaths = ["/api-keys", "/feedbacks", "/profile", "/settings"];
+
 export function middleware(request: NextRequest) {
   const sessionCookie = getSessionCookie(request);
   const path = request.nextUrl.pathname;
@@ -15,9 +17,25 @@ export function middleware(request: NextRequest) {
 
     if (path === "/sign-in" || path === "/sign-up") {
       const url = request.nextUrl.clone();
-      url.pathname = "/feedbacks";
+      url.pathname = "/";
       return NextResponse.redirect(url);
     }
+  }
+
+  const isProtectedPath = protectedPaths.some((protectedPath) =>
+    path.startsWith(protectedPath),
+  );
+
+  if (isProtectedPath && !sessionCookie) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/sign-in";
+    return NextResponse.redirect(url);
+  }
+
+  if (path === "/home" && !sessionCookie) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/";
+    return NextResponse.redirect(url);
   }
 
   if (path === "/") {

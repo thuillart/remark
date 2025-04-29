@@ -1,27 +1,18 @@
 import "dotenv/config";
-
 import { neonConfig } from "@neondatabase/serverless";
 import { PrismaNeon } from "@prisma/adapter-neon";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../app/generated/prisma";
 
 import ws from "ws";
 neonConfig.webSocketConstructor = ws;
 
-// To work in edge environments (Vercel Edge, etc.), enable querying over fetch
 neonConfig.poolQueryViaFetch = true;
 
-declare global {
-  var db: PrismaClient | undefined;
-}
-
-const connectionString = `${process.env.DATABASE_URL}`;
+const connectionString = `${process.env.DATABASE_URL}?connect_timeout=10&pool_timeout=15`;
 
 const adapter = new PrismaNeon({ connectionString });
-// biome-ignore lint/suspicious/noRedeclare: leave this as is
-const db = global.db || new PrismaClient({ adapter });
+const prisma = global.prisma || new PrismaClient({ adapter });
 
-if (process.env.NODE_ENV !== "production") {
-  global.db = db;
-}
+if (process.env.NODE_ENV === "development") global.prisma = prisma;
 
-export default db;
+export default prisma;
