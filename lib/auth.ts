@@ -1,10 +1,11 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
+import { magicLink } from "better-auth/plugins/magic-link";
 import { passkey } from "better-auth/plugins/passkey";
 import React from "react";
 
-import { VerifyEmail } from "@/components/template/verify-email";
+import { MagicLinkTemplate } from "@/components/template/magic-link";
 import { sendEmail } from "@/lib/resend";
 import db from "@/prisma/db";
 
@@ -13,34 +14,29 @@ export const auth = betterAuth({
     provider: "postgresql",
   }),
 
-  emailAndPassword: {
-    enabled: true,
-    requireEmailVerification: true,
-  },
-
   socialProviders: {
     github: {
-      clientId: process.env.GITHUB_CLIENT_ID as string,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET as string,
+      clientId: process.env.GITHUB_CLIENT_ID,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET,
     },
     gitlab: {
-      issuer: process.env.GITLAB_ISSUER as string,
-      clientId: process.env.GITLAB_CLIENT_ID as string,
-      clientSecret: process.env.GITLAB_CLIENT_SECRET as string,
+      issuer: process.env.GITLAB_ISSUER,
+      clientId: process.env.GITLAB_CLIENT_ID,
+      clientSecret: process.env.GITLAB_CLIENT_SECRET,
     },
   },
 
-  emailVerification: {
-    sendVerificationEmail: async ({ url, user }) => {
-      const firstName = user.name.split(" ")[0];
-
-      await sendEmail({
-        to: user.email,
-        react: React.createElement(VerifyEmail, { url, firstName }),
-        subject: "Verify your email address",
-      });
-    },
-  },
-
-  plugins: [passkey(), nextCookies()],
+  plugins: [
+    passkey(),
+    magicLink({
+      sendMagicLink: async ({ url, email }) => {
+        await sendEmail({
+          to: email,
+          react: React.createElement(MagicLinkTemplate, { url }),
+          subject: "Your magic link",
+        });
+      },
+    }),
+    nextCookies(),
+  ],
 });
