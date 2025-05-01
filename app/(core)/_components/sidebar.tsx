@@ -1,40 +1,40 @@
 import "server-only";
 
 import { LogoLink } from "@/components/logo";
-import { ContactIcon } from "@/core/components/icons/contact";
-import { LogIcon } from "@/core/components/icons/log";
+import { KeyRoundIcon } from "@/core/components/icons/key-round";
+import { SettingsIcon } from "@/core/components/icons/settings";
 import { NavItem } from "@/core/components/nav-item";
 
 export interface Item {
   href: string;
-  Icon: React.ComponentType<{ className?: string; isHovering?: boolean }>;
+  Icon: React.ComponentType<{ className?: string; isHovering: boolean }>;
   label: string;
 }
 
 export const navItems: Item[] = [
   {
     href: "/",
-    Icon: ContactIcon,
+    Icon: SettingsIcon,
     label: "Feedbacks",
   },
   {
     href: "/contacts",
-    Icon: ContactIcon,
+    Icon: SettingsIcon,
     label: "Contacts",
   },
   {
     href: "/logs",
-    Icon: LogIcon,
+    Icon: SettingsIcon,
     label: "Logs",
   },
   {
     href: "/api-keys",
-    Icon: ContactIcon,
+    Icon: KeyRoundIcon,
     label: "API Keys",
   },
   {
     href: "/settings/usage",
-    Icon: ContactIcon,
+    Icon: SettingsIcon,
     label: "Settings",
   },
 ];

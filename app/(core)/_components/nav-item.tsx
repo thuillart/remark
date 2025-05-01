@@ -20,14 +20,14 @@ export function NavItem({ href, Icon, label }: Item) {
       asChild
       variant="ghost"
       className={cn(
-        "w-full justify-start gap-2 font-normal hover:bg-accent",
+        "group w-full justify-start gap-2 font-normal hover:bg-accent",
         isActive && "bg-accent text-accent-foreground",
       )}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
       <Link href={href}>
-        <Icon className="opacity-80" isHovering={isHovering} />
+        <Icon className="not-group-hover:opacity-80" isHovering={isHovering} />
         {label}
       </Link>
     </Button>
