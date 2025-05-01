@@ -4,7 +4,7 @@ import { LogoLink } from "@/components/logo";
 import { HeaderEndContent } from "@/home/components/header-end-content";
 import { HeaderLayout } from "@/home/components/header-layout";
 
-export function Header({ startContent }: { startContent: React.ReactNode }) {
+export function Header({ startContent }: { startContent?: React.ReactNode }) {
   return (
     <HeaderLayout>
       <header className="container">
