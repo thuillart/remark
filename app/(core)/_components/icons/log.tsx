@@ -70,46 +70,46 @@ export function LogIcon({ isHovering }: { isHovering: boolean }) {
       <title>Log</title>
 
       <rect
-        ref={line1}
         x={4.4}
         y={4.4}
+        rx={0.6}
+        ref={line1}
+        fill="currentColor"
         width={6.2}
         height={1.2}
-        rx={0.6}
-        fill="currentColor"
         stroke="none"
       />
 
       <rect
-        ref={line2}
         x={4.4}
         y={7.4}
+        rx={0.6}
+        ref={line2}
+        fill="currentColor"
         width={7.2}
         height={1.2}
-        rx={0.6}
-        fill="currentColor"
         stroke="none"
       />
 
       <rect
-        ref={line3}
         x={4.4}
         y={10.4}
+        rx={0.6}
+        ref={line3}
+        fill="currentColor"
         width={6.2}
         height={1.2}
-        rx={0.6}
-        fill="currentColor"
         stroke="none"
       />
 
       <rect
-        ref={line4}
         x={4.4}
         y={13.4}
+        rx={0.6}
+        ref={line4}
+        fill="currentColor"
         width={0}
         height={1.2}
-        rx={0.6}
-        fill="currentColor"
         stroke="none"
       />
 
