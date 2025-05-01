@@ -17,7 +17,6 @@ import { cn } from "@/lib/utils";
 interface Item {
   href: string;
   title: string;
-  type?: "POST" | "PATCH" | "DELETE";
   items?: Item[];
 }
 
@@ -42,11 +41,6 @@ const items: Section[] = [
         items: [{ href: "/docs/next", title: "Next.js" }],
       },
     ],
-  },
-
-  {
-    title: "Resources",
-    items: [{ href: "/changelog", title: "Changelog" }],
   },
 ];
 
@@ -187,7 +181,7 @@ export function Sidebar() {
                           className="overflow-hidden pl-5"
                           transition={transition}
                         >
-                          {items.map(({ href, title, type }) => (
+                          {items.map(({ href, title }) => (
                             <li key={title}>
                               <Link
                                 href={href}
@@ -195,17 +189,6 @@ export function Sidebar() {
                                   "inline-flex w-full items-center gap-2.5 py-1.5 text-sm",
                                 )}
                               >
-                                {type && (
-                                  <span
-                                    className={cn(
-                                      "inline-flex items-center rounded px-2 py-1 font-medium text-[8px] ring-1 ring-inset",
-                                      type === "POST" &&
-                                        "bg-blue-50 text-blue-700 ring-blue-700/10 dark:bg-blue-400/10 dark:text-blue-400 dark:ring-blue-400/30",
-                                    )}
-                                  >
-                                    {type}
-                                  </span>
-                                )}
                                 <span
                                   data-active={href === pathname}
                                   className="opacity-40 transition-[opacity,font-weight] duration-200 hover:opacity-70 data-[active=true]:font-medium data-[active=true]:opacity-100 dark:opacity-50 dark:data-[active=true]:opacity-100 dark:hover:opacity-70"
