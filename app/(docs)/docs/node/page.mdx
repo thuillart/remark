@@ -1,0 +1,60 @@
+import { SquareArrowOutUpRightIcon } from "lucide-react";
+
+# Node.js
+
+Learn how to send your first feedback using the Node.js SDK.
+
+## Prerequisites
+
+To get the most out of this guide, you'll need to:
+
+- [Create an account](/sign-up)
+- [Create an API key](/api-keys)
+
+## 1. Install
+
+Get the Node.js SDK using your preferred package manager:
+
+```bash
+// @filename="Terminal"
+npm install @remark-sh/sdk
+```
+
+## 2. Send a test feedback
+
+```ts
+// @filename="server.ts"
+import { Remark } from "@remark-sh/sdk";
+
+const remark = new Remark("re_123456789");
+
+(async function () {
+  const { data, error } = await remark.feedbacks.send({
+    from: "delivered@remark.sh",
+    text: "Hey, what's up?",
+  });
+
+  if (error) {
+    return console.error({ error });
+  }
+
+  console.log({ data });
+})();
+```
+
+## 3. Try it yourself
+
+<LinkableCard
+  href="https://github.com/remark-sh/remark-demo-node"
+  title="Node.js example"
+  description="See the full source code."
+>
+  <SquareArrowOutUpRightIcon size={32} strokeWidth={1.5} />
+</LinkableCard>
+
+---
+
+<PaginationGroup>
+  <PaginationPrevious href="/docs" label="Introduction" />
+  <PaginationNext href="/docs/next" label="Next.js" />
+</PaginationGroup>

@@ -1,0 +1,90 @@
+import { SquareArrowOutUpRightIcon } from "lucide-react";
+
+# Next.js
+
+Learn how to send your first feedback using Next.js and the Node.js SDK.
+
+## Prerequisites
+
+To get the most out of this guide, you'll need to:
+
+- [Create an account](/sign-up)
+- [Create an API key](/api-keys)
+
+## 1. Install
+
+Get the Node.js SDK using your preferred package manager:
+
+```bash
+// @filename="Terminal"
+npm install @nucleon-sh/sdk
+```
+
+## 2. Add environment variable
+
+Add the `REMARK_API_KEY` to your `.env` file. If you don't have a key yet, [sign up](/sign-up) and create one from the [dashboard](/api-keys).
+
+```bash
+// @filename=".env"
+REMARK_API_KEY=your-api-key
+```
+
+## 3. Create a server action
+
+We highly recommend using a server action to send a feedback. Create an action file in `app/actions.ts` and add the following code:
+
+```ts
+// @filename="app/actions.ts"
+"use server";
+
+// [!code highlight:1]
+import { Remark } from "@nucleon-sh/sdk";
+
+// [!code highlight:1]
+const remark = new Remark(process.env.REMARK_API_KEY!);
+
+export async function send(formData: FormData) {
+  await remark.feedbacks.create({
+    from: formData.get("email") as string,
+    text: formData.get("message") as string,
+  });
+}
+```
+
+## 4. Create a form
+
+The easiest way to send a feedback is through a form. Paste the following code in your `app/page.tsx` and paste the following code:
+
+```tsx
+// @filename="app/page.tsx"
+// [!code highlight:1]
+import { send } from "./actions.ts";
+
+export default async function Page() {
+  return (
+    // [!code highlight:1]
+    <form action={send}>
+      <input name="email" />
+      <textarea name="message" />
+      <button type="submit">Send</button>
+    </form>
+  );
+}
+```
+
+## 5. Try it yourself
+
+<LinkableCard
+  href="https://github.com/nucleon-sh/nucleon-demo-next"
+  title="Next.js example"
+  description="See the full source code."
+>
+  <SquareArrowOutUpRightIcon size={32} strokeWidth={1.5} />
+</LinkableCard>
+
+---
+
+<PaginationGroup>
+  <PaginationPrevious href="/docs/node" label="Node.js" />
+  <PaginationNext href="/changelog" label="Changelog" />
+</PaginationGroup>

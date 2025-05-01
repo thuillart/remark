@@ -10,7 +10,13 @@ import Link from "next/link";
 
 import { LogoLink } from "@/components/logo";
 import { FooterArtwork } from "@/home/components/footer-artwork";
-import { CONTACT_EMAIL } from "@/lib/contants";
+import {
+  CONTACT_EMAIL,
+  DISCORD_URL,
+  GITHUB_URL,
+  X_URL,
+  YOUTUBE_URL,
+} from "@/lib/contants";
 
 const menuItems = [
   {
@@ -57,22 +63,22 @@ const menuItems = [
 const socialItems = [
   {
     label: "X",
-    href: "https://x.com",
+    href: X_URL,
     Icon: RiTwitterXFill,
   },
   {
     label: "GitHub",
-    href: "https://github.com",
+    href: GITHUB_URL,
     Icon: RiGithubFill,
   },
   {
     label: "Discord",
-    href: "https://discord.com",
+    href: DISCORD_URL,
     Icon: RiDiscordFill,
   },
   {
     label: "YouTube",
-    href: "https://youtube.com",
+    href: YOUTUBE_URL,
     Icon: RiYoutubeFill,
   },
 ];
