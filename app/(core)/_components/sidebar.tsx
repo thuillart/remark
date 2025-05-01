@@ -1,8 +1,11 @@
 import "server-only";
 
 import { LogoLink } from "@/components/logo";
+import { GalleryVerticalEndIcon } from "@/core/components/icons/gallery-vertical-end";
 import { KeyRoundIcon } from "@/core/components/icons/key-round";
+import { MessageSquareIcon } from "@/core/components/icons/message-square";
 import { SettingsIcon } from "@/core/components/icons/settings";
+import { UsersIcon } from "@/core/components/icons/users";
 import { NavItem } from "@/core/components/nav-item";
 
 export interface Item {
@@ -14,17 +17,17 @@ export interface Item {
 export const navItems: Item[] = [
   {
     href: "/",
-    Icon: SettingsIcon,
+    Icon: MessageSquareIcon,
     label: "Feedbacks",
   },
   {
     href: "/contacts",
-    Icon: SettingsIcon,
+    Icon: UsersIcon,
     label: "Contacts",
   },
   {
     href: "/logs",
-    Icon: SettingsIcon,
+    Icon: GalleryVerticalEndIcon,
     label: "Logs",
   },
   {
