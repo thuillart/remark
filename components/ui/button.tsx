@@ -77,6 +77,7 @@ function Button({
           size={20}
           className={cn(
             "absolute animate-spin text-primary-foreground",
+            variant === "outline" && "text-muted-foreground",
             // Used for conditional styling when button is loading
             "loading",
           )}

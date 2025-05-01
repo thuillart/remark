@@ -21,20 +21,20 @@ export function MagicLinkTemplate({ url }: { url: string }) {
           <Preview>Your magic link</Preview>
 
           <Container className="mx-auto py-5 pb-12">
-            <Heading className="my-4 pt-4 text-2xl/snug tracking-tight">
+            <Heading className="my-4 pt-4 font-normal text-2xl/snug tracking-tight">
               Your magic link
             </Heading>
 
             <Section className="py-7">
               <Button
                 href={url}
-                className="block rounded bg-neutral-900 px-6 py-3 text-center text-base text-neutral-50 no-underline"
+                className="block rounded bg-neutral-900 px-6 py-3 text-center font-semibold text-base/4 text-neutral-50 no-underline"
               >
                 Login
               </Button>
             </Section>
 
-            <Text className="text-base/snug">
+            <Text className="text-base/snug text-neutral-700">
               This link and code will only be valid for the next 5 minutes. If
               you didn't request this, you can safely ignore this email.
             </Text>
