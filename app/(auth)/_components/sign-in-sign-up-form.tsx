@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { RiGithubFill, RiGitlabFill } from "@remixicon/react";
 import { BadgeAlertIcon, InboxIcon } from "lucide-react";
 import Link from "next/link";
-import { useQueryState } from "nuqs";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -37,13 +36,9 @@ type OAuthProvider = "github" | "gitlab";
 export function SignInSignUpForm({ mode }: { mode: Mode }) {
   const isSignUp = mode === "sign-up";
 
+  const [step, setStep] = React.useState<Step>("email");
   const [isLoading, setIsLoading] = React.useState<OAuthProvider | null>(null);
   const [isHovering, setIsHovering] = React.useState(false);
-
-  const [step, setStep] = useQueryState<Step>("step", {
-    defaultValue: "email",
-    parse: (value): Step => (value === "inbox" ? "inbox" : "email"),
-  });
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
