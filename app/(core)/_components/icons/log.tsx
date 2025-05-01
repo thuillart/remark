@@ -6,10 +6,10 @@ import React from "react";
 export function LogIcon({ isHovering }: { isHovering: boolean }) {
   const [isAnimating, setIsAnimating] = React.useState(false);
 
-  const [logNew, animateLogNew] = useAnimate();
-  const [logBack, animateLogBack] = useAnimate();
-  const [logFront, animateLogFront] = useAnimate();
-  const [logBackOverlay, animateLogBackOverlay] = useAnimate();
+  const [line1, animateLine1] = useAnimate();
+  const [line2, animateLine2] = useAnimate();
+  const [line3, animateLine3] = useAnimate();
+  const [line4, animateLine4] = useAnimate();
 
   React.useEffect(() => {
     const animate = async () => {
@@ -17,36 +17,25 @@ export function LogIcon({ isHovering }: { isHovering: boolean }) {
         setIsAnimating(true);
 
         Promise.all([
-          animateLogFront(
-            logFront.current,
-            {
-              y: [0, 9.25],
-              height: [9.25, 0],
-              rx: [2.625, 1],
-            },
-            { duration: 0.2 },
+          animateLine1(
+            line1.current,
+            { y: [0, -3], opacity: [1, 0] },
+            { duration: 0.23 },
           ),
-          animateLogBack(
-            logBack.current,
-            {
-              x: [0, -2],
-              y: [0, 4],
-              width: [9.25, 13.25],
-            },
-            { delay: 0.1, duration: 0.2 },
+          animateLine2(
+            line2.current,
+            { y: [0, -3], width: [7.2, 6.2] },
+            { duration: 0.23 },
           ),
-          animateLogBackOverlay(
-            logBackOverlay.current,
-            { fillOpacity: [0, 1] },
-            { delay: 0.1, duration: 0.2 },
+          animateLine3(
+            line3.current,
+            { y: [0, -3], width: [6.2, 7.2] },
+            { duration: 0.23 },
           ),
-          animateLogNew(
-            logNew.current,
-            {
-              x: [4, 0],
-              width: [0, 8],
-            },
-            { delay: 0.2, duration: 0.2 },
+          animateLine4(
+            line4.current,
+            { y: [0, -3], width: [0, 6.2] },
+            { duration: 0.23 },
           ),
         ]);
 
@@ -58,72 +47,81 @@ export function LogIcon({ isHovering }: { isHovering: boolean }) {
   }, [
     isHovering,
     isAnimating,
-    animateLogFront,
-    animateLogBack,
-    animateLogBackOverlay,
-    animateLogNew,
-    logFront.current,
-    logBack.current,
-    logBackOverlay.current,
-    logNew.current,
+    animateLine1,
+    animateLine2,
+    animateLine3,
+    animateLine4,
+    line1.current,
+    line2.current,
+    line3.current,
+    line4.current,
   ]);
 
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 16 16"
-      height={16}
-      width={16}
       fill="none"
-      style={{ overflow: "visible" }}
+      xmlns="http://www.w3.org/2000/svg"
+      width={16}
+      height={16}
+      viewBox="0 0 16 16"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     >
       <title>Log</title>
 
       <rect
-        x={4}
-        y={2}
-        rx={1}
-        ref={logNew}
-        fill="var(--color-background)"
+        ref={line1}
+        x={4.4}
+        y={4.4}
+        width={6.2}
+        height={1.2}
+        rx={0.6}
+        fill="currentColor"
+        stroke="none"
+      />
+
+      <rect
+        ref={line2}
+        x={4.4}
+        y={7.4}
+        width={7.2}
+        height={1.2}
+        rx={0.6}
+        fill="currentColor"
+        stroke="none"
+      />
+
+      <rect
+        ref={line3}
+        x={4.4}
+        y={10.4}
+        width={6.2}
+        height={1.2}
+        rx={0.6}
+        fill="currentColor"
+        stroke="none"
+      />
+
+      <rect
+        ref={line4}
+        x={4.4}
+        y={13.4}
         width={0}
-        height={8}
-        stroke="currentColor"
-        strokeWidth={1.2}
+        height={1.2}
+        rx={0.6}
+        fill="currentColor"
+        stroke="none"
       />
 
       <rect
-        ref={logBack}
-        x={3.375}
-        y={1.375}
+        x={2.5}
+        y={1.5}
         rx={1.2}
-        fill="var(--color-background)"
-        width={9.25}
-        height={9.25}
+        fill="none"
+        width={11}
+        height={13}
         stroke="currentColor"
         strokeWidth={1.2}
-      />
-
-      <rect
-        ref={logBackOverlay}
-        x={3.375}
-        y={1.375}
-        rx={1}
-        width={9.25}
-        height={9.25}
-        stroke="currentColor"
-        fillOpacity={0}
-        strokeWidth={1.25}
-      />
-
-      <rect
-        ref={logFront}
-        x={1.375}
-        y={5.375}
-        rx={1}
-        width={13.25}
-        height={9.25}
-        stroke="currentColor"
-        strokeWidth={1.25}
       />
     </svg>
   );
