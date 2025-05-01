@@ -18,6 +18,8 @@
     "paths": {
       "@/*": ["*"],
       "@/auth/lib/*": ["app/(auth)/_lib/*"],
+      "@/core/lib/*": ["app/(core)/_lib/*"],
+      "@/core/components/*": ["app/(core)/_components/*"],
       "@/docs/components/*": ["app/(docs)/_components/*"],
       "@/auth/components/*": ["app/(auth)/_components/*"],
       "@/home/components/*": ["app/(product)/home/_components/*"]

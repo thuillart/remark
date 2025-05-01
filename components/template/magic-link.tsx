@@ -14,14 +14,14 @@ import {
 
 export function MagicLinkTemplate({ url }: { url: string }) {
   return (
-    <Html>
+    <Html className="antialiased">
       <Head />
       <Tailwind>
         <Body className="bg-white font-sans">
           <Preview>Your magic link</Preview>
 
           <Container className="mx-auto py-5 pb-12">
-            <Heading className="my-4 pt-4 font-normal text-2xl/snug tracking-tight">
+            <Heading className="my-4 pt-4 font-normal text-2xl/snug text-neutral-700 tracking-tight">
               Your magic link
             </Heading>
 
@@ -34,7 +34,7 @@ export function MagicLinkTemplate({ url }: { url: string }) {
               </Button>
             </Section>
 
-            <Text className="text-base/snug text-neutral-700">
+            <Text className="text-base/snug text-neutral-600">
               This link and code will only be valid for the next 5 minutes. If
               you didn't request this, you can safely ignore this email.
             </Text>
