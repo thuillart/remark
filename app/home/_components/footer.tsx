@@ -10,6 +10,7 @@ import Link from "next/link";
 
 import { LogoLink } from "@/components/logo";
 import { FooterArtwork } from "@/home/components/footer-artwork";
+import { CONTACT_EMAIL } from "@/lib/contants";
 
 const menuItems = [
   {
@@ -39,7 +40,7 @@ const menuItems = [
     items: [
       {
         label: "Contact",
-        href: "mailto:hello@atom.ai",
+        href: `mailto:${CONTACT_EMAIL}`,
       },
       {
         label: "Privacy",
@@ -83,7 +84,7 @@ export function Footer() {
 
       <div className="container">
         <div className="flex flex-wrap justify-between gap-x-24 gap-y-12">
-          <LogoLink size={24} />
+          <LogoLink variant="wordmark" />
           <FooterMenu />
         </div>
         <div className="mt-16 flex flex-wrap-reverse items-center justify-between gap-x-12 gap-y-6">

@@ -38,6 +38,6 @@ export default function RootLayout({
 }
 
 export const metadata: Metadata = {
-  title: "Atom",
+  title: "Nucleon",
   description: "Get up and running with large language models.",
 };
