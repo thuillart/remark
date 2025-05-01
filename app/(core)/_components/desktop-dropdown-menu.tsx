@@ -43,7 +43,7 @@ export function DesktopDropdownMenu() {
               {isPending ? (
                 <Skeleton className="size-full rounded-full" />
               ) : (
-                <AvatarFallback className="size-6 border bg-background text-xs uppercase">
+                <AvatarFallback className="text-xs uppercase">
                   {userInitial ?? <UserRoundIcon size={12} />}
                 </AvatarFallback>
               )}
