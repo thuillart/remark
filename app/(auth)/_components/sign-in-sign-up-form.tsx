@@ -9,7 +9,6 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import type { OAuthProvider } from "@/auth/lib/types";
 import { CircleArrow } from "@/components/circle-arrow";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
@@ -33,6 +32,7 @@ const schema = z.object({
 type Mode = "sign-in" | "sign-up";
 type Step = "email" | "inbox";
 type FormValues = z.infer<typeof schema>;
+type OAuthProvider = "github" | "gitlab";
 
 export function SignInSignUpForm({ mode }: { mode: Mode }) {
   const isSignUp = mode === "sign-up";
