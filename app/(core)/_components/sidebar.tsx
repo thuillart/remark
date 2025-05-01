@@ -2,6 +2,7 @@ import "server-only";
 
 import { LogoLink } from "@/components/logo";
 import { ContactIcon } from "@/core/components/icons/contact";
+import { LogIcon } from "@/core/components/icons/log";
 import { NavItem } from "@/core/components/nav-item";
 
 export interface Item {
@@ -22,6 +23,11 @@ export const navItems: Item[] = [
     label: "Contacts",
   },
   {
+    href: "/logs",
+    Icon: LogIcon,
+    label: "Logs",
+  },
+  {
     href: "/api-keys",
     Icon: ContactIcon,
     label: "API Keys",
@@ -29,12 +35,7 @@ export const navItems: Item[] = [
   {
     href: "/settings/usage",
     Icon: ContactIcon,
-    label: "Usage",
-  },
-  {
-    href: "/settings/billing",
-    Icon: ContactIcon,
-    label: "Billing",
+    label: "Settings",
   },
 ];
 
