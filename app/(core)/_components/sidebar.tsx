@@ -1,11 +1,12 @@
 import "server-only";
 
 import { LogoLink } from "@/components/logo";
+import { DesktopDropdownMenu } from "@/core/components/desktop-dropdown-menu";
+import { ContactIcon } from "@/core/components/icons/contact";
 import { GalleryVerticalEndIcon } from "@/core/components/icons/gallery-vertical-end";
 import { KeyRoundIcon } from "@/core/components/icons/key-round";
 import { MessageSquareIcon } from "@/core/components/icons/message-square";
 import { SettingsIcon } from "@/core/components/icons/settings";
-import { UsersIcon } from "@/core/components/icons/users";
 import { NavItem } from "@/core/components/nav-item";
 
 export interface Item {
@@ -22,7 +23,7 @@ export const navItems: Item[] = [
   },
   {
     href: "/contacts",
-    Icon: UsersIcon,
+    Icon: ContactIcon,
     label: "Contacts",
   },
   {
@@ -59,7 +60,7 @@ export function Sidebar() {
         </ul>
       </div>
 
-      {/* Desktop dropdown */}
+      <DesktopDropdownMenu />
     </aside>
   );
 }
