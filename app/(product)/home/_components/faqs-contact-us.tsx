@@ -14,7 +14,7 @@ export function FAQsContactUs() {
     <Button
       asChild
       variant="link"
-      className="not-hover:text-muted-foreground"
+      className="not-hover:text-muted-foreground text-base"
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >

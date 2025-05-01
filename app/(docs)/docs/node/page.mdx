@@ -17,21 +17,21 @@ Get the Node.js SDK using your preferred package manager:
 
 ```bash
 // @filename="Terminal"
-npm install @remark-sh/sdk
+npm install @nucleon-sh/sdk
 ```
 
 ## 2. Send a test feedback
 
 ```ts
 // @filename="server.ts"
-import { Remark } from "@remark-sh/sdk";
+import { Nucleon } from "@nucleon-sh/sdk";
 
-const remark = new Remark("re_123456789");
+const nucleon = new Nucleon("nu_123456789");
 
 (async function () {
-  const { data, error } = await remark.feedbacks.send({
-    from: "delivered@remark.sh",
-    text: "Hey, what's up?",
+  const { data, error } = await nucleon.feedbacks.send({
+    from: "delivered@nucleon.sh",
+    text: "Hello, world!",
   });
 
   if (error) {
@@ -45,7 +45,7 @@ const remark = new Remark("re_123456789");
 ## 3. Try it yourself
 
 <LinkableCard
-  href="https://github.com/remark-sh/remark-demo-node"
+  href="https://github.com/nucleon-sh/nucleon-demo-node"
   title="Node.js example"
   description="See the full source code."
 >

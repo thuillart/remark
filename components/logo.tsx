@@ -9,8 +9,8 @@ import { cn } from "@/lib/utils";
 function Logo({
   size = 20,
   variant = "wordmark",
-  isHovered,
   className,
+  isHovered,
 }: {
   size?: number;
   variant?: "wordmark" | "icon";
@@ -71,7 +71,7 @@ function Logo({
   ]);
 
   return (
-    <>
+    <div className={cn("inline-flex h-fit items-center gap-2", className)}>
       <svg
         fill="none"
         width={size}
@@ -107,7 +107,7 @@ function Logo({
       {variant === "wordmark" && (
         <span className="mb-0.5 font-medium font-mono text-lg/5">nucleon</span>
       )}
-    </>
+    </div>
   );
 }
 
@@ -123,10 +123,7 @@ function LogoLink({
   return (
     <Link
       href="/"
-      className={cn(
-        "inline-flex h-fit items-center gap-2 transition-opacity hover:opacity-70",
-        className,
-      )}
+      className={cn("flex transition-opacity hover:opacity-70", className)}
       onMouseEnter={() => {
         setIsHovered(true);
       }}

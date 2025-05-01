@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 
 import { CodeExample, ts } from "@/components/code-example";
-import { LogoLink } from "@/components/logo";
+import { Logo, LogoLink } from "@/components/logo";
 import { FeaturesButton } from "@/home/components/features-button";
 import { cn } from "@/lib/utils";
 
@@ -91,7 +91,7 @@ function DocsCard() {
       </h3>
       <div className="-z-1 absolute inset-0 bg-gradient-to-t from-20% from-background to-transparent" />
       <div className="-z-2 flex select-none flex-col items-start gap-5 overflow-hidden rounded-xl border border-b-0 px-6 pt-4 shadow-xs md:inset-8 md:px-8 md:pt-6">
-        <LogoLink className="-ml-2.5 scale-80" />
+        <Logo variant="wordmark" className="-ml-2.5 scale-80" />
         <div className="grid w-full grid-cols-[1fr_3fr] gap-2">
           <div className="flex h-full flex-col gap-2">
             {[70, 90, 50, 80, 60].map((width) => (
