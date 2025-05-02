@@ -1,7 +1,7 @@
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters", "queryCompiler"]
-  output          = "../app/generated/prisma"
+  output          = "../generated/prisma"
 }
 
 datasource db {
@@ -20,6 +20,8 @@ model User {
   accounts      Account[]
   passkeys      Passkey[]
   sessions      Session[]
+
+  stripeCustomerId String?
 
   @@map("user")
 }
@@ -82,4 +84,19 @@ model Passkey {
   user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("passkey")
+}
+
+model Subscription {
+  id                   String    @id
+  plan                 String
+  referenceId          String
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  status               String?
+  periodStart          DateTime?
+  periodEnd            DateTime?
+  cancelAtPeriodEnd    Boolean?
+  seats                Int?
+
+  @@map("subscription")
 }

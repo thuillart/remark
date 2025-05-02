@@ -2,7 +2,13 @@ import { getSessionCookie } from "better-auth/cookies";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-const protectedPaths = ["/api-keys", "/feedbacks", "/profile", "/settings"];
+const protectedPaths = [
+  "/profile",
+  "/api-keys",
+  "/settings",
+  "/contacts",
+  "/feedbacks",
+];
 
 export function middleware(request: NextRequest) {
   const sessionCookie = getSessionCookie(request);

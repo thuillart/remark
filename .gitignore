@@ -16,6 +16,7 @@
 # next.js
 /.next/
 /out/
+/build
 
 # production
 /build
@@ -30,8 +31,13 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# environment
+.env
+.env.*
+!.env.example
+
+# prisma
+/generated
 
 # vercel
 .vercel
@@ -40,10 +46,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# turbo
 .turbo
-
-# prisma
-prisma/generated
 
 # bun
 bun.lock

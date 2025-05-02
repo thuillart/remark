@@ -1,18 +1,40 @@
+import { stripe } from "@better-auth/stripe";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 import { magicLink } from "better-auth/plugins/magic-link";
 import { passkey } from "better-auth/plugins/passkey";
 import React from "react";
+import { Stripe } from "stripe";
 
 import { MagicLinkTemplate } from "@/components/template/magic-link";
 import { sendEmail } from "@/lib/resend";
 import db from "@/prisma/db";
 
+const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: "2025-02-24.acacia",
+});
+
 export const auth = betterAuth({
   database: prismaAdapter(db, {
     provider: "postgresql",
   }),
+
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user) => {
+          // OAuth providers do provide user's name, we do not want it
+          return {
+            data: {
+              ...user,
+              name: "",
+            },
+          };
+        },
+      },
+    },
+  },
 
   socialProviders: {
     github: {
@@ -27,6 +49,24 @@ export const auth = betterAuth({
   },
 
   plugins: [
+    stripe({
+      stripeClient,
+      subscription: {
+        enabled: true,
+        plans: [
+          {
+            name: "plus",
+            priceId: "price_1RKBVSIBfbE1qKwFZ2vs5YWw",
+          },
+          {
+            name: "pro",
+            priceId: "price_1RKBVkIBfbE1qKwFTClmuWYG",
+          },
+        ],
+      },
+      stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+      createCustomerOnSignUp: true,
+    }),
     passkey(),
     magicLink({
       sendMagicLink: async ({ url, email }) => {

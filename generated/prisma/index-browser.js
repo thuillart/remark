@@ -127,7 +127,8 @@ exports.Prisma.UserScalarFieldEnum = {
   emailVerified: 'emailVerified',
   image: 'image',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  stripeCustomerId: 'stripeCustomerId'
 };
 
 exports.Prisma.SessionScalarFieldEnum = {
@@ -179,6 +180,19 @@ exports.Prisma.PasskeyScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.SubscriptionScalarFieldEnum = {
+  id: 'id',
+  plan: 'plan',
+  referenceId: 'referenceId',
+  stripeCustomerId: 'stripeCustomerId',
+  stripeSubscriptionId: 'stripeSubscriptionId',
+  status: 'status',
+  periodStart: 'periodStart',
+  periodEnd: 'periodEnd',
+  cancelAtPeriodEnd: 'cancelAtPeriodEnd',
+  seats: 'seats'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -200,7 +214,8 @@ exports.Prisma.ModelName = {
   Session: 'Session',
   Account: 'Account',
   Verification: 'Verification',
-  Passkey: 'Passkey'
+  Passkey: 'Passkey',
+  Subscription: 'Subscription'
 };
 
 /**

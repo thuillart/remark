@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 
 import { CodeExample, ts } from "@/components/code-example";
-import { Logo, LogoLink } from "@/components/logo";
+import { Logo } from "@/components/logo";
 import { FeaturesButton } from "@/home/components/features-button";
 import { cn } from "@/lib/utils";
 
