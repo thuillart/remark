@@ -56,7 +56,7 @@ export function DesktopDropdownMenu() {
             </span>
           </div>
 
-          <div className="flex size-6 items-center justify-center">
+          <div className="flex size-6 items-center justify-center opacity-80 group-hover/button:opacity-100">
             <EllipsisIcon size={16} />
           </div>
         </Button>

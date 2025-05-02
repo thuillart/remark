@@ -1,48 +1,39 @@
-"use client";
+import "server-only";
 
-import Link from "next/link";
-import React from "react";
+import { headers } from "next/headers";
+import type React from "react";
+import { Suspense } from "react";
 
-import { CircleArrow } from "@/components/circle-arrow";
-import { Button } from "@/components/ui/button";
+import { HeaderButtons } from "@/home/components/header-buttons";
+import { auth } from "@/lib/auth";
 
 export function HeaderEndContent() {
   return (
     <>
-      <DesktopMenu />
-      <MobileMenu />
+      <Suspense>
+        <Provider />
+      </Suspense>
     </>
   );
 }
 
-function DesktopMenu() {
-  const [isHovering, setIsHovering] = React.useState(false);
+async function Provider() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
   return (
-    <div className="hidden items-center gap-x-6 md:inline-flex">
-      <Button
-        asChild
-        variant="link"
-        className="not-hover:text-muted-foreground"
-        onMouseEnter={() => setIsHovering(true)}
-        onMouseLeave={() => setIsHovering(false)}
-      >
-        <Link href="/sign-in">
-          Sign In{" "}
-          <CircleArrow
-            variant="outline"
-            direction="up-right"
-            isHovering={isHovering}
-          />
-        </Link>
-      </Button>
-      <Button size="sm" asChild className="rounded-lg">
-        <Link href="/sign-up">Create Account</Link>
-      </Button>
-    </div>
+    <>
+      <MobileMenu isSignedIn={!!session} />
+      <DesktopMenu isSignedIn={!!session} />
+    </>
   );
 }
 
-function MobileMenu() {
+function DesktopMenu({ isSignedIn }: { isSignedIn: boolean }) {
+  return <HeaderButtons isSignedIn={isSignedIn} />;
+}
+
+function MobileMenu({ isSignedIn }: { isSignedIn: boolean }) {
   return <></>;
 }
