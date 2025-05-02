@@ -7,6 +7,7 @@ import { passkey } from "better-auth/plugins/passkey";
 import React from "react";
 import { Stripe } from "stripe";
 
+import { ChangeEmailTemplate } from "@/components/template/change-email";
 import { MagicLinkTemplate } from "@/components/template/magic-link";
 import { sendEmail } from "@/lib/resend";
 import db from "@/prisma/db";
@@ -32,6 +33,38 @@ export const auth = betterAuth({
             },
           };
         },
+      },
+    },
+  },
+
+  account: {
+    accountLinking: {
+      enabled: true,
+      trustedProviders: ["github", "gitlab"],
+      allowDifferentEmails: true,
+    },
+  },
+
+  user: {
+    deleteUser: {
+      enabled: true,
+    },
+    changeEmail: {
+      enabled: true,
+      sendChangeEmailVerification: async ({
+        url,
+        user: { email },
+        newEmail,
+      }) => {
+        await sendEmail({
+          to: email,
+          react: React.createElement(ChangeEmailTemplate, {
+            url,
+            email,
+            newEmail,
+          }),
+          subject: "Change your email",
+        });
       },
     },
   },

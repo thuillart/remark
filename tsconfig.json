@@ -23,7 +23,8 @@
       "@/core/components/*": ["app/(core)/_components/*"],
       "@/docs/components/*": ["app/(docs)/_components/*"],
       "@/auth/components/*": ["app/(auth)/_components/*"],
-      "@/home/components/*": ["app/(product)/home/_components/*"]
+      "@/home/components/*": ["app/(product)/home/_components/*"],
+      "@/core/profile/components/*": ["app/(core)/profile/_components/*"]
     }
   },
   "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],
