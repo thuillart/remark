@@ -171,7 +171,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       >
         <div
           className={cn(
-            "relative flex size-full select-none flex-col gap-4 overflow-hidden rounded-lg rounded-tr-3xl px-4 pt-5 pb-4 text-muted-foreground leading-loose shadow-[inset_0_0_0_1px_var(--color-border)] transition-[180ms] group-hover/card:rounded-tr-[2.25rem]",
+            "relative flex size-full select-none flex-col gap-4 overflow-hidden rounded-lg rounded-tr-3xl px-4 pt-5 pb-4 text-muted-foreground leading-loose shadow-[inset_0_0_0_1px_var(--color-border)] transition-[180ms] group-hover/card:rounded-tr-[2.25rem] group-hover/card:bg-foreground/2.5",
             "before:-translate-y-1/2 group-hover/card:before:-translate-y-1/2 before:absolute before:top-0 before:right-0 before:z-3 before:size-7.5 before:translate-x-1/2 before:rotate-45 before:bg-background before:shadow-[0_1px_0_0_var(--color-border)] before:transition-[inherit] before:content-[''] group-hover/card:before:size-10.5 group-hover/card:before:translate-x-1/2 group-hover/card:before:rotate-45",
             "after:-translate-y-2 group-hover/card:after:-translate-y-0 after:absolute after:top-0 after:right-0 after:z-2 after:size-7 after:translate-x-2 after:rounded-bl-md after:bg-foreground/2.5 after:shadow-[-1px_1px_0_0_var(--color-border)] after:transition-[inherit] after:content-[''] group-hover/card:after:translate-x-0",
           )}

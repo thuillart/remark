@@ -1,17 +1,33 @@
 "use client";
 
+import {
+  GalleryVerticalEndIcon,
+  IdCardIcon,
+  KeyRoundIcon,
+  type LucideIcon,
+  MessageSquareIcon,
+  SettingsIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
 
 import { Button } from "@/components/ui/button";
-import type { Item } from "@/core/components/sidebar";
+import type { IconName, Item } from "@/core/components/sidebar";
 import { cn } from "@/lib/utils";
 
-export function NavItem({ href, Icon, label }: Item) {
+const iconMap: Record<IconName, LucideIcon> = {
+  MessageSquareIcon,
+  IdCardIcon,
+  GalleryVerticalEndIcon,
+  KeyRoundIcon,
+  SettingsIcon,
+};
+
+export function NavItem({ href, iconName, label }: Omit<Item, "Icon">) {
+  const Icon: LucideIcon = iconMap[iconName];
   const pathname = usePathname();
   const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
-
   const [isHovering, setIsHovering] = React.useState(false);
 
   return (
@@ -27,7 +43,10 @@ export function NavItem({ href, Icon, label }: Item) {
       onMouseLeave={() => setIsHovering(false)}
     >
       <Link href={href}>
-        <Icon className="not-group-hover:opacity-80" isHovering={isHovering} />
+        <Icon
+          size={16}
+          className={cn("opacity-80", isHovering && "opacity-100")}
+        />
         {label}
       </Link>
     </Button>
