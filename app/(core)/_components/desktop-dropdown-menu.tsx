@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  EllipsisIcon,
   HomeIcon,
   LogOutIcon,
   MoonIcon,
@@ -31,34 +32,43 @@ export function DesktopDropdownMenu() {
   const { theme, setTheme } = useTheme();
   const { data: session, isPending } = authClient.useSession();
 
-  const userInitial = session?.user?.email?.charAt(0);
-  const displayName = session?.user?.email;
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button size="sm" variant="ghost" className="w-full justify-between">
           <div className="flex items-center gap-3 overflow-hidden">
-            <Avatar className="size-6 overflow-visible">
+            <Avatar className="size-6 overflow-visible border">
               {isPending ? (
                 <Skeleton className="size-full rounded-full" />
               ) : (
-                <AvatarFallback className="text-xs uppercase">
-                  {userInitial ?? <UserRoundIcon size={12} />}
+                <AvatarFallback className="bg-background text-xs uppercase">
+                  {session?.user?.email?.charAt(0)}
                 </AvatarFallback>
               )}
             </Avatar>
 
             <span className="truncate">
-              {isPending ? <TextShimmer>Loading...</TextShimmer> : displayName}
+              {isPending ? (
+                <TextShimmer>Loading...</TextShimmer>
+              ) : (
+                session?.user?.email
+              )}
             </span>
+          </div>
+
+          <div className="flex size-6 items-center justify-center">
+            <EllipsisIcon size={16} />
           </div>
         </Button>
       </DropdownMenuTrigger>
+
       <DropdownMenuContent className="w-56 min-w-0">
         <DropdownMenuItem asChild>
           <Link href="/profile">
-            <UserRoundPenIcon size={16} />
+            <UserRoundPenIcon
+              size={16}
+              className="opacity-80 group-hover/item:opacity-100"
+            />
             My profile
           </Link>
         </DropdownMenuItem>
@@ -70,7 +80,17 @@ export function DesktopDropdownMenu() {
           className="justify-between"
         >
           <div className="flex items-center gap-2">
-            {theme === "dark" ? <SunIcon size={16} /> : <MoonIcon size={16} />}
+            {theme === "dark" ? (
+              <SunIcon
+                size={16}
+                className="opacity-80 group-hover/item:opacity-100"
+              />
+            ) : (
+              <MoonIcon
+                size={16}
+                className="opacity-80 group-hover/item:opacity-100"
+              />
+            )}
             Toggle theme
           </div>
           <DropdownMenuShortcut>M</DropdownMenuShortcut>
@@ -78,7 +98,10 @@ export function DesktopDropdownMenu() {
 
         <DropdownMenuItem asChild>
           <Link href="/home">
-            <HomeIcon size={16} />
+            <HomeIcon
+              size={16}
+              className="opacity-80 group-hover/item:opacity-100"
+            />
             Home page
           </Link>
         </DropdownMenuItem>
@@ -96,7 +119,10 @@ export function DesktopDropdownMenu() {
             });
           }}
         >
-          <LogOutIcon size={16} />
+          <LogOutIcon
+            size={16}
+            className="opacity-80 group-hover/item:opacity-100"
+          />
           Logout
         </DropdownMenuItem>
       </DropdownMenuContent>
