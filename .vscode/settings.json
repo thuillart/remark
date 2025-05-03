@@ -3,6 +3,7 @@
   "files.exclude": {
     "**.mjs": true,
     "**/.next": true,
+    "bun.lock": true,
     ".gitignore": true,
     "**/generated": true,
     "next-env.d.ts": true,

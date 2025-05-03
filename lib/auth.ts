@@ -1,6 +1,7 @@
 import { stripe } from "@better-auth/stripe";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { APIError } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
 import { magicLink } from "better-auth/plugins/magic-link";
 import { passkey } from "better-auth/plugins/passkey";
@@ -48,6 +49,26 @@ export const auth = betterAuth({
   user: {
     deleteUser: {
       enabled: true,
+      beforeDelete: async (user) => {
+        const customer = await stripeClient.customers.search({
+          query: `metadata['userId']:'${user.id}'`,
+        });
+
+        if (customer.data.length === 0) return;
+
+        const { data: activeSubscriptions } =
+          await stripeClient.subscriptions.list({
+            customer: customer.data[0].id,
+            status: "active",
+          });
+
+        if (activeSubscriptions.length > 0) {
+          throw new APIError("BAD_REQUEST", {
+            message:
+              "Please cancel your subscription before deleting your account.",
+          });
+        }
+      },
     },
     changeEmail: {
       enabled: true,

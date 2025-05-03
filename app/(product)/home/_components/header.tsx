@@ -9,7 +9,7 @@ export function Header({ startContent }: { startContent?: React.ReactNode }) {
   return (
     <HeaderLayout>
       <header className="container">
-        <div className="pt-6">
+        <div className="py-1 md:pt-6 md:pb-0">
           <div className="flex h-14 items-center justify-between">
             {hasStartContent ? (
               <div className="inline-flex items-center gap-x-2.5">
