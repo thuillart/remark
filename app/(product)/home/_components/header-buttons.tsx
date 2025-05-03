@@ -5,20 +5,23 @@ import React from "react";
 
 import { CircleArrow } from "@/components/circle-arrow";
 import { Button } from "@/components/ui/button";
+import { FadeIn } from "@/home/components/fade-in";
 
 export function HeaderButtons({ isSignedIn }: { isSignedIn: boolean }) {
   const [isHovering, setIsHovering] = React.useState(false);
 
   if (isSignedIn) {
     return (
-      <Button size="sm" asChild className="rounded-lg">
-        <Link href="/">Open App</Link>
-      </Button>
+      <FadeIn>
+        <Button size="sm" asChild variant="outline" className="rounded-lg">
+          <Link href="/">Open App</Link>
+        </Button>
+      </FadeIn>
     );
   }
 
   return (
-    <div className="hidden items-center gap-x-6 md:inline-flex">
+    <FadeIn className="hidden items-center gap-x-6 md:inline-flex">
       <Button
         asChild
         variant="link"
@@ -35,9 +38,10 @@ export function HeaderButtons({ isSignedIn }: { isSignedIn: boolean }) {
           />
         </Link>
       </Button>
+
       <Button size="sm" asChild className="rounded-lg">
         <Link href="/sign-up">Create Account</Link>
       </Button>
-    </div>
+    </FadeIn>
   );
 }
