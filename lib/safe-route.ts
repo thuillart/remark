@@ -203,8 +203,6 @@ type ApiKey = Awaited<ReturnType<typeof auth.api.listApiKeys>>[number];
 
 // Counts API requests for metered billing.
 function countRequestsInPeriod(apiKeys: ApiKey[], startDate: Date): number {
-  const startTimestamp = startDate.getTime();
-
   return apiKeys.reduce((totalRequests, key) => {
     // Skip keys that have never been used
     if (!key.lastRequest) {
