@@ -37,8 +37,7 @@ yarn-error.log*
 !.env.example
 
 # prisma
-/generated/prisma
-/lib/generated/prisma
+/generated/prisma/client
 
 # vercel
 .vercel

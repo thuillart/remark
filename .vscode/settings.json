@@ -4,7 +4,7 @@
     "**.mjs": true,
     "**/.next": true,
     "bun.lock": true,
-    // ".gitignore": true,
+    ".gitignore": true,
     "**/generated": true,
     "next-env.d.ts": true,
     "**/node_modules": true,
