@@ -4,7 +4,15 @@ import { NextResponse } from "next/server";
 import { getSubscription } from "@/actions/get-subscription";
 import { auth } from "@/lib/auth";
 import { stripeClient } from "@/lib/configs/stripe";
+import { SUBSCRIPTION_LIMITS } from "@/lib/constants";
 import { tryCatch } from "@/lib/utils";
+import {
+  getStartOfDay,
+  getStartOfMonth,
+  getTimeUntilNextMonth,
+  isStartOfMonth,
+  isToday,
+} from "@/lib/utils/date";
 
 export class ZodRouteError extends Error {
   status?: number;
@@ -94,16 +102,6 @@ export const authRoute = loggingMiddleware.use(async ({ next, request }) => {
   return next({ ctx: { apiKey: key } });
 });
 
-const RATE_LIMITS = {
-  FREE: {
-    DAILY: 25,
-    MONTHLY: 250,
-  },
-  PLUS: {
-    INCLUDED_REQUESTS: 2500,
-  },
-};
-
 export const rateLimitedRoute = authRoute.use(
   async ({ ctx, next, request }) => {
     // 1. Get all user's API keys.
@@ -123,7 +121,7 @@ export const rateLimitedRoute = authRoute.use(
     }
 
     // 2. Get user's subscription.
-    const result = await getSubscription();
+    const result = await getSubscription({});
 
     if (!result?.data || !result.data.subscription.stripeCustomerId) {
       throw new ZodRouteError(
@@ -132,7 +130,7 @@ export const rateLimitedRoute = authRoute.use(
       );
     }
 
-    const tier = result.data.subscription.tier;
+    const plan = result.data.subscription.plan;
     const stripeCustomerId = result.data.subscription.stripeCustomerId;
 
     // Count requests made this month, to know if they've exceeded monthly limit.
@@ -142,28 +140,36 @@ export const rateLimitedRoute = authRoute.use(
     );
 
     // 4. Otherwise, they're free tier.
-    if (tier === "free") {
+    if (plan === "free") {
       // Count requests made today, to know if they've exceeded daily limit.
       const requestsMadeToday = countRequestsInPeriod(apiKeys, getStartOfDay());
 
-      if (requestsMadeToday >= RATE_LIMITS.FREE.DAILY) {
+      if (requestsMadeToday >= SUBSCRIPTION_LIMITS.FREE.DAILY) {
         throw new ZodRouteError(
-          `Daily request limit of (${RATE_LIMITS.FREE.DAILY}) reached. Try again tomorrow or upgrade for more requests.`,
+          `Daily request limit of (${SUBSCRIPTION_LIMITS.FREE.DAILY}) reached. Try again tomorrow or upgrade for more requests.`,
           429,
         );
       }
 
-      if (requestsMadeThisMonth >= RATE_LIMITS.FREE.MONTHLY) {
+      if (requestsMadeThisMonth >= SUBSCRIPTION_LIMITS.FREE.MONTHLY) {
         throw new ZodRouteError(
-          `Monthly request limit of (${RATE_LIMITS.FREE.MONTHLY}) reached. Try again next month or upgrade for more requests.`,
+          `Monthly request limit of (${SUBSCRIPTION_LIMITS.FREE.MONTHLY}) reached. Try again in ${getTimeUntilNextMonth()} or upgrade for more requests.`,
           429,
         );
       }
     }
 
-    if (tier === "plus") {
-      // If they've exceeded the included requests, update stripe for metered billing.
-      if (requestsMadeThisMonth >= RATE_LIMITS.PLUS.INCLUDED_REQUESTS) {
+    if (plan === "plus") {
+      if (requestsMadeThisMonth >= SUBSCRIPTION_LIMITS.PLUS.INCLUDED_REQUESTS) {
+        throw new ZodRouteError(
+          `Monthly request limit of (${SUBSCRIPTION_LIMITS.PLUS.INCLUDED_REQUESTS}) reached. Try again in ${getTimeUntilNextMonth()} or upgrade for more requests.`,
+          429,
+        );
+      }
+    }
+
+    if (plan === "pro") {
+      if (requestsMadeThisMonth >= SUBSCRIPTION_LIMITS.PRO.INCLUDED_REQUESTS) {
         const { error } = await tryCatch(
           stripeClient.billing.meterEvents.create({
             event_name: "api_requests",
@@ -186,35 +192,49 @@ export const rateLimitedRoute = authRoute.use(
     return next({
       ctx: {
         ...ctx,
-        tier,
+        plan,
         stripeCustomerId,
       },
     });
   },
 );
 
-function getStartOfDay(): Date {
-  const now = new Date();
-  const startOfDay = new Date(now);
-  startOfDay.setHours(0, 0, 0, 0);
-  return startOfDay;
-}
+type ApiKey = Awaited<ReturnType<typeof auth.api.listApiKeys>>[number];
 
-function getStartOfMonth(): Date {
-  const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), 1);
-}
+// Counts API requests for metered billing.
+function countRequestsInPeriod(apiKeys: ApiKey[], startDate: Date): number {
+  const startTimestamp = startDate.getTime();
 
-function countRequestsInPeriod(
-  apiKeys: Awaited<ReturnType<typeof auth.api.listApiKeys>>,
-  startDate: Date,
-): number {
-  // Iterate over all API keys and makes the sum of all the request counts.
-  return apiKeys.reduce((totalRequests, apiKey) => {
-    const hasRecentRequest =
-      apiKey.lastRequest && new Date(apiKey.lastRequest) >= startDate;
-    const requestCount = apiKey.requestCount || 0;
+  return apiKeys.reduce((totalRequests, key) => {
+    // Skip keys that have never been used
+    if (!key.lastRequest) {
+      return totalRequests;
+    }
 
-    return hasRecentRequest ? totalRequests + requestCount : totalRequests;
+    const lastRequestDate = new Date(key.lastRequest);
+
+    // Skip keys that haven't been used in this period
+    if (lastRequestDate < startDate) {
+      return totalRequests;
+    }
+
+    // If requestCount is available, add it to the total
+    // better-auth properly increments and resets requestCount based on time windows
+    const requestCount = key.requestCount ?? 0;
+
+    // For daily limits, we only count requests made today
+    if (isToday(startDate)) {
+      // If the key was last used today, count all its current requests
+      return totalRequests + (isToday(lastRequestDate) ? requestCount : 0);
+    }
+
+    // For monthly limits (starting at beginning of month)
+    if (isStartOfMonth(startDate)) {
+      // Count all requests for keys used this month
+      return totalRequests + requestCount;
+    }
+
+    // Default case: just add the request count for keys used since startDate
+    return totalRequests + requestCount;
   }, 0);
 }

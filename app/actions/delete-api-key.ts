@@ -5,8 +5,8 @@ import { headers } from "next/headers";
 import { z } from "zod";
 
 import { auth } from "@/lib/auth";
-import { tryCatch } from "@/lib/helpers/try-catch";
 import { authActionClient } from "@/lib/safe-action";
+import { tryCatch } from "@/lib/utils/try-catch";
 
 const schema = z.object({
   keyId: z.string(),

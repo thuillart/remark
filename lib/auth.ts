@@ -9,9 +9,9 @@ import React from "react";
 
 import { ChangeEmailTemplate } from "@/components/template/change-email";
 import { MagicLinkTemplate } from "@/components/template/magic-link";
+import { sendEmail } from "@/lib/configs/resend";
 import { stripeClient } from "@/lib/configs/stripe";
 import db from "@/lib/prisma/db";
-import { sendEmail } from "@/lib/resend";
 
 export const auth = betterAuth({
   database: prismaAdapter(db, {

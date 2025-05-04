@@ -2,16 +2,9 @@ import { createSafeActionClient } from "next-safe-action";
 import { headers } from "next/headers";
 
 import { auth } from "@/lib/auth";
-import { tryCatch } from "@/lib/helpers/try-catch";
-import db from "@/prisma/db";
-
-type Subscription = {
-  plan: string | null;
-  status: string | null;
-  periodEnd: Date | null;
-  stripeCustomerId: string | null;
-  cancelAtPeriodEnd: boolean | null;
-};
+import db from "@/lib/prisma/db";
+import type { Subscription, SubscriptionTier } from "@/lib/types";
+import { tryCatch } from "@/lib/utils/try-catch";
 
 export const actionClient = createSafeActionClient();
 
@@ -46,14 +39,12 @@ export const subscriptionActionClient = authActionClient.use(
       throw new Error("Failed to get subscription");
     }
 
-    const tier: "plus" | "free" = data?.plan ? "plus" : "free";
-
     return next({
       ctx: {
         ...user,
         subscription: {
-          tier,
           ...data,
+          plan: (data?.plan as SubscriptionTier) ?? "free",
         },
       },
     });

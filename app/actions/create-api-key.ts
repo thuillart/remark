@@ -6,34 +6,14 @@ import { z } from "zod";
 
 import { apiKeyNameSchema } from "@/actions/schema";
 import { auth } from "@/lib/auth";
-import { tryCatch } from "@/lib/helpers/try-catch";
+import { API_KEY_CONFIG } from "@/lib/configs/api-key";
 import { subscriptionActionClient } from "@/lib/safe-action";
+import { tryCatch } from "@/lib/utils/try-catch";
 
 const schema = z.object({
   name: apiKeyNameSchema,
   pathname: z.string(),
 });
-
-const apiKeyConfig = {
-  free: {
-    remaining: 250, // Monthly limit of 250 requests
-    refillAmount: 250, // Refill 250 requests every month
-    rateLimitMax: 25, // Max 25 requests per day
-    rateLimitEnabled: true,
-  },
-  plus: {
-    remaining: undefined, // Unlimited requests (no cap)
-    refillAmount: undefined, // No refill needed since it's unlimited
-    rateLimitMax: undefined, // No daily rate limit
-    rateLimitEnabled: false,
-  },
-  pro: {
-    remaining: undefined, // Unlimited requests (no cap)
-    refillAmount: undefined, // No refill needed since it's unlimited
-    rateLimitMax: undefined, // No daily rate limit
-    rateLimitEnabled: false,
-  },
-};
 
 export const createApiKey = subscriptionActionClient
   .schema(schema)
@@ -42,20 +22,19 @@ export const createApiKey = subscriptionActionClient
       parsedInput: { name, pathname },
       ctx: { user, subscription },
     }) => {
-      const tierConfig =
-        subscription.tier === "plus" ? apiKeyConfig.plus : apiKeyConfig.free;
+      const tierConfig = API_KEY_CONFIG[subscription.plan];
 
       const { data: apiKey, error } = await tryCatch(
         auth.api.createApiKey({
           body: {
             name,
-            prefix: "re_",
+            prefix: "nu_",
             userId: user.id,
             remaining: tierConfig.remaining,
             refillAmount: tierConfig.refillAmount,
             refillInterval: tierConfig.remaining
               ? 60 * 60 * 24 * 30
-              : undefined, // 30 days (in seconds) for free tier, undefined for plus
+              : undefined, // 30 days (in seconds) for free and plus tier, undefined for pro
             rateLimitMax: tierConfig.rateLimitMax,
             rateLimitEnabled: tierConfig.rateLimitEnabled,
             rateLimitTimeWindow: 60 * 60 * 24, // 24 hours (in seconds)

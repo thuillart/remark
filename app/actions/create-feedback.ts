@@ -3,9 +3,9 @@
 import { z } from "zod";
 
 import { ADMIN_ID } from "@/lib/contants";
-import { tryCatch } from "@/lib/helpers/try-catch";
+import db from "@/lib/prisma/db";
 import { authActionClient } from "@/lib/safe-action";
-import db from "@/prisma/db";
+import { tryCatch } from "@/lib/utils/try-catch";
 
 const schema = z.object({
   text: z.string(),
