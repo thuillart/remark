@@ -1,11 +1,8 @@
 import {
   addMonths,
-  isToday as dateFnsIsToday,
   differenceInDays,
   differenceInHours,
   differenceInMinutes,
-  isFirstDayOfMonth,
-  isSameDay,
   startOfDay,
   startOfMonth,
 } from "date-fns";
@@ -33,17 +30,4 @@ export function getTimeUntilNextMonth(): string {
     return `${hours} hour${hours > 1 ? "s" : ""}`;
   }
   return `${minutes} minute${minutes > 1 ? "s" : ""}`;
-}
-
-export function isToday(date: Date): boolean {
-  return dateFnsIsToday(date);
-}
-
-export function isStartOfMonth(date: Date): boolean {
-  return (
-    isFirstDayOfMonth(date) &&
-    date.getHours() === 0 &&
-    date.getMinutes() === 0 &&
-    date.getSeconds() === 0
-  );
 }

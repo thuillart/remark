@@ -13,20 +13,20 @@ type ApiKeyConfig = Pick<
 
 export const API_KEY_CONFIG: Record<SubscriptionTier, ApiKeyConfig> = {
   free: {
-    remaining: 250, // 250 requests per month
-    refillAmount: 250, // Refill 250 monthly
-    rateLimitMax: 25, // 25 requests per day
-    refillInterval: 60 * 60 * 24 * 30, // 30 days in seconds
-    rateLimitEnabled: true, // Rate limited daily
-    rateLimitTimeWindow: 60 * 60 * 24, // 24 hours in seconds
+    remaining: 250,
+    refillAmount: 250,
+    rateLimitMax: 250,
+    refillInterval: 1000 * 60 * 60 * 24 * 30, // 30 days
+    rateLimitEnabled: true,
+    rateLimitTimeWindow: 1000 * 60 * 60 * 24 * 30, // 30 days
   },
   plus: {
-    remaining: 2500, // 2500 requests per month (10x free)
-    refillAmount: 2500, // Refill 2500 monthly
-    rateLimitMax: undefined, // No daily limit
-    refillInterval: 60 * 60 * 24 * 30, // 30 days in seconds
-    rateLimitEnabled: true, // Still rate limited monthly
-    rateLimitTimeWindow: 60 * 60 * 24, // 24 hours in seconds
+    remaining: 2500, // 10x free count
+    refillAmount: 2500,
+    rateLimitMax: 2500,
+    refillInterval: 1000 * 60 * 60 * 24 * 30, // 30 days
+    rateLimitEnabled: true,
+    rateLimitTimeWindow: 1000 * 60 * 60 * 24 * 30, // 30 days
   },
   /**
    * This plan has no limits as we're using metered billing.

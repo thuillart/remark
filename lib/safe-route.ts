@@ -10,8 +10,6 @@ import {
   getStartOfDay,
   getStartOfMonth,
   getTimeUntilNextMonth,
-  isStartOfMonth,
-  isToday,
 } from "@/lib/utils/date";
 
 export class ZodRouteError extends Error {
@@ -201,7 +199,7 @@ export const rateLimitedRoute = authRoute.use(
 
 type ApiKey = Awaited<ReturnType<typeof auth.api.listApiKeys>>[number];
 
-// Counts API requests for metered billing.
+// Counts total API requests for metered billing (Pro plan only)
 function countRequestsInPeriod(apiKeys: ApiKey[], startDate: Date): number {
   return apiKeys.reduce((totalRequests, key) => {
     // Skip keys that have never been used
@@ -216,23 +214,7 @@ function countRequestsInPeriod(apiKeys: ApiKey[], startDate: Date): number {
       return totalRequests;
     }
 
-    // If requestCount is available, add it to the total
-    // better-auth properly increments and resets requestCount based on time windows
-    const requestCount = key.requestCount ?? 0;
-
-    // For daily limits, we only count requests made today
-    if (isToday(startDate)) {
-      // If the key was last used today, count all its current requests
-      return totalRequests + (isToday(lastRequestDate) ? requestCount : 0);
-    }
-
-    // For monthly limits (starting at beginning of month)
-    if (isStartOfMonth(startDate)) {
-      // Count all requests for keys used this month
-      return totalRequests + requestCount;
-    }
-
-    // Default case: just add the request count for keys used since startDate
-    return totalRequests + requestCount;
+    // Add the request count for keys used in the period
+    return totalRequests + (key.requestCount ?? 0);
   }, 0);
 }

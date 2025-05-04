@@ -2,7 +2,6 @@
 
 import { z } from "zod";
 
-import { ADMIN_ID } from "@/lib/contants";
 import db from "@/lib/prisma/db";
 import { authActionClient } from "@/lib/safe-action";
 import { tryCatch } from "@/lib/utils/try-catch";
@@ -19,7 +18,7 @@ export const createFeedback = authActionClient
         data: {
           from: user.email,
           text,
-          referenceId: ADMIN_ID,
+          referenceId: "",
         },
       }),
     );

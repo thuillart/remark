@@ -32,10 +32,8 @@ export const createApiKey = subscriptionActionClient
             userId: user.id,
             remaining: tierConfig.remaining,
             refillAmount: tierConfig.refillAmount,
-            refillInterval: tierConfig.remaining
-              ? 60 * 60 * 24 * 30
-              : undefined, // 30 days (in seconds) for free and plus tier, undefined for pro
             rateLimitMax: tierConfig.rateLimitMax,
+            refillInterval: tierConfig.refillInterval,
             rateLimitEnabled: tierConfig.rateLimitEnabled,
             rateLimitTimeWindow: 60 * 60 * 24, // 24 hours (in seconds)
           },
