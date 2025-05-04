@@ -37,7 +37,7 @@ export function DataTable({
 
   if (table.getRowModel().rows.length === 0) {
     return (
-      <div className="mx-auto w-full max-w-full px-6 md:max-w-5xl">
+      <div className="container">
         <EmptyState
           title="You don't have any API keys yet"
           icons={[KeyRoundIcon, KeyRoundIcon, KeyRoundIcon]}
@@ -52,7 +52,7 @@ export function DataTable({
   }
 
   return (
-    <div className="mx-auto w-full max-w-full px-6 md:max-w-5xl">
+    <div className="container">
       <div className="relative w-full overflow-x-auto overflow-y-hidden">
         <Table>
           <TableHeader>

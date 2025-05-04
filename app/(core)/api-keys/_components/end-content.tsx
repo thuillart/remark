@@ -11,7 +11,7 @@ export function EndContent({ hasApiKeys }: { hasApiKeys: boolean }) {
   if (hasApiKeys) {
     return (
       <Button size="sm" onClick={() => setOpen("create")}>
-        <PlusIcon size={16} className="mr-2" />
+        <PlusIcon size={16} />
         Create API Key
       </Button>
     );

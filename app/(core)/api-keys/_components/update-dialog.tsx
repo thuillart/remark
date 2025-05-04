@@ -56,6 +56,8 @@ export function UpdateDialog({ apiKeys }: { apiKeys: ApiKey[] }) {
     });
 
     if (res?.data?.failure) {
+      console.error(res.data.failure);
+
       toast({
         Icon: BadgeAlertIcon,
         title: "Something went wrong",

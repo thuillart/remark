@@ -5,7 +5,7 @@ import React from "react";
 
 import { CircleArrow } from "@/components/circle-arrow";
 import { Button } from "@/components/ui/button";
-import { CONTACT_EMAIL } from "@/lib/contants";
+import { SUPPORT_EMAIL } from "@/lib/constants";
 
 export function FAQsContactUs() {
   const [isHovering, setIsHovering] = React.useState(false);
@@ -18,7 +18,7 @@ export function FAQsContactUs() {
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      <Link href={`mailto:${CONTACT_EMAIL}`}>
+      <Link href={`mailto:${SUPPORT_EMAIL}`}>
         Contact us
         <CircleArrow
           variant="outline"

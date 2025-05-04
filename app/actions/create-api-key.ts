@@ -41,7 +41,10 @@ export const createApiKey = subscriptionActionClient
         }),
       );
 
+      console.log(apiKey, error);
+
       if (!apiKey || error) {
+        console.error(error);
         return { failure: "We couldn't create your API key" };
       }
 
@@ -53,8 +56,8 @@ export const createApiKey = subscriptionActionClient
           key: apiKey.key,
           name: apiKey.name,
           start: apiKey.start,
-          createdAt: apiKey.createdAt,
-          lastRequest: apiKey.lastRequest,
+          createdAt: new Date(apiKey.createdAt),
+          lastRequest: apiKey.lastRequest ? new Date(apiKey.lastRequest) : null,
         },
       };
     },

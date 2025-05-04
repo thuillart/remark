@@ -8,8 +8,8 @@ import {
 } from "@remixicon/react";
 import Link from "next/link";
 
-import { DISCORD_URL, X_URL, YOUTUBE_URL } from "@/lib/contants";
-import { GITHUB_URL } from "@/lib/contants";
+import { DISCORD_URL, X_URL, YOUTUBE_URL } from "@/lib/constants";
+import { GITHUB_URL } from "@/lib/constants";
 
 export function Footer() {
   return (

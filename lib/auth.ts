@@ -1,20 +1,18 @@
 import { stripe } from "@better-auth/stripe";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { APIError } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
 import { admin, apiKey, magicLink } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import React from "react";
 
-import { ChangeEmailTemplate } from "@/components/template/change-email";
 import { MagicLinkTemplate } from "@/components/template/magic-link";
 import { sendEmail } from "@/lib/configs/resend";
 import { stripeClient } from "@/lib/configs/stripe";
-import db from "@/lib/prisma/db";
+import prisma from "@/prisma/db";
 
 export const auth = betterAuth({
-  database: prismaAdapter(db, {
+  database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
 
@@ -37,50 +35,6 @@ export const auth = betterAuth({
     },
   },
 
-  user: {
-    deleteUser: {
-      enabled: true,
-      beforeDelete: async (user) => {
-        const customer = await stripeClient.customers.search({
-          query: `metadata['userId']:'${user.id}'`,
-        });
-
-        if (customer.data.length === 0) return;
-
-        const { data: activeSubscriptions } =
-          await stripeClient.subscriptions.list({
-            customer: customer.data[0].id,
-            status: "active",
-          });
-
-        if (activeSubscriptions.length > 0) {
-          throw new APIError("BAD_REQUEST", {
-            message:
-              "Please cancel your subscription before deleting your account.",
-          });
-        }
-      },
-    },
-    changeEmail: {
-      enabled: true,
-      sendChangeEmailVerification: async ({
-        url,
-        user: { email },
-        newEmail,
-      }) => {
-        await sendEmail({
-          to: email,
-          react: React.createElement(ChangeEmailTemplate, {
-            url,
-            email,
-            newEmail,
-          }),
-          subject: "Change your email",
-        });
-      },
-    },
-  },
-
   socialProviders: {
     github: {
       clientId: process.env.GITHUB_CLIENT_ID,
@@ -95,11 +49,9 @@ export const auth = betterAuth({
 
   plugins: [
     admin({
-      adminUserIds: [], // Might not hardcode it, but retrieve it based on email (team@nucleon.site)
+      adminUserIds: [],
     }),
-    apiKey({
-      enableMetadata: true,
-    }),
+    apiKey(),
     stripe({
       stripeClient,
       subscription: {

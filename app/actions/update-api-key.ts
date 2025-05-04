@@ -28,6 +28,7 @@ export const updateApiKey = authActionClient
     );
 
     if (!apiKey || error) {
+      console.log(error);
       return { failure: "We couldn't update your API key" };
     }
 

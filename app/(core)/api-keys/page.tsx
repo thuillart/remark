@@ -20,6 +20,10 @@ async function getApiKeys(): Promise<ApiKey[]> {
     headers: await headers(),
   });
 
+  console.log("API Keys raw data:", JSON.stringify(apiKeys, null, 2));
+  console.log("First key createdAt:", apiKeys[0]?.createdAt);
+  console.log("First key createdAt type:", typeof apiKeys[0]?.createdAt);
+
   return apiKeys.map((key) => ({
     id: key.id,
     name: key.name,

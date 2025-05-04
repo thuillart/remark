@@ -11,12 +11,12 @@ import Link from "next/link";
 import { LogoLink } from "@/components/logo";
 import { FooterArtwork } from "@/home/components/footer-artwork";
 import {
-  CONTACT_EMAIL,
   DISCORD_URL,
   GITHUB_URL,
+  SUPPORT_EMAIL,
   X_URL,
   YOUTUBE_URL,
-} from "@/lib/contants";
+} from "@/lib/constants";
 
 const menuItems = [
   {
@@ -46,7 +46,7 @@ const menuItems = [
     items: [
       {
         label: "Contact",
-        href: `mailto:${CONTACT_EMAIL}`,
+        href: `mailto:${SUPPORT_EMAIL}`,
       },
       {
         label: "Privacy",

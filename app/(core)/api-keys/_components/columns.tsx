@@ -70,12 +70,17 @@ export const columns: ColumnDef<ApiKey>[] = [
   {
     accessorKey: "createdAt",
     header: "Created at",
-    cell: ({ row }) =>
-      capitalizeFirstLetter(
-        formatDistanceToNow(row.original.createdAt, {
+    cell: ({ row }) => {
+      const createdAt = row.original.createdAt;
+      if (!(createdAt instanceof Date) || Number.isNaN(createdAt.getTime())) {
+        return "Invalid date";
+      }
+      return capitalizeFirstLetter(
+        formatDistanceToNow(createdAt, {
           addSuffix: true,
         }),
-      ),
+      );
+    },
   },
   {
     accessorKey: "actions",

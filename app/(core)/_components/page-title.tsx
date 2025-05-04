@@ -14,8 +14,8 @@ export function PageTitle({ title, description, endContent }: PageTitleProps) {
     <div className="container">
       <div
         className={cn("py-8", {
-          "items-center justify-between": endContent,
-          "flex-col gap-2": !endContent && description,
+          "flex items-center justify-between": endContent,
+          "flex flex-col gap-2": !endContent && description,
         })}
       >
         {endContent && description ? (

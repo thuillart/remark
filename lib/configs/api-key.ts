@@ -16,17 +16,17 @@ export const API_KEY_CONFIG: Record<SubscriptionTier, ApiKeyConfig> = {
     remaining: 250,
     refillAmount: 250,
     rateLimitMax: 250,
-    refillInterval: 1000 * 60 * 60 * 24 * 30, // 30 days
+    refillInterval: 60 * 60 * 24 * 30, // 30 days in seconds
     rateLimitEnabled: true,
-    rateLimitTimeWindow: 1000 * 60 * 60 * 24 * 30, // 30 days
+    rateLimitTimeWindow: 60 * 60 * 24 * 30, // 30 days in seconds
   },
   plus: {
     remaining: 2500, // 10x free count
     refillAmount: 2500,
     rateLimitMax: 2500,
-    refillInterval: 1000 * 60 * 60 * 24 * 30, // 30 days
+    refillInterval: 60 * 60 * 24 * 30, // 30 days in seconds
     rateLimitEnabled: true,
-    rateLimitTimeWindow: 1000 * 60 * 60 * 24 * 30, // 30 days
+    rateLimitTimeWindow: 60 * 60 * 24 * 30, // 30 days in seconds
   },
   /**
    * This plan has no limits as we're using metered billing.
