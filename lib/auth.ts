@@ -3,19 +3,15 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { APIError } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
-import { magicLink } from "better-auth/plugins/magic-link";
+import { admin, apiKey, magicLink } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import React from "react";
-import { Stripe } from "stripe";
 
 import { ChangeEmailTemplate } from "@/components/template/change-email";
 import { MagicLinkTemplate } from "@/components/template/magic-link";
+import { stripeClient } from "@/lib/configs/stripe";
+import db from "@/lib/prisma/db";
 import { sendEmail } from "@/lib/resend";
-import db from "@/prisma/db";
-
-const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2025-02-24.acacia",
-});
 
 export const auth = betterAuth({
   database: prismaAdapter(db, {
@@ -27,12 +23,7 @@ export const auth = betterAuth({
       create: {
         before: async (user) => {
           // OAuth providers do provide user's name, we do not want it
-          return {
-            data: {
-              ...user,
-              name: "",
-            },
-          };
+          return { data: { ...user, name: "" } };
         },
       },
     },
@@ -103,6 +94,12 @@ export const auth = betterAuth({
   },
 
   plugins: [
+    admin({
+      adminUserIds: [], // Might not hardcode it, but retrieve it based on email (team@nucleon.site)
+    }),
+    apiKey({
+      enableMetadata: true,
+    }),
     stripe({
       stripeClient,
       subscription: {

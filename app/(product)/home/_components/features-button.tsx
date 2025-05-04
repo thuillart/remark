@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import React from "react";
 
 import { CircleArrow } from "@/components/circle-arrow";
 import { Button } from "@/components/ui/button";
 
 export function FeaturesButton() {
-  const [isHovering, setIsHovering] = useState(false);
+  const [isHovering, setIsHovering] = React.useState(false);
 
   return (
     <Button

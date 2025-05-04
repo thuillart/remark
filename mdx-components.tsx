@@ -1,8 +1,7 @@
-import { cn } from "@/lib/utils";
 import { ArrowUpRightIcon } from "lucide-react";
 import type { MDXComponents } from "mdx/types";
 import Link from "next/link";
-import { Children } from "react";
+import React from "react";
 
 import { CodeExample } from "@/components/code-example";
 import {
@@ -18,6 +17,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/docs/components/pagination";
+import { cn } from "@/lib/utils";
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
@@ -98,7 +98,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       />
     ),
     pre: (props) => {
-      const child = Children.only(props.children) as React.ReactElement<{
+      const child = React.Children.only(props.children) as React.ReactElement<{
         className?: string;
         children: string;
       }>;

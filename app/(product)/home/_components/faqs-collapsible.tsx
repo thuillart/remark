@@ -1,7 +1,7 @@
 "use client";
 
 import { type Transition, motion } from "motion/react";
-import { useState } from "react";
+import React from "react";
 
 const transition: Transition = {
   type: "spring",
@@ -15,7 +15,7 @@ export function FAQsCollapsible({
 }: {
   items: { question: string; answer: string }[];
 }) {
-  const [open, setOpen] = useState<number | null>(null);
+  const [open, setOpen] = React.useState<number | null>(null);
 
   return (
     <div>

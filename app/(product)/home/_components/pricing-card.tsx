@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React from "react";
 
 import { CircleArrow } from "@/components/circle-arrow";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,8 @@ export function PricingCard({
   features: { id: string; content: React.ReactNode | string }[];
   description: string;
 }) {
-  const [isHovering, setIsHovering] = useState(false);
+  const [isHovering, setIsHovering] = React.useState(false);
+
   return (
     <div
       className={cn(

@@ -3,13 +3,6 @@
 import { cn } from "@/lib/utils";
 import { motion } from "motion/react";
 import React from "react";
-import {
-  type CSSProperties,
-  type ElementType,
-  type JSX,
-  memo,
-  useMemo,
-} from "react";
 
 function ShimmerComponent({
   as: Component = "p",
@@ -18,17 +11,17 @@ function ShimmerComponent({
   spread = 2,
   duration = 2,
 }: {
-  as?: ElementType;
+  as?: React.ElementType;
   spread?: number;
   children: string;
   duration?: number;
   className?: string;
 }) {
   const MotionComponent = motion.create(
-    Component as keyof JSX.IntrinsicElements,
+    Component as keyof React.JSX.IntrinsicElements,
   );
 
-  const dynamicSpread = useMemo(() => {
+  const dynamicSpread = React.useMemo(() => {
     return children.length * spread;
   }, [children, spread]);
 
@@ -54,7 +47,7 @@ function ShimmerComponent({
           "--spread": `${dynamicSpread}px`,
           backgroundImage:
             "var(--bg), linear-gradient(var(--base-color), var(--base-color))",
-        } as CSSProperties
+        } as React.CSSProperties
       }
     >
       {children}
@@ -62,4 +55,4 @@ function ShimmerComponent({
   );
 }
 
-export const TextShimmer = memo(ShimmerComponent);
+export const TextShimmer = React.memo(ShimmerComponent);

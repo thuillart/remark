@@ -39,5 +39,5 @@ export default function RootLayout({
 
 export const metadata: Metadata = {
   title: "Nucleon",
-  description: "Get up and running with large language models.",
+  description: "Get up and running with your users feedbacks.",
 };

@@ -11,7 +11,6 @@ import { z } from "zod";
 import { CircleArrow } from "@/components/circle-arrow";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
-
 import {
   Form,
   FormControl,
@@ -24,13 +23,13 @@ import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "@/lib/utils";
 
-const schema = z.object({
+const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email." }),
 });
 
-type Mode = "sign-in" | "sign-up";
 type Step = "email" | "inbox";
-type FormValues = z.infer<typeof schema>;
+type Mode = "sign-in" | "sign-up";
+type FormValues = z.infer<typeof formSchema>;
 type OAuthProvider = "github" | "gitlab";
 
 export function SignInSignUpForm({ mode }: { mode: Mode }) {
@@ -41,7 +40,7 @@ export function SignInSignUpForm({ mode }: { mode: Mode }) {
   const [isHovering, setIsHovering] = React.useState(false);
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
     },
