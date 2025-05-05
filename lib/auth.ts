@@ -6,10 +6,11 @@ import { admin, apiKey, magicLink } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import React from "react";
 
+import { updateApiKeyLimits } from "@/actions/update-api-key-limits";
 import { MagicLinkTemplate } from "@/components/template/magic-link";
-import { updateAllApiKeyLimits } from "@/lib/actions/update-api-keys";
 import { sendEmail } from "@/lib/configs/resend";
 import { stripeClient } from "@/lib/configs/stripe";
+import type { SubscriptionTier } from "@/lib/types/subscription";
 import prisma from "@/prisma/db";
 
 export const auth = betterAuth({
@@ -70,7 +71,9 @@ export const auth = betterAuth({
           },
         ],
         onSubscriptionUpdate: async ({ subscription }) => {
-          await updateAllApiKeyLimits(subscription);
+          await updateApiKeyLimits({
+            plan: subscription.plan as SubscriptionTier,
+          });
         },
       },
       stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
