@@ -18,16 +18,17 @@
     "paths": {
       "@/*": ["*"],
       "@/lib/*": ["lib/*"],
+      "@/actions/*": ["app/actions/*"],
       "@/auth/lib/*": ["app/(auth)/_lib/*"],
       "@/core/lib/*": ["app/(core)/_lib/*"],
-      "@/actions/*": ["app/actions/*"],
       "@/api-keys/lib/*": ["app/(core)/api-keys/_lib/*"],
       "@/core/components/*": ["app/(core)/_components/*"],
       "@/docs/components/*": ["app/(docs)/_components/*"],
       "@/auth/components/*": ["app/(auth)/_components/*"],
       "@/home/components/*": ["app/(product)/home/_components/*"],
-      "@/api-keys/components/*": ["app/(core)/api-keys/_components/*"],
-      "@/core/profile/components/*": ["app/(core)/profile/_components/*"]
+      "@/profile/components/*": ["app/(core)/profile/_components/*"],
+      "@/settings/components/*": ["app/(core)/settings/_components/*"],
+      "@/api-keys/components/*": ["app/(core)/api-keys/_components/*"]
     }
   },
   "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],

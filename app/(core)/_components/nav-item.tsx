@@ -1,12 +1,12 @@
 "use client";
 
 import {
-  GalleryVerticalEndIcon,
-  IdCardIcon,
+  GalleryVerticalIcon,
+  InboxIcon,
   KeyRoundIcon,
   type LucideIcon,
-  MessageSquareIcon,
-  SettingsIcon,
+  SlidersHorizontalIcon,
+  WalletCardsIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -17,11 +17,11 @@ import type { IconName, Item } from "@/core/components/sidebar";
 import { cn } from "@/lib/utils";
 
 const iconMap: Record<IconName, LucideIcon> = {
-  MessageSquareIcon,
-  IdCardIcon,
-  GalleryVerticalEndIcon,
+  InboxIcon,
+  WalletCardsIcon,
+  GalleryVerticalIcon,
   KeyRoundIcon,
-  SettingsIcon,
+  SlidersHorizontalIcon,
 };
 
 export function NavItem({ href, iconName, label }: Omit<Item, "Icon">) {

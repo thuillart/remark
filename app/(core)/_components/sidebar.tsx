@@ -5,11 +5,11 @@ import { DesktopDropdownMenu } from "@/core/components/desktop-dropdown-menu";
 import { NavItem } from "@/core/components/nav-item";
 
 export type IconName =
-  | "MessageSquareIcon"
-  | "IdCardIcon"
-  | "GalleryVerticalEndIcon"
+  | "InboxIcon"
+  | "WalletCardsIcon"
+  | "GalleryVerticalIcon"
   | "KeyRoundIcon"
-  | "SettingsIcon";
+  | "SlidersHorizontalIcon";
 
 export interface Item {
   href: string;
@@ -21,17 +21,17 @@ export const navItems: Item[] = [
   {
     href: "/",
     label: "Feedbacks",
-    iconName: "MessageSquareIcon",
+    iconName: "InboxIcon",
   },
   {
     href: "/contacts",
     label: "Contacts",
-    iconName: "IdCardIcon",
+    iconName: "WalletCardsIcon",
   },
   {
     href: "/logs",
     label: "Logs",
-    iconName: "GalleryVerticalEndIcon",
+    iconName: "GalleryVerticalIcon",
   },
   {
     href: "/api-keys",
@@ -41,7 +41,7 @@ export const navItems: Item[] = [
   {
     href: "/settings/usage",
     label: "Settings",
-    iconName: "SettingsIcon",
+    iconName: "SlidersHorizontalIcon",
   },
 ];
 
