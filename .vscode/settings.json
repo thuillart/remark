@@ -20,9 +20,5 @@
     "quickfix.biome": "always",
     "source.fixAll.biome": "always",
     "source.organizeImports.biome": "always"
-  },
-
-  "[prisma]": {
-    "editor.defaultFormatter": "Prisma.prisma"
   }
 }

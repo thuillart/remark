@@ -16,13 +16,16 @@ export const getFeedbacks = authActionClient
   .schema(schema)
   .action(async ({ parsedInput: { cursor }, ctx: { user } }) => {
     const { data, error } = await tryCatch(
-      db.query.feedback.findMany({
-        limit: 11,
-        where: cursor
-          ? and(eq(feedback.referenceId, user.id), lt(feedback.id, cursor))
-          : eq(feedback.referenceId, user.id),
-        orderBy: [desc(feedback.createdAt)],
-      }),
+      db
+        .select()
+        .from(feedback)
+        .where(
+          cursor
+            ? and(eq(feedback.referenceId, user.id), lt(feedback.id, cursor))
+            : eq(feedback.referenceId, user.id),
+        )
+        .orderBy(desc(feedback.createdAt))
+        .limit(11),
     );
 
     if (error) {

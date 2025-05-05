@@ -11,11 +11,13 @@ import { MagicLinkTemplate } from "@/components/template/magic-link";
 import { sendEmail } from "@/lib/configs/resend";
 import { stripeClient } from "@/lib/configs/stripe";
 import { db } from "@/lib/db/drizzle";
+import * as schema from "@/lib/db/schema";
 import type { SubscriptionTier } from "@/lib/types/subscription";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
+    schema,
   }),
 
   databaseHooks: {
