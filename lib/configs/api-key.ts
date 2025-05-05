@@ -1,15 +1,13 @@
-import type { auth } from "@/lib/auth";
 import type { SubscriptionTier } from "@/lib/types/subscription";
 
-type ApiKeyConfig = Pick<
-  Parameters<typeof auth.api.createApiKey>[0]["body"],
-  | "remaining"
-  | "rateLimitMax"
-  | "refillAmount"
-  | "refillInterval"
-  | "rateLimitEnabled"
-  | "rateLimitTimeWindow"
->;
+type ApiKeyConfig = {
+  remaining: number | undefined;
+  refillAmount: number | undefined;
+  rateLimitMax: number | undefined;
+  refillInterval: number | undefined;
+  rateLimitEnabled: boolean;
+  rateLimitTimeWindow: number | undefined;
+};
 
 export const API_KEY_CONFIG: Record<SubscriptionTier, ApiKeyConfig> = {
   free: {
@@ -21,23 +19,19 @@ export const API_KEY_CONFIG: Record<SubscriptionTier, ApiKeyConfig> = {
     rateLimitTimeWindow: 60 * 60 * 24 * 30, // 30 days in seconds
   },
   plus: {
-    remaining: 2500, // 10x free count
+    remaining: 2500,
     refillAmount: 2500,
     rateLimitMax: 2500,
-    refillInterval: 60 * 60 * 24 * 30, // 30 days in seconds
+    refillInterval: 60 * 60 * 24 * 30,
     rateLimitEnabled: true,
-    rateLimitTimeWindow: 60 * 60 * 24 * 30, // 30 days in seconds
+    rateLimitTimeWindow: 60 * 60 * 24 * 30,
   },
-  /**
-   * This plan has no limits as we're using metered billing.
-   * We calculate the limits based on the number of requests made.
-   */
   pro: {
-    remaining: undefined, // Unlimited monthly
+    remaining: undefined,
     refillAmount: undefined,
-    rateLimitMax: undefined, // No daily limit
+    rateLimitMax: undefined,
     refillInterval: undefined,
-    rateLimitEnabled: false, // No rate limiting
+    rateLimitEnabled: false,
     rateLimitTimeWindow: undefined,
   },
 } as const;

@@ -16,7 +16,7 @@ declare global {
 const connectionString = `${process.env.DATABASE_URL}?connect_timeout=10&pool_timeout=15`;
 
 const adapter = new PrismaNeon({ connectionString });
-// biome-ignore lint/suspicious/noRedeclare: idc
+// biome-ignore lint/suspicious/noRedeclare: not needed
 const prisma = global.prisma || new PrismaClient({ adapter });
 
 if (process.env.NODE_ENV === "development") global.prisma = prisma;

@@ -7,6 +7,7 @@ import { passkey } from "better-auth/plugins/passkey";
 import React from "react";
 
 import { MagicLinkTemplate } from "@/components/template/magic-link";
+import { updateAllApiKeyLimits } from "@/lib/actions/update-api-keys";
 import { sendEmail } from "@/lib/configs/resend";
 import { stripeClient } from "@/lib/configs/stripe";
 import prisma from "@/prisma/db";
@@ -51,7 +52,9 @@ export const auth = betterAuth({
     admin({
       adminUserIds: [],
     }),
-    apiKey(),
+    apiKey({
+      enableMetadata: true,
+    }),
     stripe({
       stripeClient,
       subscription: {
@@ -66,6 +69,9 @@ export const auth = betterAuth({
             priceId: "price_1RKBVkIBfbE1qKwFTClmuWYG",
           },
         ],
+        onSubscriptionUpdate: async ({ subscription }) => {
+          await updateAllApiKeyLimits(subscription);
+        },
       },
       stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
       createCustomerOnSignUp: true,

@@ -10,6 +10,16 @@ import { API_KEY_CONFIG } from "@/lib/configs/api-key";
 import { subscriptionActionClient } from "@/lib/safe-action";
 import { tryCatch } from "@/lib/utils/try-catch";
 
+type ApiKeyConfig = Pick<
+  Parameters<typeof auth.api.createApiKey>[0]["body"],
+  | "remaining"
+  | "rateLimitMax"
+  | "refillAmount"
+  | "refillInterval"
+  | "rateLimitEnabled"
+  | "rateLimitTimeWindow"
+>;
+
 const schema = z.object({
   name: apiKeyNameSchema,
   pathname: z.string(),
@@ -30,6 +40,7 @@ export const createApiKey = subscriptionActionClient
             name,
             prefix: "nu_",
             userId: user.id,
+            metadata: { tier: subscription.plan },
             remaining: tierConfig.remaining,
             refillAmount: tierConfig.refillAmount,
             rateLimitMax: tierConfig.rateLimitMax,
