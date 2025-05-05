@@ -38,8 +38,8 @@ CREATE TABLE "apikey" (
 	"metadata" text
 );
 --> statement-breakpoint
-CREATE TABLE "contacts" (
-	"id" text PRIMARY KEY DEFAULT 'ucq5AID9mlfLAsMa0aTwJ' NOT NULL,
+CREATE TABLE "contact" (
+	"id" text PRIMARY KEY DEFAULT 'xXnXiKMX-2Y6igJNjmP4q' NOT NULL,
 	"email" text NOT NULL,
 	"reference_id" text NOT NULL,
 	"first_name" text,
@@ -49,8 +49,8 @@ CREATE TABLE "contacts" (
 	"updated_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "feedbacks" (
-	"id" text PRIMARY KEY DEFAULT 'w9INBDnvd3asOaaW8mFfr' NOT NULL,
+CREATE TABLE "feedback" (
+	"id" text PRIMARY KEY DEFAULT 'I5KYWr1c4JzhY4AGqZoAo' NOT NULL,
 	"from" text NOT NULL,
 	"reference_id" text NOT NULL,
 	"text" text NOT NULL,
@@ -124,7 +124,7 @@ CREATE TABLE "verification" (
 --> statement-breakpoint
 ALTER TABLE "account" ADD CONSTRAINT "account_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "apikey" ADD CONSTRAINT "apikey_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "contacts" ADD CONSTRAINT "contacts_reference_id_user_id_fk" FOREIGN KEY ("reference_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "feedbacks" ADD CONSTRAINT "feedbacks_reference_id_user_id_fk" FOREIGN KEY ("reference_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "contact" ADD CONSTRAINT "contact_reference_id_user_id_fk" FOREIGN KEY ("reference_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "feedback" ADD CONSTRAINT "feedback_reference_id_user_id_fk" FOREIGN KEY ("reference_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "passkey" ADD CONSTRAINT "passkey_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;

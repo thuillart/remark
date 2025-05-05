@@ -117,7 +117,7 @@ export const passkey = pgTable("passkey", {
   createdAt: timestamp("created_at"),
 });
 
-export const feedback = pgTable("feedbacks", {
+export const feedback = pgTable("feedback", {
   id: text("id").primaryKey().default(nanoid()),
   from: text("from").notNull(),
   referenceId: text("reference_id")
@@ -128,7 +128,7 @@ export const feedback = pgTable("feedbacks", {
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
-export const contact = pgTable("contacts", {
+export const contact = pgTable("contact", {
   id: text("id").primaryKey().default(nanoid()),
   email: text("email").notNull(),
   referenceId: text("reference_id")

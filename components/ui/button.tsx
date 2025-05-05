@@ -32,12 +32,12 @@ const buttonVariants = cva(
     },
     compoundVariants: [
       {
-        variant: ["ghost", "default", "outline", "secondary"],
+        variant: ["ghost", "default", "outline", "secondary", "destructive"],
         size: "default",
         className: "h-9 px-4 py-2",
       },
       {
-        variant: ["ghost", "default", "outline", "secondary"],
+        variant: ["ghost", "default", "outline", "secondary", "destructive"],
         className: " justify-center",
       },
     ],

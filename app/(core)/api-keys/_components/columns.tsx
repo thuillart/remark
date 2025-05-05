@@ -71,14 +71,11 @@ export const columns: ColumnDef<ApiKey>[] = [
     accessorKey: "createdAt",
     header: "Created at",
     cell: ({ row }) => {
-      const createdAt = row.original.createdAt;
-      if (!(createdAt instanceof Date) || Number.isNaN(createdAt.getTime())) {
-        return "Invalid date";
-      }
+      const distance = formatDistanceToNow(row.original.createdAt, {
+        addSuffix: true,
+      });
       return capitalizeFirstLetter(
-        formatDistanceToNow(createdAt, {
-          addSuffix: true,
-        }),
+        distance === "less than a minute ago" ? "Now" : distance,
       );
     },
   },

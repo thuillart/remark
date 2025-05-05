@@ -1,6 +1,6 @@
 {
-  "id": "a9eeca73-b47f-4570-a336-dd3ade9205e1",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "01a69048-a255-4edc-897a-09b51c985848",
+  "prevId": "a9eeca73-b47f-4570-a336-dd3ade9205e1",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -271,7 +271,7 @@
           "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "default": "'xXnXiKMX-2Y6igJNjmP4q'"
+          "default": "'cDgg12FWiyuWeomFNYVrM'"
         },
         "email": {
           "name": "email",
@@ -349,7 +349,7 @@
           "type": "text",
           "primaryKey": true,
           "notNull": true,
-          "default": "'I5KYWr1c4JzhY4AGqZoAo'"
+          "default": "'OwpTEtKFDrw1-Jv8Y1k2_'"
         },
         "from": {
           "name": "from",
