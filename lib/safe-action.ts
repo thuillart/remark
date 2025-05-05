@@ -50,7 +50,7 @@ export const subscriptionActionClient = authActionClient.use(
       ctx: {
         ...user,
         subscription: {
-          ...data,
+          ...data[0],
           plan: (data[0]?.plan as SubscriptionTier) ?? "free",
         },
       },

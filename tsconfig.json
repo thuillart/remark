@@ -27,6 +27,7 @@
       "@/auth/components/*": ["app/(auth)/_components/*"],
       "@/home/components/*": ["app/(product)/home/_components/*"],
       "@/profile/components/*": ["app/(core)/profile/_components/*"],
+      "@/billing/components/*": ["app/(core)/settings/billing/_components/*"],
       "@/settings/components/*": ["app/(core)/settings/_components/*"],
       "@/api-keys/components/*": ["app/(core)/api-keys/_components/*"]
     }
