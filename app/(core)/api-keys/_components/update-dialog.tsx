@@ -6,7 +6,6 @@ import { BadgeAlertIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { apiKeyNameSchema } from "@/actions/schema";
 import { useApiKeyStore } from "@/api-keys/lib/store";
 import type { ApiKey } from "@/api-keys/lib/types";
 import { updateApiKey } from "@/app/actions/update-api-key";
@@ -29,6 +28,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { apiKeyNameSchema } from "@/lib/schemas";
 import { toast } from "@/lib/utils";
 
 const formSchema = z.object({
