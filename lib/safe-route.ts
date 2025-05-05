@@ -121,15 +121,15 @@ export const rateLimitedRoute = authRoute.use(
     // 2. Get user's subscription.
     const result = await getSubscription({});
 
-    if (!result?.data || !result.data.subscription.stripeCustomerId) {
+    if (!result?.data || !result.data.subscription[0]?.stripeCustomerId) {
       throw new ZodRouteError(
         "Internal server error. We're unable to process your request right now, please try again later.",
         500,
       );
     }
 
-    const plan = result.data.subscription.plan;
-    const stripeCustomerId = result.data.subscription.stripeCustomerId;
+    const plan = result.data.subscription[0].plan;
+    const stripeCustomerId = result.data.subscription[0].stripeCustomerId;
 
     // Count requests made this month, to know if they've exceeded monthly limit.
     const requestsMadeThisMonth = countRequestsInPeriod(

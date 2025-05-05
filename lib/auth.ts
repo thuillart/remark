@@ -1,6 +1,6 @@
 import { stripe } from "@better-auth/stripe";
 import { betterAuth } from "better-auth";
-import { prismaAdapter } from "better-auth/adapters/prisma";
+import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { admin, apiKey, magicLink } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
@@ -10,12 +10,12 @@ import { updateApiKeyLimits } from "@/actions/update-api-key-limits";
 import { MagicLinkTemplate } from "@/components/template/magic-link";
 import { sendEmail } from "@/lib/configs/resend";
 import { stripeClient } from "@/lib/configs/stripe";
+import { db } from "@/lib/db/drizzle";
 import type { SubscriptionTier } from "@/lib/types/subscription";
-import prisma from "@/prisma/db";
 
 export const auth = betterAuth({
-  database: prismaAdapter(prisma, {
-    provider: "postgresql",
+  database: drizzleAdapter(db, {
+    provider: "pg",
   }),
 
   databaseHooks: {

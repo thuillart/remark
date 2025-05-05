@@ -1,14 +1,15 @@
+import type { auth } from "@/lib/auth";
 import type { SubscriptionTier } from "@/lib/types/subscription";
 
-type ApiKeyConfig = {
-  remaining: number | undefined;
-  refillAmount: number | undefined;
-  rateLimitMax: number | undefined;
-  refillInterval: number | undefined;
-  rateLimitEnabled: boolean;
-  rateLimitTimeWindow: number | undefined;
-};
-
+type ApiKeyConfig = Pick<
+  Parameters<typeof auth.api.createApiKey>[0]["body"],
+  | "remaining"
+  | "rateLimitMax"
+  | "refillAmount"
+  | "refillInterval"
+  | "rateLimitEnabled"
+  | "rateLimitTimeWindow"
+>;
 export const API_KEY_CONFIG: Record<SubscriptionTier, ApiKeyConfig> = {
   free: {
     remaining: 250,

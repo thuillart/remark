@@ -4,10 +4,10 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { z } from "zod";
 
-import { apiKeyNameSchema } from "@/actions/schema";
 import { auth } from "@/lib/auth";
 import { authActionClient } from "@/lib/safe-action";
-import { tryCatch } from "@/lib/utils/try-catch";
+import { apiKeyNameSchema } from "@/lib/schemas";
+import { tryCatch } from "@/lib/utils";
 
 const schema = z.object({
   keyId: z.string(),
@@ -20,15 +20,14 @@ export const updateApiKey = authActionClient
     const { data: apiKey, error } = await tryCatch(
       auth.api.updateApiKey({
         body: {
-          name: newName,
           keyId,
+          name: newName,
         },
         headers: await headers(),
       }),
     );
 
     if (!apiKey || error) {
-      console.log(error);
       return { failure: "We couldn't update your API key" };
     }
 

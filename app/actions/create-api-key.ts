@@ -4,21 +4,11 @@ import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { z } from "zod";
 
-import { apiKeyNameSchema } from "@/actions/schema";
 import { auth } from "@/lib/auth";
 import { API_KEY_CONFIG } from "@/lib/configs/api-key";
 import { subscriptionActionClient } from "@/lib/safe-action";
-import { tryCatch } from "@/lib/utils/try-catch";
-
-type ApiKeyConfig = Pick<
-  Parameters<typeof auth.api.createApiKey>[0]["body"],
-  | "remaining"
-  | "rateLimitMax"
-  | "refillAmount"
-  | "refillInterval"
-  | "rateLimitEnabled"
-  | "rateLimitTimeWindow"
->;
+import { apiKeyNameSchema } from "@/lib/schemas";
+import { tryCatch } from "@/lib/utils";
 
 const schema = z.object({
   name: apiKeyNameSchema,
@@ -52,10 +42,7 @@ export const createApiKey = subscriptionActionClient
         }),
       );
 
-      console.log(apiKey, error);
-
       if (!apiKey || error) {
-        console.error(error);
         return { failure: "We couldn't create your API key" };
       }
 

@@ -1,36 +1,27 @@
 "use server";
 
-import db from "@/lib/prisma/db";
-import { authActionClient } from "@/lib/safe-action";
-import { tryCatch } from "@/lib/utils/try-catch";
+import { and, desc, eq, lt } from "drizzle-orm";
 import { z } from "zod";
+
+import { db } from "@/lib/db/drizzle";
+import { feedback } from "@/lib/db/schema";
+import { authActionClient } from "@/lib/safe-action";
+import { tryCatch } from "@/lib/utils";
 
 const schema = z.object({
   cursor: z.string().optional(),
 });
 
-type Feedback = {
-  id: string;
-  createdAt: Date;
-};
-
 export const getFeedbacks = authActionClient
   .schema(schema)
   .action(async ({ parsedInput: { cursor }, ctx: { user } }) => {
-    const { data, error } = await tryCatch<Feedback[]>(
-      db.feedback.findMany({
-        take: 11,
-        where: {
-          referenceId: user.id,
-          ...(cursor ? { id: { lt: cursor } } : {}),
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-        select: {
-          id: true,
-          createdAt: true,
-        },
+    const { data, error } = await tryCatch(
+      db.query.feedback.findMany({
+        limit: 11,
+        where: cursor
+          ? and(eq(feedback.referenceId, user.id), lt(feedback.id, cursor))
+          : eq(feedback.referenceId, user.id),
+        orderBy: [desc(feedback.createdAt)],
       }),
     );
 

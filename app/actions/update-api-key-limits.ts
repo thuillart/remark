@@ -7,7 +7,7 @@ import { auth } from "@/lib/auth";
 import { API_KEY_CONFIG } from "@/lib/configs/api-key";
 import { actionClient } from "@/lib/safe-action";
 import { subscriptionTierSchema } from "@/lib/schemas/subscription";
-import { tryCatch } from "@/lib/utils/try-catch";
+import { tryCatch } from "@/lib/utils";
 
 const schema = z.object({
   plan: subscriptionTierSchema,

@@ -45,6 +45,7 @@
       },
 
       "style": {
+        "noNonNullAssertion": "off",
         "useNumberNamespace": "off"
       }
     }

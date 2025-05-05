@@ -2,29 +2,27 @@
 
 import { z } from "zod";
 
-import db from "@/lib/prisma/db";
+import { ADMIN_ID } from "@/lib/constants";
+import { db } from "@/lib/db/drizzle";
+import { feedback } from "@/lib/db/schema";
 import { authActionClient } from "@/lib/safe-action";
-import { tryCatch } from "@/lib/utils/try-catch";
+import { tryCatch } from "@/lib/utils";
 
 const schema = z.object({
   text: z.string(),
 });
-
 export const createFeedback = authActionClient
   .schema(schema)
   .action(async ({ parsedInput: { text }, ctx: { user } }) => {
     const { error } = await tryCatch(
-      db.feedback.create({
-        data: {
-          from: user.email,
-          text,
-          referenceId: "",
-        },
+      db.insert(feedback).values({
+        from: user.email,
+        text,
+        referenceId: ADMIN_ID,
       }),
     );
 
     if (error) {
-      console.log("error", error);
       return { failure: error?.message };
     }
 
