@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import db from "@/lib/prisma/db";
+import { db } from "@/lib/db/drizzle";
+import { contacts } from "@/lib/db/schema";
 import { authRoute } from "@/lib/safe-route";
 
 const bodySchema = z.object({
@@ -30,12 +31,13 @@ const bodySchema = z.object({
 export const POST = authRoute
   .body(bodySchema)
   .handler(async (_req, { ctx, body }) => {
-    const contact = await db.contact.findFirst({
-      where: {
-        referenceId: ctx.apiKey.userId,
-        email: body.email,
-      },
-    });
+    const [contact] = await db
+      .select()
+      .from(contacts)
+      .where(
+        eq(contacts.referenceId, ctx.apiKey.userId) &&
+          eq(contacts.email, body.email),
+      );
 
     if (contact) {
       return NextResponse.json(
@@ -44,25 +46,24 @@ export const POST = authRoute
       );
     }
 
-    await db.contact.create({
-      data: {
-        email: body.email,
-        lastName: body.lastName,
-        firstName: body.firstName,
-        referenceId: ctx.apiKey.userId,
-      },
+    await db.insert(contacts).values({
+      email: body.email,
+      lastName: body.lastName,
+      firstName: body.firstName,
+      subscribed: body.subscribed,
+      referenceId: ctx.apiKey.userId,
     });
 
     return NextResponse.json({ status: 200 });
   });
 
 export const DELETE = authRoute.handler(async (_req, { ctx, body }) => {
-  await db.contact.deleteMany({
-    where: {
-      email: body.email,
-      referenceId: ctx.apiKey.userId,
-    },
-  });
+  await db
+    .delete(contacts)
+    .where(
+      eq(contacts.email, body.email) &&
+        eq(contacts.referenceId, ctx.apiKey.userId),
+    );
 
   return NextResponse.json({ status: 200 });
 });

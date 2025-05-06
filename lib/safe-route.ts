@@ -3,8 +3,9 @@ import { NextResponse } from "next/server";
 
 import { getSubscription } from "@/actions/get-subscription";
 import { auth } from "@/lib/auth";
-import { stripeClient } from "@/lib/configs/stripe";
+import { polarClient } from "@/lib/configs/polar";
 import { SUBSCRIPTION_LIMITS } from "@/lib/constants";
+import type { SubscriptionTier } from "@/lib/types";
 import { tryCatch } from "@/lib/utils";
 import {
   getStartOfDay,
@@ -121,15 +122,15 @@ export const rateLimitedRoute = authRoute.use(
     // 2. Get user's subscription.
     const result = await getSubscription({});
 
-    if (!result?.data || !result.data.subscription[0]?.stripeCustomerId) {
+    if (!result?.data || !result.data.subscription[0]?.polarCustomerId) {
       throw new ZodRouteError(
         "Internal server error. We're unable to process your request right now, please try again later.",
         500,
       );
     }
 
-    const plan = result.data.subscription[0].plan;
-    const stripeCustomerId = result.data.subscription[0].stripeCustomerId;
+    const tier: SubscriptionTier = result.data.subscription[0].tier;
+    const polarCustomerId = result.data.subscription[0].polarCustomerId;
 
     // Count requests made this month, to know if they've exceeded monthly limit.
     const requestsMadeThisMonth = countRequestsInPeriod(
@@ -138,7 +139,7 @@ export const rateLimitedRoute = authRoute.use(
     );
 
     // 4. Otherwise, they're free tier.
-    if (plan === "free") {
+    if (tier === "free") {
       // Count requests made today, to know if they've exceeded daily limit.
       const requestsMadeToday = countRequestsInPeriod(apiKeys, getStartOfDay());
 
@@ -157,7 +158,7 @@ export const rateLimitedRoute = authRoute.use(
       }
     }
 
-    if (plan === "plus") {
+    if (tier === "plus") {
       if (requestsMadeThisMonth >= SUBSCRIPTION_LIMITS.PLUS.INCLUDED_REQUESTS) {
         throw new ZodRouteError(
           `Monthly request limit of (${SUBSCRIPTION_LIMITS.PLUS.INCLUDED_REQUESTS}) reached. Try again in ${getTimeUntilNextMonth()} or upgrade for more requests.`,
@@ -166,15 +167,16 @@ export const rateLimitedRoute = authRoute.use(
       }
     }
 
-    if (plan === "pro") {
+    if (tier === "pro") {
       if (requestsMadeThisMonth >= SUBSCRIPTION_LIMITS.PRO.INCLUDED_REQUESTS) {
         const { error } = await tryCatch(
-          stripeClient.billing.meterEvents.create({
-            event_name: "api_requests",
-            payload: {
-              value: "1",
-              stripe_customer_id: stripeCustomerId,
-            },
+          polarClient.events.ingest({
+            events: [
+              {
+                name: "api-requests",
+                externalCustomerId: polarCustomerId,
+              },
+            ],
           }),
         );
 
@@ -190,8 +192,8 @@ export const rateLimitedRoute = authRoute.use(
     return next({
       ctx: {
         ...ctx,
-        plan,
-        stripeCustomerId,
+        tier,
+        polarCustomerId,
       },
     });
   },

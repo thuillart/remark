@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import db from "@/lib/prisma/db";
+import { db } from "@/lib/db/drizzle";
+import { feedbacks } from "@/lib/db/schema";
 import { rateLimitedRoute } from "@/lib/safe-route";
 
 const bodySchema = z.object({
@@ -18,12 +19,10 @@ const bodySchema = z.object({
 export const POST = rateLimitedRoute
   .body(bodySchema)
   .handler(async (_req, { ctx, body }) => {
-    await db.feedback.create({
-      data: {
-        from: body.from,
-        text: body.text,
-        referenceId: ctx.apiKey.userId,
-      },
+    await db.insert(feedbacks).values({
+      from: body.from,
+      text: body.text,
+      referenceId: ctx.apiKey.userId,
     });
 
     return NextResponse.json({ status: 200 });

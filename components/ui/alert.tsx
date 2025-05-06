@@ -3,34 +3,76 @@ import type * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-const alertVariants = cva(
-  "relative grid w-full grid-cols-[0_1fr] items-start gap-y-0.5 rounded-lg border px-4 py-3 text-sm has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] has-[>svg]:gap-x-3 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current",
-  {
-    variants: {
-      variant: {
-        default: "border-border bg-card text-card-foreground",
-        destructive:
-          "border-destructive/50 bg-card text-destructive *:data-[slot=alert-description]:text-destructive/90 [&>svg]:text-current",
-      },
+const alertVariants = cva("relative rounded-lg border", {
+  variants: {
+    variant: {
+      error: "border-red-500/50 text-red-600",
+      warning: "border-amber-500/50 text-amber-600",
+      default: "border-border bg-card text-card-foreground",
     },
-    defaultVariants: {
-      variant: "default",
+    size: {
+      sm: "px-4 py-3",
+      lg: "p-4",
     },
   },
-);
+  defaultVariants: {
+    size: "sm",
+    variant: "default",
+  },
+});
+
+interface AlertProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof alertVariants> {
+  icon?: React.ReactNode;
+  action?: React.ReactNode;
+  layout?: "row" | "complex";
+}
 
 function Alert({
-  className,
+  icon,
+  size,
+  layout = "row",
+  action,
   variant,
+  children,
+  className,
   ...props
-}: React.ComponentProps<"div"> & VariantProps<typeof alertVariants>) {
+}: AlertProps) {
   return (
     <div
-      data-slot="alert"
       role="alert"
-      className={cn(alertVariants({ variant }), className)}
+      data-slot="alert"
+      className={cn(alertVariants({ size, variant }), className)}
       {...props}
-    />
+    >
+      {layout === "row" ? (
+        // Single line variant
+        <div className="flex items-center gap-2">
+          <div className="flex grow items-center">
+            {icon && <span className="me-3 inline-flex">{icon}</span>}
+            {children}
+          </div>
+          {action && <div className="flex shrink-0 items-center">{action}</div>}
+        </div>
+      ) : (
+        // Multi-line variant
+        <div className="flex gap-2">
+          {icon && children ? (
+            <div className="flex grow gap-3">
+              <span className="mt-0.5 shrink-0">{icon}</span>
+              <div className="grow">{children}</div>
+            </div>
+          ) : (
+            <div className="grow">
+              {icon && <span className="me-3 inline-flex">{icon}</span>}
+              {children}
+            </div>
+          )}
+          {action && <div className="shrink-0">{action}</div>}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -38,10 +80,7 @@ function AlertTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="alert-title"
-      className={cn(
-        "col-start-2 line-clamp-1 min-h-4 font-medium tracking-tight",
-        className,
-      )}
+      className={cn("font-medium text-sm", className)}
       {...props}
     />
   );
@@ -54,13 +93,14 @@ function AlertDescription({
   return (
     <div
       data-slot="alert-description"
-      className={cn(
-        "col-start-2 grid justify-items-start gap-1 text-muted-foreground text-sm [&_p]:leading-relaxed",
-        className,
-      )}
+      className={cn("text-muted-foreground text-sm", className)}
       {...props}
     />
   );
 }
 
-export { Alert, AlertDescription, AlertTitle };
+function AlertContent({ className, ...props }: React.ComponentProps<"div">) {
+  return <div className={cn("space-y-1", className)} {...props} />;
+}
+
+export { Alert, AlertContent, AlertDescription, AlertTitle };

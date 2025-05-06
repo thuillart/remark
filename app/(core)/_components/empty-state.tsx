@@ -6,15 +6,28 @@ import { cn } from "@/lib/utils";
 
 interface EmptyStateProps {
   title: string | React.ReactNode;
-  description: string;
   icons?: LucideIcon[];
-  action?: {
-    label: string;
-    onClick: () => void;
-    loading?: boolean;
-  };
+  action?:
+    | {
+        label: string;
+        onClick: () => void;
+        isLoading?: boolean;
+      }
+    | React.ReactNode;
   className?: string;
+  description: string;
 }
+
+const isActionObject = (
+  action: EmptyStateProps["action"],
+): action is { label: string; onClick: () => void; isLoading?: boolean } => {
+  return (
+    typeof action === "object" &&
+    action !== null &&
+    "label" in action &&
+    "onClick" in action
+  );
+};
 
 export function EmptyState({
   title,
@@ -67,16 +80,19 @@ export function EmptyState({
         {description}
       </p>
 
-      {action && (
-        <Button
-          variant="outline"
-          onClick={action.onClick}
-          loading={action.loading}
-          className="mt-4 shadow-sm active:shadow-none"
-        >
-          {action.label}
-        </Button>
-      )}
+      {action &&
+        (typeof action === "object" && "type" in action ? (
+          action
+        ) : (
+          <Button
+            variant="outline"
+            onClick={isActionObject(action) ? action.onClick : undefined}
+            loading={isActionObject(action) ? action.isLoading : undefined}
+            className="mt-4 shadow-sm active:shadow-none"
+          >
+            {isActionObject(action) ? action.label : ""}
+          </Button>
+        ))}
     </div>
   );
 }

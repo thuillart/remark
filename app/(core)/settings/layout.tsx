@@ -9,8 +9,10 @@ export default function SettingsLayout({
   return (
     <>
       <PageTitle title="Settings" />
-      <SettingsTabs />
-      {children}
+      <div className="flex flex-col gap-3 md:gap-6">
+        <SettingsTabs />
+        {children}
+      </div>
     </>
   );
 }

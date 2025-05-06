@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import { type VariantProps, cva } from "class-variance-authority";
 import { useAnimate } from "framer-motion";
 import React from "react";
@@ -18,11 +19,13 @@ const getRotationClass = (direction: CircleArrowProps["direction"]) => {
 interface CircleArrowProps extends VariantProps<typeof circleArrowVariants> {
   direction: "right" | "left" | "up-right" | "up-left";
   isHovering: boolean;
+  className?: string;
 }
 
 export function CircleArrow({
   variant,
   direction,
+  className,
   isHovering,
 }: CircleArrowProps) {
   const [arrow1, animate1] = useAnimate();
@@ -84,7 +87,7 @@ export function CircleArrow({
       xmlns="http://www.w3.org/2000/svg"
       height="16"
       viewBox="0 0 16 16"
-      className={circleArrowVariants({ variant })}
+      className={cn(circleArrowVariants({ variant }), className)}
     >
       <title>A circle arrow</title>
       <rect rx={8} width={16} height={16} />

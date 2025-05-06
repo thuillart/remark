@@ -1,4 +1,4 @@
-import { stripe } from "@better-auth/stripe";
+import { polar } from "@polar-sh/better-auth";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
@@ -6,13 +6,12 @@ import { admin, apiKey, magicLink } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import React from "react";
 
-import { updateApiKeyLimits } from "@/actions/update-api-key-limits";
 import { MagicLinkTemplate } from "@/components/template/magic-link";
+import { polarClient } from "@/lib/configs/polar";
+import { PRODUCT_CONFIGS } from "@/lib/configs/products";
 import { sendEmail } from "@/lib/configs/resend";
-import { stripeClient } from "@/lib/configs/stripe";
 import { db } from "@/lib/db/drizzle";
 import * as schema from "@/lib/db/schema";
-import type { SubscriptionTier } from "@/lib/types/subscription";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -58,29 +57,6 @@ export const auth = betterAuth({
     apiKey({
       enableMetadata: true,
     }),
-    stripe({
-      stripeClient,
-      subscription: {
-        enabled: true,
-        plans: [
-          {
-            name: "plus",
-            priceId: "price_1RKBVSIBfbE1qKwFZ2vs5YWw",
-          },
-          {
-            name: "pro",
-            priceId: "price_1RKBVkIBfbE1qKwFTClmuWYG",
-          },
-        ],
-        onSubscriptionUpdate: async ({ subscription }) => {
-          await updateApiKeyLimits({
-            plan: subscription.plan as SubscriptionTier,
-          });
-        },
-      },
-      stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
-      createCustomerOnSignUp: true,
-    }),
     passkey(),
     magicLink({
       sendMagicLink: async ({ url, email }) => {
@@ -91,6 +67,24 @@ export const auth = betterAuth({
         });
       },
     }),
+
+    polar({
+      client: polarClient,
+      checkout: {
+        enabled: true,
+        products: Object.values(PRODUCT_CONFIGS).map(({ slug, productId }) => ({
+          slug,
+          productId,
+        })),
+        successUrl: "/success?checkout_id={CHECKOUT_ID}",
+      },
+      webhooks: {
+        secret: process.env.POLAR_WEBHOOK_SECRET,
+      },
+      enableCustomerPortal: true,
+      createCustomerOnSignUp: true,
+    }),
+
     nextCookies(),
   ],
 });
