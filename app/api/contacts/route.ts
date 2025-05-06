@@ -1,8 +1,9 @@
+import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { db } from "@/lib/db/drizzle";
-import { contacts } from "@/lib/db/schema";
+import { contact } from "@/lib/db/schema";
 import { authRoute } from "@/lib/safe-route";
 
 const bodySchema = z.object({
@@ -33,10 +34,10 @@ export const POST = authRoute
   .handler(async (_req, { ctx, body }) => {
     const [contact] = await db
       .select()
-      .from(contacts)
+      .from(contact)
       .where(
-        eq(contacts.referenceId, ctx.apiKey.userId) &&
-          eq(contacts.email, body.email),
+        eq(contact.referenceId, ctx.apiKey.userId) &&
+          eq(contact.email, body.email),
       );
 
     if (contact) {
@@ -46,7 +47,7 @@ export const POST = authRoute
       );
     }
 
-    await db.insert(contacts).values({
+    await db.insert(contact).values({
       email: body.email,
       lastName: body.lastName,
       firstName: body.firstName,
@@ -59,10 +60,10 @@ export const POST = authRoute
 
 export const DELETE = authRoute.handler(async (_req, { ctx, body }) => {
   await db
-    .delete(contacts)
+    .delete(contact)
     .where(
-      eq(contacts.email, body.email) &&
-        eq(contacts.referenceId, ctx.apiKey.userId),
+      eq(contact.email, body.email) &&
+        eq(contact.referenceId, ctx.apiKey.userId),
     );
 
   return NextResponse.json({ status: 200 });

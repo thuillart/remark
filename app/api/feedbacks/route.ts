@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { db } from "@/lib/db/drizzle";
-import { feedbacks } from "@/lib/db/schema";
+import { feedback } from "@/lib/db/schema";
 import { rateLimitedRoute } from "@/lib/safe-route";
 
 const bodySchema = z.object({
@@ -19,7 +19,7 @@ const bodySchema = z.object({
 export const POST = rateLimitedRoute
   .body(bodySchema)
   .handler(async (_req, { ctx, body }) => {
-    await db.insert(feedbacks).values({
+    await db.insert(feedback).values({
       from: body.from,
       text: body.text,
       referenceId: ctx.apiKey.userId,
