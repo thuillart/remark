@@ -22,6 +22,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "@/lib/utils";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email." }),
@@ -34,7 +36,7 @@ type OAuthProvider = "github" | "gitlab";
 
 export function SignInSignUpForm({ mode }: { mode: Mode }) {
   const isSignUp = mode === "sign-up";
-
+  const router = useRouter();
   const [step, setStep] = React.useState<Step>("email");
   const [isLoading, setIsLoading] = React.useState<OAuthProvider | null>(null);
   const [isHovering, setIsHovering] = React.useState(false);
@@ -45,6 +47,26 @@ export function SignInSignUpForm({ mode }: { mode: Mode }) {
       email: "",
     },
   });
+
+  React.useEffect(() => {
+    if (isSignUp) return; // Don't preload passkeys for sign up
+
+    if (
+      !PublicKeyCredential.isConditionalMediationAvailable ||
+      !PublicKeyCredential.isConditionalMediationAvailable()
+    ) {
+      return;
+    }
+
+    void authClient.signIn.passkey({
+      autoFill: true,
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/");
+        },
+      },
+    });
+  }, [router, isSignUp]);
 
   async function onSubmit({ email }: FormValues) {
     const { error } = await authClient.signIn.magicLink({
@@ -103,8 +125,8 @@ export function SignInSignUpForm({ mode }: { mode: Mode }) {
   return (
     <>
       <div className="flex flex-col items-center gap-2">
-        <div className="flex size-11 shrink-0 items-center justify-center rounded-full border">
-          <Logo variant="icon" className="opacity-60" />
+        <div className="flex size-11 shrink-0 select-none items-center justify-center rounded-full border">
+          <Logo variant="icon" className="h-4.5 text-2xl" />
         </div>
         <div className="flex flex-col text-center">
           <h2 className="font-semibold text-lg tracking-tight">
@@ -130,12 +152,21 @@ export function SignInSignUpForm({ mode }: { mode: Mode }) {
               <FormItem className="not-first:mt-6">
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <Input type="email" {...field} />
+                  <Input
+                    type="email"
+                    {...field}
+                    autoComplete="username webauthn"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
+
+          {/* Hidden password field for passkey */}
+          <VisuallyHidden>
+            <Input type="password" autoComplete="current-password webauthn" />
+          </VisuallyHidden>
 
           <Button
             type="submit"

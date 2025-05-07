@@ -6,6 +6,7 @@ import { admin, apiKey, magicLink } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import React from "react";
 
+import { ChangeEmailTemplate } from "@/components/template/change-email";
 import { MagicLinkTemplate } from "@/components/template/magic-link";
 import { polarClient } from "@/lib/configs/polar";
 import { PRODUCT_CONFIGS } from "@/lib/configs/products";
@@ -26,6 +27,35 @@ export const auth = betterAuth({
           // OAuth providers do provide user's name, we do not want it
           return { data: { ...user, name: "" } };
         },
+      },
+    },
+  },
+
+  user: {
+    changeEmail: {
+      enabled: true,
+      sendChangeEmailVerification: async ({ url, user, newEmail }) => {
+        await sendEmail({
+          to: user.email,
+          react: React.createElement(ChangeEmailTemplate, {
+            url,
+            email: user.email,
+            newEmail,
+          }),
+          subject: "Approve email change",
+        });
+      },
+    },
+
+    deleteUser: {
+      enabled: true,
+      sendDeleteAccountVerification: async ({ url, user }) => {
+        // TODO: Add a template for the delete account email
+        await sendEmail({
+          to: user.email,
+          text: `Click the link to approve the deletion of your account: ${url}. Any ongoing subscription will be terminated.`,
+          subject: "Approve account deletion",
+        });
       },
     },
   },

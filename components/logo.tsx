@@ -4,10 +4,16 @@ import React from "react";
 import { APP_NAME } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-function Logo({ className }: { className?: string }) {
+function Logo({
+  variant,
+  className,
+}: {
+  variant?: "icon" | "wordmark";
+  className?: string;
+}) {
   return (
     <span className={cn("h-3 font-borel text-xl antialiased", className)}>
-      {APP_NAME.toLowerCase()}
+      {variant === "icon" ? APP_NAME.toLowerCase()[0] : APP_NAME.toLowerCase()}
     </span>
   );
 }

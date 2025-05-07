@@ -1,9 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BadgeAlertIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { BadgeAlertIcon, InboxIcon } from "lucide-react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -35,6 +34,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "@/lib/utils";
 
 const formSchema = z.object({
   prompt: z.string().min(1, {
@@ -45,7 +45,7 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export function DeleteAccount() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = React.useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -62,16 +62,17 @@ export function DeleteAccount() {
       return;
     }
 
-    await authClient.deleteUser(
-      {
-        onRequest: () => {
-          setIsLoading(true);
-        },
+    await authClient.deleteUser({
+      callbackURL: "/",
+      fetchOptions: {
         onSuccess: () => {
-          router.push("/login");
+          toast({
+            Icon: InboxIcon,
+            title: "Check your inbox",
+            description: "We've sent you an email to confirm.",
+          });
         },
         onError: () => {
-          setIsLoading(false);
           toast({
             Icon: BadgeAlertIcon,
             title: "Something went wrong",
@@ -80,7 +81,7 @@ export function DeleteAccount() {
           });
         },
       },
-    );
+    });
   }
 
   return (
@@ -102,8 +103,8 @@ export function DeleteAccount() {
             <AlertDialogHeader>
               <AlertDialogTitle>Delete account</AlertDialogTitle>
               <AlertDialogDescription>
-                This action is final. It will permanently delete your account
-                and your data from our servers.
+                Any ongoing subscriptions will be terminated, and it will
+                permanently delete your account and data from our servers.
               </AlertDialogDescription>
             </AlertDialogHeader>
 
@@ -124,12 +125,9 @@ export function DeleteAccount() {
                           below:
                         </span>
                       </FormLabel>
-
                       <FormControl>
                         <Input {...field} className="font-mono" />
                       </FormControl>
-
-                      <FormMessage />
                     </FormItem>
                   )}
                 />

@@ -26,7 +26,7 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-export function At() {
+export function EmailAddress() {
   const { data: session, isPending: isLoading } = authClient.useSession();
 
   const form = useForm<FormValues>({
