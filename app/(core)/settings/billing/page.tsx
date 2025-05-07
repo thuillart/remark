@@ -1,7 +1,8 @@
 import "server-only";
 
-import { getSubscription } from "@/actions/get-subscription";
+import type { CustomerState } from "@polar-sh/sdk/dist/commonjs/models/components/customerstate";
 import { Loader2Icon, SparklesIcon, TriangleAlertIcon } from "lucide-react";
+import { headers } from "next/headers";
 import { Suspense } from "react";
 
 import { CurrentPlanCard } from "@/billing/components/current-plan-card";
@@ -9,6 +10,7 @@ import { ResolveSubscriptionButton } from "@/billing/components/resolve-subscrip
 import { UpdatePlanDialog } from "@/billing/components/update-plan-dialog";
 import { Alert } from "@/components/ui/alert";
 import { EmptyState } from "@/core/components/empty-state";
+import { getBaseUrl } from "@/lib/utils";
 
 export default async function BillingPage() {
   return (
@@ -27,29 +29,30 @@ export default async function BillingPage() {
 }
 
 async function BillingCard() {
-  const result = await getSubscription({});
+  const response = await fetch(`${getBaseUrl()}/api/auth/state`, {
+    headers: await headers(),
+  });
 
-  // const plan = result.data.subscription.plan;
-  // const status = result.data.subscription.status;
-  // const periodEnd = result.data.subscription.periodEnd;
-  // const cancelAtPeriodEnd = result.data.subscription.cancelAtPeriodEnd;
+  const state = (await response.json()) as CustomerState;
 
-  // console.log(plan);
+  const subscription = state.activeSubscriptions.find(
+    (subscription) => subscription.status === "active",
+  );
 
-  // if (plan === "free") {
-  //   return (
-  //     <EmptyState
-  //       title="You're not subscribed to any plan yet"
-  //       icons={[SparklesIcon, SparklesIcon, SparklesIcon]}
-  //       action={<UpdatePlanDialog currentPlan="free" />}
-  //       description="Upgrade for AI at your fingertips, no daily limit and many more."
-  //     />
-  //   );
-  // }
+  if (!subscription) {
+    return (
+      <EmptyState
+        icons={[SparklesIcon, SparklesIcon, SparklesIcon]}
+        title="You're not subscribed to any plan yet"
+        action={<UpdatePlanDialog currentPlan="free" />}
+        description="Upgrade for AI at your fingertips, no daily limit and many more."
+      />
+    );
+  }
 
   return (
     <>
-      {/* {status !== "active" && status !== "trialing" && (
+      {subscription.status !== "active" && (
         <Alert
           icon={
             <TriangleAlertIcon
@@ -65,11 +68,12 @@ async function BillingCard() {
           <p className="text-sm">Your subscription isn't active.</p>
         </Alert>
       )}
+
       <CurrentPlanCard
-        status={status}
-        periodEnd={periodEnd}
-        cancelAtPeriodEnd={cancelAtPeriodEnd ?? false}
-      /> */}
+        status={subscription.status}
+        periodEnd={subscription.endsAt}
+        cancelAtPeriodEnd={subscription.cancelAtPeriodEnd ?? false}
+      />
     </>
   );
 }

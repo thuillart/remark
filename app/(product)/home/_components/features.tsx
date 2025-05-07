@@ -10,6 +10,7 @@ import {
 import { CodeExample, ts } from "@/components/code-example";
 import { Logo } from "@/components/logo";
 import { FeaturesButton } from "@/home/components/features-button";
+import { APP_NAME } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 type Feature = {
@@ -90,8 +91,8 @@ function DocsCard() {
         <span>Developer documentation the way it should be.</span>
       </h3>
       <div className="-z-1 absolute inset-0 bg-gradient-to-t from-20% from-background to-transparent" />
-      <div className="-z-2 flex select-none flex-col items-start gap-5 overflow-hidden rounded-xl border border-b-0 px-6 pt-4 shadow-xs md:inset-8 md:px-8 md:pt-6">
-        <Logo variant="wordmark" className="-ml-2.5 scale-80" />
+      <div className="-z-2 flex select-none flex-col items-start gap-6 overflow-hidden rounded-xl border border-b-0 px-6 pt-4 shadow-xs md:inset-8 md:px-8 md:pt-7">
+        <Logo className="-ml-1.75 scale-80" />
         <div className="grid w-full grid-cols-[1fr_3fr] gap-2">
           <div className="flex h-full flex-col gap-2">
             {[70, 90, 50, 80, 60].map((width) => (
@@ -117,7 +118,7 @@ const example = ts`
   // [!code highlight:1]
   import { ... } from '...' // 2.5k (gzipped: 950)
 
-  const nucleon = new Nucleon(...)
+  const ${APP_NAME.toLowerCase()} = new ${APP_NAME}(...)
 
   async function send() {
     "use server";

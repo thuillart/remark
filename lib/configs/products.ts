@@ -8,11 +8,11 @@ export type Product = (typeof PRODUCTS)[keyof typeof PRODUCTS];
 export const PRODUCT_CONFIGS = {
   [PRODUCTS.PLUS]: {
     slug: PRODUCTS.PLUS,
-    productId: "ae52a0b8-2506-4666-abbd-d88156b4479c",
+    productId: "5f234b49-ff7c-462e-aec0-711688e248d1",
   },
   [PRODUCTS.PRO]: {
     slug: PRODUCTS.PRO,
-    productId: "58b07362-ece1-4cfb-91e8-af7984798763",
+    productId: "849604dd-17dd-43ae-9052-573fe23d2034",
   },
 } as const;
 

@@ -1,17 +1,24 @@
 import "server-only";
 
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, Inter } from "next/font/google";
+import { Borel, IBM_Plex_Mono, Inter } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "sonner";
 
 import "@/app/globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
+import { APP_NAME } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+});
+
+const borel = Borel({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-borel",
 });
 
 const plexMono = IBM_Plex_Mono({
@@ -27,7 +34,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn(inter.variable, plexMono.variable)}>
+      <body className={cn(inter.variable, borel.variable, plexMono.variable)}>
         <ThemeProvider>
           <NuqsAdapter>{children}</NuqsAdapter>
           <Toaster className="![--width:420px]" />
@@ -38,6 +45,6 @@ export default function RootLayout({
 }
 
 export const metadata: Metadata = {
-  title: "Nucleon",
+  title: APP_NAME,
   description: "Get up and running with your users feedbacks.",
 };

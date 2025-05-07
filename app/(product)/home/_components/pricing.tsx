@@ -1,9 +1,12 @@
 import "server-only";
 
+import type { CustomerState } from "@polar-sh/sdk/dist/commonjs/models/components/customerstate";
+import { headers } from "next/headers";
 import { type ReactNode, Suspense } from "react";
 
 import { PricingCard } from "@/home/components/pricing-card";
 import { PricingSkeleton } from "@/home/components/pricing-skeleton";
+import { getBaseUrl } from "@/lib/utils";
 
 type Plan = {
   id: "free" | "plus" | "pro";
@@ -64,12 +67,43 @@ export async function Pricing() {
         </div>
         <div className="mt-18 grid gap-4 md:grid-cols-3">
           <Suspense fallback={<PricingSkeleton />}>
-            {plans.map(({ id, ...plan }) => (
-              <PricingCard id={id} key={id} {...plan} />
-            ))}
+            <PricingCards />
           </Suspense>
         </div>
       </div>
     </section>
+  );
+}
+
+async function PricingCards() {
+  const response = await fetch(`${getBaseUrl()}/api/auth/state`, {
+    headers: await headers(),
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      // Not signed in, show all plans
+      return (
+        <>
+          {plans.map(({ id, ...plan }) => (
+            <PricingCard id={id} key={id} {...plan} />
+          ))}
+        </>
+      );
+    }
+  }
+
+  const state = (await response.json()) as CustomerState;
+
+  const hasActiveSubscription = state.activeSubscriptions.some(
+    (subscription) => subscription.status === "active",
+  );
+
+  return (
+    <>
+      {plans.map(({ id, ...plan }) => (
+        <PricingCard id={id} key={id} {...plan} />
+      ))}
+    </>
   );
 }

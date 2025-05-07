@@ -6,6 +6,7 @@ import { HeaderLayout } from "@/home/components/header-layout";
 
 export function Header({ startContent }: { startContent?: React.ReactNode }) {
   const hasStartContent = !!startContent;
+
   return (
     <HeaderLayout>
       <header className="container">

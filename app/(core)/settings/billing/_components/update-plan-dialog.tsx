@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { authClient } from "@/lib/auth-client";
 import type { SubscriptionTier } from "@/lib/types";
 
 type Plan = {
@@ -47,15 +46,16 @@ const plans: Plan[] = [
 export function UpdatePlanDialog({
   currentPlan,
 }: { currentPlan: SubscriptionTier }) {
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [selectedPlan, setSelectedPlan] = React.useState(currentPlan);
   const router = useRouter();
 
-  async function onUpgrade(plan: SubscriptionTier) {
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [selectedPlan, setSelectedPlan] = React.useState(currentPlan);
+
+  async function onUpgrade(slug: SubscriptionTier) {
     setIsLoading(true);
 
     // Redirect to Polar checkout
-    router.push(`/checkout/${plan}`);
+    router.push(`/api/auth/checkout/${slug}`);
   }
 
   return (
@@ -183,6 +183,7 @@ export function UpdatePlanDialog({
           <div className="grid gap-2">
             <Button
               type="button"
+              loading={isLoading}
               onClick={() => onUpgrade(selectedPlan)}
               disabled={currentPlan === selectedPlan}
               className="w-full"
@@ -192,12 +193,7 @@ export function UpdatePlanDialog({
                 : "Change plan"}
             </Button>
             <DialogClose asChild>
-              <Button
-                type="button"
-                variant="ghost"
-                loading={isLoading}
-                className="w-full"
-              >
+              <Button type="button" variant="ghost" className="w-full">
                 Cancel
               </Button>
             </DialogClose>
