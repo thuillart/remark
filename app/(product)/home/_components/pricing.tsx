@@ -2,11 +2,22 @@ import "server-only";
 
 import type { CustomerState } from "@polar-sh/sdk/dist/commonjs/models/components/customerstate";
 import { headers } from "next/headers";
+import { cache } from "react";
 import { type ReactNode, Suspense } from "react";
 
 import { PricingCard } from "@/home/components/pricing-card";
 import { PricingSkeleton } from "@/home/components/pricing-skeleton";
 import { getBaseUrl } from "@/lib/utils";
+
+// Cache the fetch request for auth state
+const getCachedSubscriptionState = cache(async () => {
+  const response = await fetch(`${getBaseUrl()}/api/auth/state`, {
+    headers: await headers(),
+  });
+
+  if (!response.ok) return null;
+  return response.json() as Promise<CustomerState>;
+});
 
 type Plan = {
   id: "free" | "plus" | "pro";
@@ -76,24 +87,18 @@ export async function Pricing() {
 }
 
 async function PricingCards() {
-  const response = await fetch(`${getBaseUrl()}/api/auth/state`, {
-    headers: await headers(),
-  });
+  const state = await getCachedSubscriptionState();
 
-  if (!response.ok) {
-    if (response.status === 401) {
-      // Not signed in, show all plans
-      return (
-        <>
-          {plans.map(({ id, ...plan }) => (
-            <PricingCard id={id} key={id} {...plan} />
-          ))}
-        </>
-      );
-    }
+  if (!state) {
+    // Not signed in, show all plans
+    return (
+      <>
+        {plans.map(({ id, ...plan }) => (
+          <PricingCard id={id} key={id} {...plan} />
+        ))}
+      </>
+    );
   }
-
-  const state = (await response.json()) as CustomerState;
 
   const hasActiveSubscription = state.activeSubscriptions.some(
     (subscription) => subscription.status === "active",

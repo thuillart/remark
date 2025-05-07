@@ -1,9 +1,12 @@
 import { polar } from "@polar-sh/better-auth";
+import type { CustomerState } from "@polar-sh/sdk/dist/commonjs/models/components/customerstate";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
+import { APIError } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
 import { admin, apiKey, magicLink } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
+import { headers } from "next/headers";
 import React from "react";
 
 import { ChangeEmailTemplate } from "@/components/template/change-email";
@@ -13,6 +16,7 @@ import { PRODUCT_CONFIGS } from "@/lib/configs/products";
 import { sendEmail } from "@/lib/configs/resend";
 import { db } from "@/lib/db/drizzle";
 import * as schema from "@/lib/db/schema";
+import { getBaseUrl } from "@/lib/utils";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -53,9 +57,27 @@ export const auth = betterAuth({
         // TODO: Add a template for the delete account email
         await sendEmail({
           to: user.email,
-          text: `Click the link to approve the deletion of your account: ${url}. Any ongoing subscription will be terminated.`,
+          text: `Click the link to approve the deletion of your account: ${url}. Any ongoing subscription will be cancelled.`,
           subject: "Approve account deletion",
         });
+      },
+      beforeDelete: async () => {
+        const response = await fetch(`${getBaseUrl()}/api/auth/state`, {
+          headers: await headers(),
+        });
+
+        const state = (await response.json()) as CustomerState;
+
+        // Find all active subscriptions
+        const subscriptions = state.activeSubscriptions.filter(
+          (subscription) => subscription.status === "active",
+        );
+
+        for (const subscription of subscriptions) {
+          await polarClient.subscriptions.revoke({
+            id: subscription.id,
+          });
+        }
       },
     },
   },
@@ -106,7 +128,7 @@ export const auth = betterAuth({
           slug,
           productId,
         })),
-        successUrl: "/success?checkout_id={CHECKOUT_ID}",
+        successUrl: "/settings/billing?checkout_id={CHECKOUT_ID}",
       },
       webhooks: {
         secret: process.env.POLAR_WEBHOOK_SECRET,

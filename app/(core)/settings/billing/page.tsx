@@ -10,6 +10,7 @@ import { ResolveSubscriptionButton } from "@/billing/components/resolve-subscrip
 import { UpdatePlanDialog } from "@/billing/components/update-plan-dialog";
 import { Alert } from "@/components/ui/alert";
 import { EmptyState } from "@/core/components/empty-state";
+import { getSlugFromProductId } from "@/lib/configs/products";
 import { getBaseUrl } from "@/lib/utils";
 
 export default async function BillingPage() {
@@ -70,6 +71,7 @@ async function BillingCard() {
       )}
 
       <CurrentPlanCard
+        plan={getSlugFromProductId(subscription.productId)}
         status={subscription.status}
         periodEnd={subscription.endsAt}
         cancelAtPeriodEnd={subscription.cancelAtPeriodEnd ?? false}
