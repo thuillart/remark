@@ -16,7 +16,9 @@ import { PRODUCT_CONFIGS } from "@/lib/configs/products";
 import { sendEmail } from "@/lib/configs/resend";
 import { db } from "@/lib/db/drizzle";
 import * as schema from "@/lib/db/schema";
+import { feedback } from "@/lib/db/schema";
 import { getBaseUrl } from "@/lib/utils";
+import { eq } from "drizzle-orm";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -30,6 +32,19 @@ export const auth = betterAuth({
         before: async (user) => {
           // OAuth providers do provide user's name, we do not want it
           return { data: { ...user, name: "" } };
+        },
+      },
+      update: {
+        after: async (user) => {
+          console.log(
+            "DB HOOK: updating user, we've received email: ",
+            user.email,
+          );
+          // Update feedbacks with new email
+          await db
+            .update(feedback)
+            .set({ from: user.email })
+            .where(eq(feedback.from, user.email));
         },
       },
     },

@@ -19,6 +19,8 @@ import { FormControl } from "@/components/ui/form";
 import { FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "@/lib/utils";
+import { BadgeAlertIcon, InboxIcon } from "lucide-react";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -37,7 +39,24 @@ export function EmailAddress() {
   });
 
   async function onSubmit(data: FormValues) {
-    console.log(data);
+    const { error } = await authClient.changeEmail({
+      newEmail: data.email,
+    });
+
+    if (error) {
+      return toast({
+        Icon: BadgeAlertIcon,
+        title: "Something went wrong",
+        variant: "destructive",
+        description: error.message,
+      });
+    }
+
+    toast({
+      Icon: InboxIcon,
+      title: "Check your inbox",
+      description: "We've sent you a link to confirm your new email.",
+    });
   }
 
   return (
