@@ -1,8 +1,10 @@
 import { SquareArrowOutUpRightIcon } from "lucide-react";
 
+import { APP_NAME } from "@/lib/constants";
+
 # Next.js
 
-Learn how to send your first feedback using Next.js and the Node.js SDK.
+Learn how to send your first feedback using Next.js and the {APP_NAME} Node.js SDK.
 
 ## Prerequisites
 
@@ -17,16 +19,16 @@ Get the Node.js SDK using your preferred package manager:
 
 ```bash
 // @filename="Terminal"
-npm install @nucleon-sh/sdk
+npm install @remark-sh/sdk
 ```
 
 ## 2. Add environment variable
 
-Add the `NUCLEON_API_KEY` to your `.env` file. If you don't have a key yet, [sign up](/sign-up) and create one from the [dashboard](/api-keys).
+Add the `REMARK_API_KEY` to your `.env` file. If you don't have a key yet, [sign up](/sign-up) and create one from the [dashboard](/api-keys).
 
 ```bash
 // @filename=".env"
-NUCLEON_API_KEY=your-api-key
+REMARK_API_KEY=your-api-key
 ```
 
 ## 3. Create a server action
@@ -38,13 +40,13 @@ We highly recommend using a server action to send a feedback. Create an action f
 "use server";
 
 // [!code highlight:1]
-import { Nucleon } from "@nucleon-sh/sdk";
+import { Remark } from "@remark-sh/sdk";
 
 // [!code highlight:1]
-const nucleon = new Nucleon(process.env.NUCLEON_API_KEY!);
+const remark = new Remark(process.env.REMARK_API_KEY!);
 
 export async function send(formData: FormData) {
-  await nucleon.feedbacks.create({
+  await remark.feedbacks.create({
     from: formData.get("email") as string,
     text: formData.get("message") as string,
   });
@@ -75,7 +77,7 @@ export default async function Page() {
 ## 5. Try it yourself
 
 <LinkableCard
-  href="https://github.com/nucleon-sh/nucleon-demo-next"
+  href="https://github.com/remark-sh/remark-demo-next"
   title="Next.js example"
   description="See the full source code."
 >

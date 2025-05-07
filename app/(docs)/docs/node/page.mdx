@@ -1,8 +1,10 @@
 import { SquareArrowOutUpRightIcon } from "lucide-react";
 
+import { APP_NAME } from "@/lib/constants";
+
 # Node.js
 
-Learn how to send your first feedback using the Node.js SDK.
+Learn how to send your first feedback using the {APP_NAME} Node.js SDK.
 
 ## Prerequisites
 
@@ -17,20 +19,20 @@ Get the Node.js SDK using your preferred package manager:
 
 ```bash
 // @filename="Terminal"
-npm install @nucleon-sh/sdk
+npm install @remark-sh/sdk
 ```
 
 ## 2. Send a test feedback
 
 ```ts
 // @filename="server.ts"
-import { Nucleon } from "@nucleon-sh/sdk";
+import { Remark } from "@remark-sh/sdk";
 
-const nucleon = new Nucleon("nu_123456789");
+const remark = new Remark("nu_123456789");
 
 (async function () {
-  const { data, error } = await nucleon.feedbacks.send({
-    from: "delivered@nucleon.sh",
+  const { data, error } = await remark.feedbacks.send({
+    from: "delivered@remark.sh",
     text: "Hello, world!",
   });
 
@@ -45,7 +47,7 @@ const nucleon = new Nucleon("nu_123456789");
 ## 3. Try it yourself
 
 <LinkableCard
-  href="https://github.com/nucleon-sh/nucleon-demo-node"
+  href="https://github.com/remark-sh/remark-demo-node"
   title="Node.js example"
   description="See the full source code."
 >
