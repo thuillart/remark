@@ -2,6 +2,7 @@ import "server-only";
 
 import type { CustomerState } from "@polar-sh/sdk/dist/commonjs/models/components/customerstate";
 import { headers } from "next/headers";
+import { Suspense } from "react";
 
 import { Button } from "@/components/ui/button";
 import { API_KEY_CONFIG } from "@/lib/configs/api-key";
@@ -9,11 +10,11 @@ import { getSlugFromProductId } from "@/lib/configs/products";
 import { APP_NAME } from "@/lib/constants";
 import type { SubscriptionTier } from "@/lib/types";
 import { getBaseUrl } from "@/lib/utils";
-import { Suspense } from "react";
+import { UsageSkeleton } from "@/usage/components/usage-skeleton";
 
 export default function UsagePage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<UsageSkeleton />}>
       <UsageCards />
     </Suspense>
   );
@@ -67,7 +68,7 @@ async function UsageCards() {
         tier={getSlugFromProductId(subscription.productId)}
         title="Internal"
         limits={internalLimits}
-        description={`Integrate email into your app using the ${APP_NAME} API.`}
+        description="Know who's behind the feedback and segment them."
       />
     </main>
   );
@@ -93,9 +94,9 @@ function UsageCard({
   };
 
   const getStrokeDashoffset = (used: number, total: number | string) => {
-    if (typeof total === "string") return 0;
+    if (typeof total === "string" || total === 0 || total === null) return 0;
     const circumference = 2 * Math.PI * 8; // 2πr where r=8
-    const percentage = used / total;
+    const percentage = (used ?? 0) / total;
     return circumference * (1 - percentage);
   };
 
