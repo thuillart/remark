@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { APP_NAME } from "@/lib/constants";
 
 export function UsageSkeleton() {
   return (
@@ -10,7 +11,7 @@ export function UsageSkeleton() {
           title={key === "1" ? "External" : "Internal"}
           description={
             key === "1"
-              ? "Integrate feedback into your app using the ${APP_NAME} API."
+              ? `Integrate feedback into your app using the ${APP_NAME} API.`
               : "Know who's behind the feedback and segment them."
           }
           limits={
