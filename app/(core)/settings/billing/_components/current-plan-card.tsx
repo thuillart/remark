@@ -1,6 +1,6 @@
 "use client";
 
-import { format } from "date-fns";
+import { differenceInDays } from "date-fns";
 import { useRouter } from "next/navigation";
 import React from "react";
 
@@ -54,8 +54,11 @@ export function CurrentPlanCard({
             </>
           ) : cancelAtPeriodEnd ? (
             <>
-              Your plan will end on{" "}
-              {periodEnd && format(periodEnd, "MMM d, yyyy")}.
+              Your{" "}
+              <TextShimmer>
+                {`${APP_NAME} ${capitalizeFirstLetter(plan)}`}
+              </TextShimmer>{" "}
+              plan will end in {differenceInDays(periodEnd, new Date())} days.
             </>
           ) : null}
         </CardDescription>
@@ -73,7 +76,7 @@ export function CurrentPlanCard({
           ) : (
             <>
               <GlowEffect borderWidth={2} />
-              Reactivate
+              I've changed my mind
             </>
           )}
         </Button>
