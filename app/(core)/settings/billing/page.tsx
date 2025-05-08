@@ -1,10 +1,11 @@
 import "server-only";
 
 import type { CustomerState } from "@polar-sh/sdk/dist/commonjs/models/components/customerstate";
-import { Loader2Icon, SparklesIcon, TriangleAlertIcon } from "lucide-react";
+import { SparklesIcon, TriangleAlertIcon } from "lucide-react";
 import { headers } from "next/headers";
 import { Suspense } from "react";
 
+import { BillingSkeleton } from "@/billing/components/billing-skeleton";
 import { CurrentPlanCard } from "@/billing/components/current-plan-card";
 import { ResolveSubscriptionButton } from "@/billing/components/resolve-subscription-button";
 import { UpdatePlanDialog } from "@/billing/components/update-plan-dialog";
@@ -16,13 +17,7 @@ import { getBaseUrl } from "@/lib/utils";
 export default async function BillingPage() {
   return (
     <div className="container">
-      <Suspense
-        fallback={
-          <div className="flex h-72 items-center justify-center">
-            <Loader2Icon className="animate-spin" />
-          </div>
-        }
-      >
+      <Suspense fallback={<BillingSkeleton />}>
         <BillingCard />
       </Suspense>
     </div>

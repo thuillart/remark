@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import React from "react";
 
 import { CircleArrow } from "@/components/circle-arrow";
@@ -66,17 +67,20 @@ export function PricingCard({
       <div className="mt-auto p-6 pt-0">
         <Button
           size="lg"
-          className="group/button h-10 w-full justify-between rounded-full pr-3 pl-4"
+          asChild
           variant={id === "pro" ? "outline" : "default"}
+          className="group/button h-10 w-full justify-between rounded-full pr-3 pl-4"
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
         >
-          {id === "free" ? "Start Building" : `Upgrade to ${name}`}
-          <CircleArrow
-            variant={id === "pro" ? "outline" : "default"}
-            direction="up-right"
-            isHovering={isHovering}
-          />
+          <Link href="/settings/billing">
+            {id === "free" ? "Start Building" : `Upgrade to ${name}`}
+            <CircleArrow
+              variant={id === "pro" ? "outline" : "default"}
+              direction="up-right"
+              isHovering={isHovering}
+            />
+          </Link>
         </Button>
       </div>
     </div>

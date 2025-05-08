@@ -7,6 +7,7 @@ import { type ReactNode, Suspense } from "react";
 
 import { PricingCard } from "@/home/components/pricing-card";
 import { PricingSkeleton } from "@/home/components/pricing-skeleton";
+import { getSlugFromProductId } from "@/lib/configs/products";
 import { getBaseUrl } from "@/lib/utils";
 
 // Cache the fetch request for auth state
@@ -100,14 +101,16 @@ async function PricingCards() {
     );
   }
 
-  const hasActiveSubscription = state.activeSubscriptions.some(
+  const subscription = state.activeSubscriptions.find(
     (subscription) => subscription.status === "active",
   );
+
+  const tier = getSlugFromProductId(subscription?.productId);
 
   return (
     <>
       {plans.map(({ id, ...plan }) => (
-        <PricingCard id={id} key={id} {...plan} />
+        <PricingCard id={id} key={id} isCurrent={tier === id} {...plan} />
       ))}
     </>
   );
