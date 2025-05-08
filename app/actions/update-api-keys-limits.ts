@@ -13,7 +13,7 @@ const schema = z.object({
   plan: subscriptionTierSchema,
 });
 
-export const updateApiKeyLimits = actionClient
+export const updateApiKeysLimits = actionClient
   .schema(schema)
   .action(async ({ parsedInput: { plan } }) => {
     // 1. Get all API keys

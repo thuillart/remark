@@ -9,7 +9,7 @@ import {
   EyeOffIcon,
   TriangleAlertIcon,
 } from "lucide-react";
-import { useState } from "react";
+import React from "react";
 
 import { useApiKeyStore } from "@/api-keys/lib/store";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -28,8 +28,8 @@ import { cn, toast } from "@/lib/utils";
 export function ViewDialog() {
   const { open, setOpen, apiKey, setApiKey } = useApiKeyStore();
 
-  const [isCopied, setIsCopied] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isCopied, setIsCopied] = React.useState(false);
+  const [isVisible, setIsVisible] = React.useState(false);
 
   async function handleCopy() {
     setIsCopied(true);
@@ -65,7 +65,7 @@ export function ViewDialog() {
           </DialogDescription>
         </VisuallyHidden>
 
-        <Alert variant="destructive">
+        <Alert variant="error">
           <TriangleAlertIcon size={16} />
           <AlertDescription>You can only view it once.</AlertDescription>
         </Alert>

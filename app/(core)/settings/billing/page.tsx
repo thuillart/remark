@@ -5,11 +5,11 @@ import { SparklesIcon, TriangleAlertIcon } from "lucide-react";
 import { headers } from "next/headers";
 import { Suspense } from "react";
 
-import { BillingSkeleton } from "@/billing/components/billing-skeleton";
 import { CurrentPlanCard } from "@/billing/components/current-plan-card";
 import { ResolveSubscriptionButton } from "@/billing/components/resolve-subscription-button";
 import { UpdatePlanDialog } from "@/billing/components/update-plan-dialog";
 import { Alert } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/core/components/empty-state";
 import { getSlugFromProductId } from "@/lib/configs/products";
 import { getBaseUrl } from "@/lib/utils";
@@ -17,7 +17,7 @@ import { getBaseUrl } from "@/lib/utils";
 export default async function BillingPage() {
   return (
     <div className="container">
-      <Suspense fallback={<BillingSkeleton />}>
+      <Suspense fallback={<Skeleton className="h-38 rounded-xl border" />}>
         <BillingCard />
       </Suspense>
     </div>
