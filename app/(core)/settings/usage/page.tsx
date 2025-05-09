@@ -5,7 +5,6 @@ import { count, eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { Suspense } from "react";
 
-import { Button, buttonVariants } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
 import { API_KEY_CONFIG } from "@/lib/configs/api-key";
 import { getSlugFromProductId } from "@/lib/configs/products";
@@ -13,9 +12,9 @@ import { APP_NAME } from "@/lib/constants";
 import { db } from "@/lib/db/drizzle";
 import { contact } from "@/lib/db/schema";
 import type { SubscriptionTier } from "@/lib/types";
-import { cn, getBaseUrl, tryCatch } from "@/lib/utils";
+import { getBaseUrl, tryCatch } from "@/lib/utils";
+import { UpgradeButton } from "@/usage/components/upgrade-button";
 import { UsageSkeleton } from "@/usage/components/usage-skeleton";
-import Link from "next/link";
 
 export default function UsagePage() {
   return (
@@ -32,8 +31,9 @@ async function UsageCards() {
 
   const state = (await response.json()) as CustomerState;
 
-  const subscription = state.activeSubscriptions[0];
-  const tier = getSlugFromProductId(subscription.productId);
+  const tier = state.activeSubscriptions?.[0]?.productId
+    ? getSlugFromProductId(state.activeSubscriptions[0].productId)
+    : "free";
   const config = API_KEY_CONFIG[tier];
   const twentyFourHoursInSeconds = 60 * 60 * 24 * 30;
 
@@ -86,13 +86,13 @@ async function UsageCards() {
   return (
     <main className="container">
       <UsageCard
-        tier={getSlugFromProductId(subscription.productId)}
+        tier={tier}
         title="External"
         limits={transactionalLimits}
         description={`Integrate feedback into your app using the ${APP_NAME} API.`}
       />
       <UsageCard
-        tier={getSlugFromProductId(subscription.productId)}
+        tier={tier}
         title="Internal"
         limits={internalLimits}
         description="Know who's behind the feedback and segment them."
@@ -134,15 +134,7 @@ function UsageCard({
         <span className="mb-4 hidden text-muted-foreground text-sm md:block md:w-1/2">
           {description}
         </span>
-
-        {tier !== "pro" && (
-          <Link
-            href="/api/auth/portal"
-            className={cn(buttonVariants({ size: "sm" }))}
-          >
-            Upgrade
-          </Link>
-        )}
+        <UpgradeButton tier={tier} />
       </div>
       <div className="w-full md:w-1/2">
         <h3 className="font-medium text-base capitalize">{tier}</h3>

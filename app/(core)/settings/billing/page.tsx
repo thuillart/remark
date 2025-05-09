@@ -9,6 +9,7 @@ import { CurrentPlanCard } from "@/billing/components/current-plan-card";
 import { ResolveSubscriptionButton } from "@/billing/components/resolve-subscription-button";
 import { UpdatePlanDialog } from "@/billing/components/update-plan-dialog";
 import { Alert } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/core/components/empty-state";
 import { getSlugFromProductId } from "@/lib/configs/products";
@@ -40,7 +41,16 @@ async function BillingCard() {
       <EmptyState
         icons={[SparklesIcon, SparklesIcon, SparklesIcon]}
         title="You're not subscribed to any plan yet"
-        action={<UpdatePlanDialog currentPlan="free" />}
+        action={
+          <UpdatePlanDialog currentPlan="free">
+            <Button
+              variant="outline"
+              className="mt-4 shadow-sm active:shadow-none"
+            >
+              Change plan
+            </Button>
+          </UpdatePlanDialog>
+        }
         description="Upgrade for AI at your fingertips, no daily limit and many more."
       />
     );

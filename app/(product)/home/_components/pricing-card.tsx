@@ -99,6 +99,7 @@ export function PricingCard({
           loading={isLoading}
           onClick={handleClick}
           variant={id === "plus" ? "default" : "outline"}
+          disabled={id === "free" && isCurrent}
           className={cn(
             "group/button h-10 w-full cursor-pointer justify-between rounded-full pr-3 pl-4",
             isLoading && "justify-center",
@@ -108,31 +109,35 @@ export function PricingCard({
         >
           {isCurrent ? (
             <span className="relative inline-block h-1/2">
-              <AnimatePresence mode="wait" initial={false}>
-                {!isHovering ? (
-                  <motion.span
-                    key="current"
-                    exit={{ opacity: 0, y: -8 }}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="absolute right-0 left-0"
-                    transition={{ duration: 0.11 }}
-                  >
-                    Your current plan
-                  </motion.span>
-                ) : (
-                  <motion.span
-                    key="manage"
-                    exit={{ opacity: 0, y: -8 }}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="absolute right-0 left-0"
-                    transition={{ duration: 0.11 }}
-                  >
-                    Manage subscription
-                  </motion.span>
-                )}
-              </AnimatePresence>
+              {id === "free" ? (
+                "Your current plan"
+              ) : (
+                <AnimatePresence mode="wait" initial={false}>
+                  {!isHovering ? (
+                    <motion.span
+                      key="current"
+                      exit={{ opacity: 0, y: -8 }}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="absolute right-0 left-0"
+                      transition={{ duration: 0.11 }}
+                    >
+                      Your current plan
+                    </motion.span>
+                  ) : (
+                    <motion.span
+                      key="manage"
+                      exit={{ opacity: 0, y: -8 }}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="absolute right-0 left-0"
+                      transition={{ duration: 0.11 }}
+                    >
+                      Manage subscription
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              )}
             </span>
           ) : (
             (() => {

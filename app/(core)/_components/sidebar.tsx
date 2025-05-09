@@ -1,47 +1,77 @@
-import "server-only";
+"use client";
+
+import {
+  type RemixiconComponentType,
+  RiContactsBook2Line,
+  RiEqualizer3Line,
+  RiInbox2Line,
+  RiKey2Line,
+} from "@remixicon/react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import React from "react";
 
 import { LogoLink } from "@/components/logo";
+import { Button } from "@/components/ui/button";
 import { DesktopDropdownMenu } from "@/core/components/desktop-dropdown-menu";
-import { NavItem } from "@/core/components/nav-item";
+import { cn } from "@/lib/utils";
 
-export type IconName =
-  | "InboxIcon"
-  | "WalletCardsIcon"
-  | "GalleryVerticalIcon"
-  | "KeyRoundIcon"
-  | "SlidersHorizontalIcon";
+function NavItem({
+  href,
+  Icon,
+  label,
+}: {
+  href: string;
+  Icon: RemixiconComponentType;
+  label: string;
+}) {
+  const pathname = usePathname();
+  const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
+
+  return (
+    <Button
+      size="sm"
+      asChild
+      variant="ghost"
+      className={cn(
+        "group w-full justify-start gap-2 font-normal hover:bg-accent",
+        isActive && "bg-accent text-accent-foreground",
+      )}
+    >
+      <Link href={href}>
+        <Icon className="opacity-60" />
+        {label}
+      </Link>
+    </Button>
+  );
+}
 
 export interface Item {
   href: string;
-  iconName: IconName;
+  Icon: RemixiconComponentType;
   label: string;
 }
 
 export const navItems: Item[] = [
   {
     href: "/",
+    Icon: RiInbox2Line,
     label: "Feedbacks",
-    iconName: "InboxIcon",
   },
   {
     href: "/contacts",
+    Icon: RiContactsBook2Line,
     label: "Contacts",
-    iconName: "WalletCardsIcon",
-  },
-  {
-    href: "/logs",
-    label: "Logs",
-    iconName: "GalleryVerticalIcon",
   },
   {
     href: "/api-keys",
+    Icon: RiKey2Line,
     label: "API Keys",
-    iconName: "KeyRoundIcon",
   },
   {
     href: "/settings/usage",
+    Icon: RiEqualizer3Line,
     label: "Settings",
-    iconName: "SlidersHorizontalIcon",
   },
 ];
 
@@ -56,11 +86,7 @@ export function Sidebar() {
         <ul className="flex flex-col gap-2">
           {navItems.map((item) => (
             <li key={item.href}>
-              <NavItem
-                href={item.href}
-                iconName={item.iconName}
-                label={item.label}
-              />
+              <NavItem href={item.href} Icon={item.Icon} label={item.label} />
             </li>
           ))}
         </ul>

@@ -1,6 +1,11 @@
 "use client";
 
-import { RiGithubFill, RiGitlabFill } from "@remixicon/react";
+import {
+  RiGithubFill,
+  RiGitlabFill,
+  RiKey2Line,
+  RiKeyLine,
+} from "@remixicon/react";
 import type { Account } from "better-auth";
 import type { Passkey } from "better-auth/plugins/passkey";
 import { format } from "date-fns";
@@ -83,7 +88,10 @@ export function SignInMethods() {
 
     if (provider === "passkey") {
       try {
-        await authClient.passkey.addPasskey();
+        const { error } = await authClient.passkey.addPasskey();
+        if (error) {
+          throw new Error(error.message);
+        }
         const { data } = await authClient.passkey.listUserPasskeys();
         setPasskeys(data ?? []);
       } catch (error) {
@@ -254,7 +262,7 @@ export function SignInMethods() {
                   disabled={loading !== null}
                   className="w-32 justify-center"
                 >
-                  <RiGitlabFill size={16} className="fill-[#FC6D26]" />
+                  <RiGitlabFill className="fill-[#FC6D26]" />
                   Link GitLab
                 </Button>
               )}
@@ -268,7 +276,7 @@ export function SignInMethods() {
                   disabled={loading !== null}
                   className="w-32 justify-center"
                 >
-                  <KeyRoundIcon size={16} />
+                  <RiKeyLine className="opacity-60" />
                   Add Passkey
                 </Button>
               )}

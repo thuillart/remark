@@ -6,7 +6,6 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { KeyRoundIcon } from "lucide-react";
 
 import { useApiKeyStore } from "@/api-keys/lib/store";
 import type { ApiKey } from "@/api-keys/lib/types";
@@ -19,6 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { EmptyState } from "@/core/components/empty-state";
+import { RiKeyLine } from "@remixicon/react";
 
 export function DataTable({
   data,
@@ -40,7 +40,7 @@ export function DataTable({
       <div className="container">
         <EmptyState
           title="You don't have any API keys yet"
-          icons={[KeyRoundIcon, KeyRoundIcon, KeyRoundIcon]}
+          icons={[RiKeyLine, RiKeyLine, RiKeyLine]}
           description="API Keys are randomly generated alpha-numeric strings that are used to send feedbacks."
           action={{
             label: "Create API Key",

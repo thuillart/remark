@@ -44,8 +44,12 @@ const plans: Plan[] = [
 ];
 
 export function UpdatePlanDialog({
+  children,
   currentPlan,
-}: { currentPlan: SubscriptionTier }) {
+}: {
+  children: React.ReactNode;
+  currentPlan: SubscriptionTier;
+}) {
   const router = useRouter();
 
   const [isLoading, setIsLoading] = React.useState(false);
@@ -60,11 +64,7 @@ export function UpdatePlanDialog({
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline" className="mt-4 shadow-sm active:shadow-none">
-          Change plan
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <div className="mb-2 flex flex-col gap-2">
           <div

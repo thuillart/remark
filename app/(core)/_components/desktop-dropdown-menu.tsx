@@ -1,14 +1,14 @@
 "use client";
 
 import {
-  EllipsisIcon,
-  HomeIcon,
-  LogOutIcon,
-  MoonIcon,
-  SunIcon,
-  UserRoundIcon,
-  UserRoundPenIcon,
-} from "lucide-react";
+  RiAccountCircleLine,
+  RiHome2Line,
+  RiLogoutBoxLine,
+  RiMoonLine,
+  RiMoreFill,
+  RiSunLine,
+} from "@remixicon/react";
+import { HomeIcon, MoonIcon, SunIcon, UserRoundPenIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -56,8 +56,8 @@ export function DesktopDropdownMenu() {
             </span>
           </div>
 
-          <div className="flex size-6 items-center justify-center opacity-80 group-hover/button:opacity-100">
-            <EllipsisIcon size={16} />
+          <div className="flex size-6 items-center justify-center">
+            <RiMoreFill className="opacity-60" />
           </div>
         </Button>
       </DropdownMenuTrigger>
@@ -65,10 +65,7 @@ export function DesktopDropdownMenu() {
       <DropdownMenuContent className="w-56 min-w-0">
         <DropdownMenuItem asChild>
           <Link href="/profile">
-            <UserRoundPenIcon
-              size={16}
-              className="opacity-80 group-hover/item:opacity-100"
-            />
+            <RiAccountCircleLine className="opacity-60" />
             My profile
           </Link>
         </DropdownMenuItem>
@@ -81,15 +78,9 @@ export function DesktopDropdownMenu() {
         >
           <div className="flex items-center gap-2">
             {theme === "dark" ? (
-              <SunIcon
-                size={16}
-                className="opacity-80 group-hover/item:opacity-100"
-              />
+              <RiSunLine className="opacity-60" />
             ) : (
-              <MoonIcon
-                size={16}
-                className="opacity-80 group-hover/item:opacity-100"
-              />
+              <RiMoonLine className="opacity-60" />
             )}
             Toggle theme
           </div>
@@ -98,10 +89,7 @@ export function DesktopDropdownMenu() {
 
         <DropdownMenuItem asChild>
           <Link href="/home">
-            <HomeIcon
-              size={16}
-              className="opacity-80 group-hover/item:opacity-100"
-            />
+            <RiHome2Line className="opacity-60" />
             Home page
           </Link>
         </DropdownMenuItem>
@@ -119,10 +107,7 @@ export function DesktopDropdownMenu() {
             });
           }}
         >
-          <LogOutIcon
-            size={16}
-            className="opacity-80 group-hover/item:opacity-100"
-          />
+          <RiLogoutBoxLine className="opacity-60" />
           Logout
         </DropdownMenuItem>
       </DropdownMenuContent>

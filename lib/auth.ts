@@ -120,7 +120,9 @@ export const auth = betterAuth({
 
   plugins: [
     admin({
-      adminUserIds: [],
+      adminUserIds: [
+        "7erXjGNKA410dCWethaiSrRNic2XxROt", // team@remark.sh
+      ],
     }),
     apiKey({
       enableMetadata: true,
