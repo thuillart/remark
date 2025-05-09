@@ -49,8 +49,8 @@ const menuItems = [
         href: `mailto:${SUPPORT_EMAIL}`,
       },
       {
-        label: "Privacy",
-        href: "/privacy",
+        label: "Notice",
+        href: "/notice",
       },
       {
         label: "Terms",
