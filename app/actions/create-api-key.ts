@@ -22,7 +22,7 @@ export const createApiKey = subscriptionActionClient
       parsedInput: { name, pathname },
       ctx: { user, subscription },
     }) => {
-      const tierConfig = API_KEY_CONFIG[subscription.plan];
+      const tierConfig = API_KEY_CONFIG[subscription.tier];
 
       const { data: apiKey, error } = await tryCatch(
         auth.api.createApiKey({
@@ -30,7 +30,7 @@ export const createApiKey = subscriptionActionClient
             name,
             prefix: "nu_",
             userId: user.id,
-            metadata: { tier: subscription.plan },
+            metadata: { tier: subscription.tier },
             remaining: tierConfig.remaining,
             refillAmount: tierConfig.refillAmount,
             rateLimitMax: tierConfig.rateLimitMax,

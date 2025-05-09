@@ -1,18 +1,24 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { RiSparkling2Line } from "@remixicon/react";
+import { HeartIcon } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import Link from "next/link";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import { Button, buttonVariants } from "@/components/ui/button";
+import { FormControl, FormField, FormItem } from "@/components/ui/form";
+import { Form } from "@/components/ui/form";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { RiSparkling2Line } from "@remixicon/react";
-import { HeartIcon } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
-import React from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   text: z.string().min(2).max(2000),
@@ -72,7 +78,56 @@ export function FeedbackPopover() {
               </div>
             </motion.div>
           ) : (
-            <motion.div key="form" exit={{ opacity: 0 }} />
+            <motion.div key="form" exit={{ opacity: 0 }}>
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className="space-y-3"
+                >
+                  <FormField
+                    control={form.control}
+                    name="text"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Textarea
+                            className="min-h-28 p-3"
+                            placeholder="Ideas to improve this page..."
+                            {...field}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <div className="flex items-center justify-between">
+                    <p className="text-muted-foreground text-sm">
+                      Need help?{" "}
+                      <Link
+                        href="/docs"
+                        target="_blank"
+                        className={cn(
+                          buttonVariants({
+                            variant: "link",
+                            className: "font-normal text-sm",
+                          }),
+                        )}
+                      >
+                        Read the docs
+                      </Link>
+                      .
+                    </p>
+                    <Button
+                      size="sm"
+                      type="submit"
+                      loading={form.formState.isSubmitting}
+                      disabled={!form.formState.isDirty}
+                    >
+                      Send
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </motion.div>
           )}
         </AnimatePresence>
       </PopoverContent>
