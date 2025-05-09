@@ -59,7 +59,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
             {...props}
           >
             {children}
-            <ArrowUpRightIcon className="group-hover/link:-translate-y-px absolute mt-1.25 ml-0.5 inline-block size-[1em] text-muted-foreground no-underline transition duration-[inherit] ease-[inherit] group-hover/link:translate-x-px group-hover/link:text-primary" />
+            <ArrowUpRightIcon className="group-hover/link:-translate-y-px absolute mt-1.25 inline-block size-[1em] text-muted-foreground no-underline transition duration-[inherit] ease-[inherit] group-hover/link:translate-x-px group-hover/link:text-primary" />
           </Link>
         );
       }

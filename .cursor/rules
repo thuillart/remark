@@ -1,0 +1,45 @@
+Code style & structure: 
+
+- `let` > `const` most of the time: Usually you want let. If you want to forbid assignment to this variable, you can use const.
+- Larger files > many small components: You only need to split components when you need `use client`
+- Colocate code that changes often close together
+- Copy/paste is better than the wrong abstraction: Make the code less DRY when it's needed, never over-engineer.
+- Prefer iteration and modularization over code duplication
+- Use functional and declarative programming patterns; avoid classes
+- Use descriptive variable names with auxiliary verbs (e.g., isLoading, hasError)
+
+Naming conventions:
+
+- Use lowercase with dashes for directories (e.g., components/auth-wizard.tsx)
+- Favor named exports for components
+
+TypeScript usage:
+
+- Use TypeScript for all code; prefer interfaces over types
+- Avoid enums; use maps instead
+- Use functional components with TypeScript interfaces
+
+Syntax and formatting:
+
+- Use the `function` keyword for pure functions
+- Avoid unnecessary curly braces in conditionals; use concise syntax for simple statements
+- Use declarative TSX
+
+Error handling and validation:
+
+- Prioritize error handling: handle errors and edge cases early
+- Use early returns and guard clauses
+- Implement `toast()` with user-friendly messages
+- Use `zod` for form validation
+
+Performance optimization:
+
+- Minimize `React.useState()`, `React.useEffect()`, and `React.setState()`; favor React Server Component (RSC)
+- Wrap client components in `Suspense` with fallback
+
+Key conventions: 
+
+- Use `nuqs` for URL search parameter state management
+- Limit `use client` :
+    - Favor RSC and Next.js SSR
+    - Use only for Web API access in small components

@@ -30,7 +30,8 @@
       "@/billing/components/*": ["app/(core)/settings/billing/_components/*"],
       "@/settings/components/*": ["app/(core)/settings/_components/*"],
       "@/api-keys/components/*": ["app/(core)/api-keys/_components/*"],
-      "@/usage/components/*": ["app/(core)/settings/usage/_components/*"]
+      "@/usage/components/*": ["app/(core)/settings/usage/_components/*"],
+      "@/legals/components/*": ["app/(product)/(legals)/_components/*"]
     }
   },
   "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],
