@@ -2,13 +2,14 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RiSparkling2Line } from "@remixicon/react";
-import { HeartIcon } from "lucide-react";
+import { BadgeAlertIcon, HeartIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { createFeedback } from "@/actions/create-feedback";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Form } from "@/components/ui/form";
@@ -18,7 +19,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
+import { cn, toast } from "@/lib/utils";
 
 const formSchema = z.object({
   text: z.string().min(2).max(2000),
@@ -34,8 +35,19 @@ export function FeedbackPopover() {
     defaultValues: { text: "" },
   });
 
-  async function onSubmit(data: FormValues) {
-    console.log(data);
+  async function onSubmit(values: FormValues) {
+    const result = await createFeedback({
+      text: values.text,
+    });
+
+    if (result?.data?.failure) {
+      toast({
+        Icon: BadgeAlertIcon,
+        title: "Something went wrong",
+        variant: "destructive",
+        description: "Please try again.",
+      });
+    }
 
     setTimeout(() => {
       setIsOpen(false);
