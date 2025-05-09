@@ -246,9 +246,8 @@ export function SignInMethods() {
                   loading={loading === "initial" || loading === "github"}
                   onClick={() => link("github")}
                   disabled={loading !== null}
-                  className="w-32 justify-center"
                 >
-                  <RiGithubFill size={16} />
+                  <RiGithubFill />
                   Link GitHub
                 </Button>
               )}
@@ -260,7 +259,6 @@ export function SignInMethods() {
                   loading={loading === "initial" || loading === "gitlab"}
                   onClick={() => link("gitlab")}
                   disabled={loading !== null}
-                  className="w-32 justify-center"
                 >
                   <RiGitlabFill className="fill-[#FC6D26]" />
                   Link GitLab
@@ -274,7 +272,6 @@ export function SignInMethods() {
                   loading={loading === "initial" || loading === "passkey"}
                   onClick={() => link("passkey")}
                   disabled={loading !== null}
-                  className="w-32 justify-center"
                 >
                   <RiKeyLine className="opacity-60" />
                   Add Passkey
@@ -309,10 +306,7 @@ export function SignInMethods() {
                   <TableRow key={account.id} className="hover:bg-transparent">
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <Logo
-                          size={20}
-                          className={cn({ "fill-[#FC6D26]": isGitlab })}
-                        />
+                        <Logo className={cn({ "fill-[#FC6D26]": isGitlab })} />
                         <div className="font-medium text-sm">
                           {providerName}
                         </div>
@@ -333,7 +327,7 @@ export function SignInMethods() {
                             variant="ghost"
                             loading={loading === "delete"}
                           >
-                            <Trash2 size={16} />
+                            <Trash2 className="opacity-60" />
                           </Button>
                         </DialogTrigger>
 
