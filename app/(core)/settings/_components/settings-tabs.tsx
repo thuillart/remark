@@ -7,10 +7,11 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function SettingsTabs() {
   const pathname = usePathname();
+  const tabValue = pathname.includes("usage") ? "usage" : "billing";
 
   return (
     <div className="container">
-      <Tabs defaultValue={pathname.includes("usage") ? "usage" : "billing"}>
+      <Tabs value={tabValue}>
         <TabsList className="bg-transparent">
           <TabsTrigger
             value="usage"
