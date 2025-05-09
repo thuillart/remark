@@ -28,6 +28,7 @@ export function HeroCanvas() {
     materialRef.current.uniforms.lineColor.value = isDark ? white : black;
   }, [scheme]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: We need to re-render the canvas when the theme changes
   React.useEffect(() => {
     if (!containerRef.current) return;
 
@@ -91,7 +92,7 @@ export function HeroCanvas() {
       window.removeEventListener("resize", handleResize);
       renderer.dispose();
     };
-  }, [scheme]);
+  }, []);
 
   function applyNoiseToGeometry(geometry: THREE.PlaneGeometry) {
     const position = geometry.attributes.position;
