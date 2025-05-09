@@ -99,7 +99,10 @@ export function PricingCard({
           loading={isLoading}
           onClick={handleClick}
           variant={id === "plus" ? "default" : "outline"}
-          className="group/button h-10 w-full justify-between rounded-full pr-3 pl-4"
+          className={cn(
+            "group/button h-10 w-full cursor-pointer justify-between rounded-full pr-3 pl-4",
+            isLoading && "justify-center",
+          )}
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
         >
