@@ -1,27 +1,56 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
+import { CheckIcon } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 import { CircleArrow } from "@/components/circle-arrow";
 import { Button } from "@/components/ui/button";
+import type { SubscriptionTier } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { CheckIcon } from "lucide-react";
 
 export function PricingCard({
   id,
   name,
   price,
   features,
+  currentPlan,
   description,
 }: {
-  id: "free" | "plus" | "pro";
+  id: SubscriptionTier;
   name: string;
   price: number;
   features: { id: string; content: React.ReactNode | string }[];
   description: string;
+  currentPlan?: SubscriptionTier;
 }) {
+  const [isLoading, setIsLoading] = React.useState(false);
   const [isHovering, setIsHovering] = React.useState(false);
+
+  const planOrder = ["free", "plus", "pro"];
+  const isCurrent = id === currentPlan;
+
+  const router = useRouter();
+
+  function handleClick() {
+    setIsLoading(true);
+
+    if (currentPlan === "free") {
+      // Not subscribed yet, allow checkout for paid plans only
+      if (id !== "free") {
+        router.push(`/api/auth/checkout/${id}`);
+      } else {
+        // Free plan, nothing to do or show a message
+        setIsLoading(false);
+      }
+      return;
+    }
+
+    // Already subscribed, always go to portal for any plan action
+    router.push("/api/auth/portal");
+  }
 
   return (
     <div
@@ -67,20 +96,62 @@ export function PricingCard({
       <div className="mt-auto p-6 pt-0">
         <Button
           size="lg"
-          asChild
-          variant={id === "pro" ? "outline" : "default"}
+          loading={isLoading}
+          onClick={handleClick}
+          variant={id === "plus" ? "default" : "outline"}
           className="group/button h-10 w-full justify-between rounded-full pr-3 pl-4"
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
         >
-          <Link href="/settings/billing">
-            {id === "free" ? "Start Building" : `Upgrade to ${name}`}
-            <CircleArrow
-              variant={id === "pro" ? "outline" : "default"}
-              direction="up-right"
-              isHovering={isHovering}
-            />
-          </Link>
+          {isCurrent ? (
+            <span className="relative inline-block h-1/2">
+              <AnimatePresence mode="wait" initial={false}>
+                {!isHovering ? (
+                  <motion.span
+                    key="current"
+                    exit={{ opacity: 0, y: -8 }}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="absolute right-0 left-0"
+                    transition={{ duration: 0.11 }}
+                  >
+                    Your current plan
+                  </motion.span>
+                ) : (
+                  <motion.span
+                    key="manage"
+                    exit={{ opacity: 0, y: -8 }}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="absolute right-0 left-0"
+                    transition={{ duration: 0.11 }}
+                  >
+                    Manage subscription
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </span>
+          ) : (
+            (() => {
+              const currentIndex = planOrder.indexOf(currentPlan ?? "free");
+              const thisIndex = planOrder.indexOf(id);
+              if (thisIndex > currentIndex) {
+                return `Upgrade to ${name}`;
+              }
+              if (thisIndex < currentIndex) {
+                return `Downgrade to ${name}`;
+              }
+              if (id === "free") {
+                return "Start Building";
+              }
+              return `Choose ${name}`;
+            })()
+          )}
+          <CircleArrow
+            variant={id === "plus" ? "default" : "outline"}
+            direction="up-right"
+            isHovering={isHovering}
+          />
         </Button>
       </div>
     </div>

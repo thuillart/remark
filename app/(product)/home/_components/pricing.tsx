@@ -101,16 +101,13 @@ async function PricingCards() {
     );
   }
 
-  const subscription = state.activeSubscriptions.find(
-    (subscription) => subscription.status === "active",
-  );
-
-  const tier = getSlugFromProductId(subscription?.productId);
+  const productId = state?.activeSubscriptions[0]?.productId;
+  const currentPlan = productId ? getSlugFromProductId(productId) : "free";
 
   return (
     <>
       {plans.map(({ id, ...plan }) => (
-        <PricingCard id={id} key={id} isCurrent={tier === id} {...plan} />
+        <PricingCard id={id} key={id} currentPlan={currentPlan} {...plan} />
       ))}
     </>
   );

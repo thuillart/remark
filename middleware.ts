@@ -22,7 +22,7 @@ export function middleware(request: NextRequest) {
       return NextResponse.rewrite(url);
     }
 
-    if (path === "/sign-in" || path === "/sign-up") {
+    if (path === "/sign-in") {
       const url = request.nextUrl.clone();
       url.pathname = "/";
       return NextResponse.redirect(url);

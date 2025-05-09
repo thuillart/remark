@@ -1,16 +1,21 @@
 import "server-only";
 
 import type { CustomerState } from "@polar-sh/sdk/dist/commonjs/models/components/customerstate";
+import { count, eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { Suspense } from "react";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { auth } from "@/lib/auth";
 import { API_KEY_CONFIG } from "@/lib/configs/api-key";
 import { getSlugFromProductId } from "@/lib/configs/products";
 import { APP_NAME } from "@/lib/constants";
+import { db } from "@/lib/db/drizzle";
+import { contact } from "@/lib/db/schema";
 import type { SubscriptionTier } from "@/lib/types";
-import { getBaseUrl } from "@/lib/utils";
+import { cn, getBaseUrl, tryCatch } from "@/lib/utils";
 import { UsageSkeleton } from "@/usage/components/usage-skeleton";
+import Link from "next/link";
 
 export default function UsagePage() {
   return (
@@ -32,11 +37,33 @@ async function UsageCards() {
   const config = API_KEY_CONFIG[tier];
   const twentyFourHoursInSeconds = 60 * 60 * 24 * 30;
 
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  const userId = session.user.id;
+
+  const [{ data: apiKeys }, contactsCount] = await Promise.all([
+    tryCatch(
+      auth.api.listApiKeys({
+        headers: await headers(),
+      }),
+    ),
+    db
+      .select({ count: count() })
+      .from(contact)
+      .where(eq(contact.referenceId, userId)),
+  ]);
+
+  const totalRequestsCount = apiKeys.reduce((accumulator, apiKey) => {
+    return accumulator + (apiKey.requestCount ?? 0);
+  }, 0);
+
   const transactionalLimits = [
     {
       title: "Monthly limit",
       total: config.rateLimitMax ?? 0,
-      used: 400,
+      used: totalRequestsCount,
     },
     {
       title: "Daily limit",
@@ -48,7 +75,7 @@ async function UsageCards() {
     {
       title: "Contacts limit",
       total: 1000,
-      used: 0,
+      used: contactsCount[0].count,
     },
     {
       title: "Segments limit",
@@ -107,7 +134,15 @@ function UsageCard({
         <span className="mb-4 hidden text-muted-foreground text-sm md:block md:w-1/2">
           {description}
         </span>
-        <Button size="sm">Upgrade</Button>
+
+        {tier !== "pro" && (
+          <Link
+            href="/api/auth/portal"
+            className={cn(buttonVariants({ size: "sm" }))}
+          >
+            Upgrade
+          </Link>
+        )}
       </div>
       <div className="w-full md:w-1/2">
         <h3 className="font-medium text-base capitalize">{tier}</h3>
