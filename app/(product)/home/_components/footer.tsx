@@ -37,7 +37,7 @@ const menuItems = [
       },
       {
         label: "Q&A",
-        href: "#faqs",
+        href: "/home#faqs",
       },
     ],
   },
@@ -90,7 +90,7 @@ export function Footer() {
 
       <div className="container">
         <div className="flex flex-wrap justify-between gap-x-24 gap-y-12">
-          <LogoLink variant="wordmark" />
+          <LogoLink />
           <FooterMenu />
         </div>
         <div className="mt-16 flex flex-wrap-reverse items-center justify-between gap-x-12 gap-y-6">
