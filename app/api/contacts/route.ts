@@ -23,16 +23,16 @@ const bodySchema = z.object({
    */
   firstName: z.string().optional(),
   /**
-   * @description Whether the contact is a paying customer.
+   * @description Metadata about the contact.
    * @optional
    */
-  subscribed: z.boolean().default(false),
+  metadata: z.record(z.string(), z.string()).optional(),
 });
 
 export const POST = authRoute
   .body(bodySchema)
   .handler(async (_req, { ctx, body }) => {
-    const [contact] = await db
+    const [existingContact] = await db
       .select()
       .from(contact)
       .where(
@@ -40,7 +40,7 @@ export const POST = authRoute
           eq(contact.email, body.email),
       );
 
-    if (contact) {
+    if (existingContact) {
       return NextResponse.json(
         { error: "Contact already exists" },
         { status: 409 },
@@ -50,6 +50,7 @@ export const POST = authRoute
     await db.insert(contact).values({
       email: body.email,
       lastName: body.lastName,
+      metadata: body.metadata,
       firstName: body.firstName,
       subscribed: body.subscribed,
       referenceId: ctx.apiKey.userId,

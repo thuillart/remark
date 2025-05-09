@@ -1,14 +1,15 @@
 import { polar } from "@polar-sh/better-auth";
 import type { CustomerState } from "@polar-sh/sdk/dist/commonjs/models/components/customerstate";
+import type { SubscriptionUpdateProduct } from "@polar-sh/sdk/dist/commonjs/models/components/subscriptionupdateproduct";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { admin, apiKey, magicLink } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
+import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import React from "react";
 
-import { updateApiKeysLimits } from "@/app/actions/update-api-keys-limits";
 import { ChangeEmailTemplate } from "@/components/template/change-email";
 import { MagicLinkTemplate } from "@/components/template/magic-link";
 import { polarClient } from "@/lib/configs/polar";
@@ -18,8 +19,6 @@ import { db } from "@/lib/db/drizzle";
 import * as schema from "@/lib/db/schema";
 import { feedback } from "@/lib/db/schema";
 import { getBaseUrl } from "@/lib/utils";
-import type { SubscriptionUpdateProduct } from "@polar-sh/sdk/dist/commonjs/models/components/subscriptionupdateproduct";
-import { eq } from "drizzle-orm";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -152,6 +151,9 @@ export const auth = betterAuth({
         secret: process.env.POLAR_WEBHOOK_SECRET,
         onSubscriptionUpdated: async (payload: SubscriptionUpdateProduct) => {
           const slug = getSlugFromProductId(payload.productId);
+          const { updateApiKeysLimits } = await import(
+            "@/app/actions/update-api-keys-limits"
+          );
           await updateApiKeysLimits({ plan: slug });
         },
       },

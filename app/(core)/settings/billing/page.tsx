@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { CustomerState } from "@polar-sh/sdk/dist/commonjs/models/components/customerstate";
-import { SparklesIcon, TriangleAlertIcon } from "lucide-react";
+import { RiAlertLine, RiDiamondLine } from "@remixicon/react";
 import { headers } from "next/headers";
 import { Suspense } from "react";
 
@@ -39,7 +39,7 @@ async function BillingCard() {
   if (!subscription) {
     return (
       <EmptyState
-        icons={[SparklesIcon, SparklesIcon, SparklesIcon]}
+        icons={[RiDiamondLine, RiDiamondLine, RiDiamondLine]}
         title="You're not subscribed to any plan yet"
         action={
           <UpdatePlanDialog currentPlan="free">
@@ -60,13 +60,7 @@ async function BillingCard() {
     <>
       {subscription.status !== "active" && (
         <Alert
-          icon={
-            <TriangleAlertIcon
-              size={16}
-              className="opacity-80"
-              strokeWidth={2}
-            />
-          }
+          icon={<RiAlertLine className="opacity-60" />}
           action={<ResolveSubscriptionButton />}
           layout="row"
           variant="warning"
