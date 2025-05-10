@@ -3,20 +3,43 @@ import { NextRequest } from "next/server";
 import { getSubscription } from "@/lib/db/queries";
 import { auth } from "@/lib/auth";
 import { polarClient } from "@/lib/configs/polar";
-import { SUBSCRIPTION_LIMITS } from "@/lib/constants";
-import type { SubscriptionTier } from "@/lib/types";
 import { tryCatch } from "@/lib/utils";
 import {
   getStartOfDay,
   getStartOfMonth,
   getTimeUntilNextMonth,
 } from "@/lib/utils";
+import { SubscriptionSlug } from "./schema";
 
 type ApiKey = Awaited<ReturnType<typeof auth.api.listApiKeys>>[number];
 type Handler = (
   request: NextRequest,
-  context?: { apiKey: any; tier?: SubscriptionTier; polarCustomerId?: string },
+  context?: { apiKey: any; slug?: SubscriptionSlug; polarCustomerId?: string },
 ) => Promise<Response>;
+
+type SubscriptionLimits = {
+  DAILY?: number;
+  MONTHLY?: number;
+  INCLUDED_REQUESTS?: number;
+};
+
+export const SUBSCRIPTION_LIMITS: Record<
+  Uppercase<SubscriptionTier>,
+  SubscriptionLimits
+> = {
+  FREE: {
+    MONTHLY: 250,
+    INCLUDED_REQUESTS: 250,
+  },
+  PLUS: {
+    MONTHLY: 2500,
+    INCLUDED_REQUESTS: 2500,
+  },
+  PRO: {
+    MONTHLY: 7500,
+    INCLUDED_REQUESTS: 7500,
+  },
+} as const;
 
 export function withAuthAndRateLimiting(handler: Handler): Handler {
   return async (request, context) => {
@@ -126,7 +149,7 @@ export function withAuthAndRateLimiting(handler: Handler): Handler {
       );
     }
 
-    const tier: SubscriptionTier = result.data.subscription[0].tier;
+    const slug: SubscriptionSlug = result.data.subscription[0].slug;
     const polarCustomerId = result.data.subscription[0].polarCustomerId;
 
     // Count requests made this month, to know if they've exceeded monthly limit.
@@ -136,7 +159,7 @@ export function withAuthAndRateLimiting(handler: Handler): Handler {
     );
 
     // 4. Otherwise, they're free tier.
-    if (tier === "free") {
+    if (slug === "free") {
       // Count requests made today, to know if they've exceeded daily limit.
       const requestsMadeToday = countRequestsInPeriod(apiKeys, getStartOfDay());
 
@@ -165,7 +188,7 @@ export function withAuthAndRateLimiting(handler: Handler): Handler {
       }
     }
 
-    if (tier === "plus") {
+    if (slug === "plus") {
       if (requestsMadeThisMonth >= SUBSCRIPTION_LIMITS.PLUS.INCLUDED_REQUESTS) {
         return new Response(
           JSON.stringify({
@@ -179,7 +202,7 @@ export function withAuthAndRateLimiting(handler: Handler): Handler {
       }
     }
 
-    if (tier === "pro") {
+    if (slug === "pro") {
       if (requestsMadeThisMonth >= SUBSCRIPTION_LIMITS.PRO.INCLUDED_REQUESTS) {
         const { error } = await tryCatch(
           polarClient.events.ingest({
@@ -210,7 +233,7 @@ export function withAuthAndRateLimiting(handler: Handler): Handler {
     return handler(request, {
       ...context,
       apiKey: key,
-      tier,
+      slug,
       polarCustomerId,
     });
   };

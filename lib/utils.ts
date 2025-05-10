@@ -18,7 +18,6 @@ export async function toast(toast: Omit<ToastProps, "id">) {
   return showToast(toast);
 }
 
-// URL
 export function getBaseUrl() {
   if (typeof window !== "undefined") return "";
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
@@ -26,7 +25,6 @@ export function getBaseUrl() {
   return `http://localhost:${process.env.PORT ?? 3000}`;
 }
 
-// Date
 export function getStartOfDay(): Date {
   return startOfDay(new Date());
 }
@@ -46,22 +44,13 @@ export function getTimeUntilNextMonth(): string {
   return `${minutes} minute${minutes > 1 ? "s" : ""}`;
 }
 
-// String
 export function capitalizeFirstLetter(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-// Toast
-
-// Try-Catch
-type TryCatchResult<T> = {
-  data: T | null;
-  error: Error | null;
-};
-
 export async function tryCatch<T>(
   promise: Promise<T>,
-): Promise<TryCatchResult<T>> {
+): Promise<{ data: T | null; error: Error | null }> {
   try {
     const data = await promise;
     return { data, error: null };
@@ -72,5 +61,3 @@ export async function tryCatch<T>(
     };
   }
 }
-
-// Tailwind
