@@ -74,10 +74,17 @@ export const enrichFeedback = actionClient
     }),
   )
   .action(async ({ parsedInput: { from, text, metadata } }) => {
+    console.log("[actions.ts] Starting feedback enrichment for:", {
+      from,
+      text,
+      metadata,
+    });
+
     // 1. Lookup for a contact with the same email
     const existingContact = await db.query.contact.findFirst({
       where: eq(contact.email, from),
     });
+    console.log("[actions.ts] Found existing contact:", existingContact);
 
     // 2. Generate classification
     const { text: output } = await generateText({
@@ -89,10 +96,12 @@ export const enrichFeedback = actionClient
         metadata,
       }),
     });
+    console.log("[actions.ts] Raw AI output:", output);
 
     // 3. Extract information from the output
     const parsedOutput = z.string().parse(output);
     const enrichment = FeedbackEnrichmentSchema.parse(JSON.parse(parsedOutput));
+    console.log("[actions.ts] Parsed enrichment:", enrichment);
 
     return { enrichment };
   });

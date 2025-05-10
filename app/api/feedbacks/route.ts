@@ -32,12 +32,15 @@ const bodySchema = z.object({
 });
 
 async function secretPOST(request: NextRequest, context: Context) {
+  console.log("[route.ts] Received feedback request");
   const {
     apiKey: { userId },
   } = context;
 
   const body = await request.json();
+  console.log("[route.ts] Request body:", body);
   const { from, text, metadata } = bodySchema.parse(body);
+  console.log("[route.ts] Parsed body:", { from, text, metadata });
 
   const { error } = await tryCatch(
     db.insert(feedback).values({
@@ -50,7 +53,7 @@ async function secretPOST(request: NextRequest, context: Context) {
   );
 
   if (error) {
-    console.log("seems there's an error with the feedback creation", error);
+    console.log("[route.ts] Error creating feedback:", error);
     return new Response(
       JSON.stringify({
         error: "Failed to create feedback. Please try again.",
@@ -62,14 +65,14 @@ async function secretPOST(request: NextRequest, context: Context) {
     );
   }
 
+  console.log("[route.ts] Feedback created, starting enrichment");
   const result = await enrichFeedback({
     from,
     text,
     metadata,
   });
 
-  console.log("raw result", result);
-  console.log("pretty result", JSON.stringify(result, null, 2));
+  console.log("[route.ts] Enrichment result:", result);
 
   return new Response(JSON.stringify({ status: 200 }), {
     headers: { "Content-Type": "application/json" },

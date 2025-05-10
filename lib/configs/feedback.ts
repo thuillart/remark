@@ -137,6 +137,9 @@ Input:
 \`\`\``;
 
 export function getFeedbackPrompt(input: FeedbackInput): string {
+  console.log("[feedback.ts] Generating prompt for input:", input);
   const inputJson = JSON.stringify(input, null, 2);
-  return `${FEEDBACK_CLASSIFICATION_PROMPT}\n\nInput: \n\`\`\`json\n${inputJson}\n\`\`\``;
+  const prompt = `${FEEDBACK_CLASSIFICATION_PROMPT}\n\nInput: \n\`\`\`json\n${inputJson}\n\`\`\``;
+  console.log("[feedback.ts] Generated prompt:", prompt);
+  return prompt;
 }
