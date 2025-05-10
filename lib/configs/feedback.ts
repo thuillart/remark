@@ -1,6 +1,6 @@
 import { FeedbackInput } from "@/lib/schema";
 
-export const FEEDBACK_CLASSIFICATION_PROMPT = `**Act as a feedback classification engine.**
+export const FEEDBACK_CLASSIFICATION_PROMPT = `**Act as a feedback classification assistant.**
 
 Input is ONE single-line JS object with these keys:
 
@@ -41,10 +41,15 @@ Return—and only return—a minified, valid JSON object with exactly these keys
 
 1. Output exactly one JSON object—no extra text or line breaks.
 2. **impact**: either "minor", "major" or "critical".
-3. **summary**: one natural‐language sentence restating the feedback; start with the user's first name if known (otherwise "The user"); include metadata.plan or metadata.path if present.
-4. **subject**: concise (1–6 words) giving instant context (e.g. "Mobile button too tiny to tap").
+3. **summary**: Write as a human assistant would - use first name only, be conversational and natural. For example:
+   - Instead of "User requests dark mode feature", write "Alex is asking for dark mode support"
+   - Instead of "User reports mobile button size issue", write "Sarah noticed the mobile button is too small to tap"
+   - If no name is provided, use "The user" instead of a name, e.g. "The user is asking for dark mode support"
+4. **subject**: Write naturally but concisely (1-6 words). For example:
+   - Instead of "Requesting dark mode", write "Dark mode support"
+   - Instead of "Mobile button size issue", write "Mobile button too tiny"
 5. **tags**: choose ≥1 from allowed list; prefer one unless multiple issues clearly exist.
-6. Use a confident, formal, friendly tone; no hedging or apologies.
+6. Write as if you're a friendly human assistant - be natural, conversational, and empathetic.
 7. Maintain any URLs unchanged; do not inject new information.
 
 **Examples:**
@@ -66,8 +71,8 @@ Output:
 {
   "tags": ["feature_request"],
   "impact": "minor",
-  "subject": "Requesting dark mode",
-  "summary": "Alice requests a dark mode to reduce eye strain at night."
+  "subject": "Dark mode support",
+  "summary": "Alice is asking for dark mode to help with eye strain at night."
 }
 \`\`\`
 
@@ -92,8 +97,8 @@ Output:
 {
   "tags": ["ui", "ux"],
   "impact": "major",
-  "subject": "Mobile button too tiny to tap when checking out",
-  "summary": "Carol, on the free plan, says the mobile signup button is too small and difficult to tap on '/billing' path, which makes it hard for her to checkout."
+  "subject": "Too small mobile button",
+  "summary": "Carol is having trouble tapping the signup button on the billing page."
 }
 \`\`\`
 
@@ -117,29 +122,19 @@ Output:
   "tags": ["bug", "performance", "ui", "ux"],
   "impact": "critical",
   "subject": "iOS settings crash",
-  "summary": "Heidi, on the pro plan, reports that the app crashes on iOS when opening settings and the layout appears broken."
+  "summary": "Heidi is experiencing crashes in the iOS settings screen and seeing layout issues."
 }
 \`\`\`
 
 Now classify this feedback:
 
-Input: 
-
-\`\`\`json
-{
-  "from": "dan@example.com",
-  "text": "Search results take over 15 seconds to load when I apply filters.",
-  "metadata": {
-    "tier": "free",
-    "path": "/search"
-  }
-}
-\`\`\``;
+Input: \`\`\`json
+`;
 
 export function getFeedbackPrompt(input: FeedbackInput): string {
   console.log("[feedback.ts] Generating prompt for input:", input);
   const inputJson = JSON.stringify(input, null, 2);
-  const prompt = `${FEEDBACK_CLASSIFICATION_PROMPT}\n\nInput: \n\`\`\`json\n${inputJson}\n\`\`\``;
+  const prompt = `${FEEDBACK_CLASSIFICATION_PROMPT}${inputJson}\n\`\`\``;
   console.log("[feedback.ts] Generated prompt:", prompt);
   return prompt;
 }

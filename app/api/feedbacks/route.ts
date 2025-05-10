@@ -42,6 +42,30 @@ async function secretPOST(request: NextRequest, context: Context) {
   const { from, text, metadata } = bodySchema.parse(body);
   console.log("[route.ts] Parsed body:", { from, text, metadata });
 
+  // First enrich the feedback
+  console.log("[route.ts] Starting enrichment");
+  const result = await enrichFeedback({
+    from,
+    text,
+    metadata,
+  });
+
+  if (!result.data) {
+    console.log("[route.ts] Enrichment failed");
+    return new Response(
+      JSON.stringify({
+        error: "Failed to process feedback. Please try again.",
+      }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
+  }
+
+  console.log("[route.ts] Enrichment result:", result);
+
+  // Then create the feedback with enrichment data
   const { error } = await tryCatch(
     db.insert(feedback).values({
       id: randomUUID(),
@@ -49,6 +73,9 @@ async function secretPOST(request: NextRequest, context: Context) {
       text,
       metadata,
       referenceId: userId,
+      tags: result.data.enrichment.tags,
+      subject: result.data.enrichment.subject,
+      summary: result.data.enrichment.summary,
     }),
   );
 
@@ -64,15 +91,6 @@ async function secretPOST(request: NextRequest, context: Context) {
       },
     );
   }
-
-  console.log("[route.ts] Feedback created, starting enrichment");
-  const result = await enrichFeedback({
-    from,
-    text,
-    metadata,
-  });
-
-  console.log("[route.ts] Enrichment result:", result);
 
   return new Response(JSON.stringify({ status: 200 }), {
     headers: { "Content-Type": "application/json" },
