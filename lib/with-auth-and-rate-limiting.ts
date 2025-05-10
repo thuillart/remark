@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 
-import { getSubscription } from "@/actions/get-subscription";
+import { getSubscription } from "@/lib/db/queries";
 import { auth } from "@/lib/auth";
 import { polarClient } from "@/lib/configs/polar";
 import { SUBSCRIPTION_LIMITS } from "@/lib/constants";
@@ -10,7 +10,7 @@ import {
   getStartOfDay,
   getStartOfMonth,
   getTimeUntilNextMonth,
-} from "@/lib/utils/date";
+} from "@/lib/utils";
 
 type ApiKey = Awaited<ReturnType<typeof auth.api.listApiKeys>>[number];
 type Handler = (

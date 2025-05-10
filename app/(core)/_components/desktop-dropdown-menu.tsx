@@ -8,7 +8,6 @@ import {
   RiMoreFill,
   RiSunLine,
 } from "@remixicon/react";
-import { HomeIcon, MoonIcon, SunIcon, UserRoundPenIcon } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

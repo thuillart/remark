@@ -9,7 +9,7 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { createFeedback } from "@/actions/create-feedback";
+import { createFeedback } from "@/lib/db/actions";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Form } from "@/components/ui/form";
@@ -75,15 +75,15 @@ export function FeedbackPopover() {
               animate={{ opacity: 1 }}
               className="flex h-39 flex-col items-center justify-center gap-1.5 text-center"
             >
-              <div className="rounded-full border border-destructive/10 bg-destructive/[2.5] p-1">
-                <div className="rounded-full border border-destructive/10 bg-destructive/5 p-1">
-                  <div className="rounded-full border border-destructive/15 bg-destructive/5 p-3">
+              <div className="border-destructive/10 bg-destructive/[2.5] rounded-full border p-1">
+                <div className="border-destructive/10 bg-destructive/5 rounded-full border p-1">
+                  <div className="border-destructive/15 bg-destructive/5 rounded-full border p-3">
                     <HeartIcon size={24} className="text-destructive" />
                   </div>
                 </div>
               </div>
               <div className="space-y-1">
-                <p className="font-medium text-sm">Thank you so much for it.</p>
+                <p className="text-sm font-medium">Thank you so much for it.</p>
                 <p className="text-sm opacity-80">
                   We&apos;ll get back to you as soon as possible.
                 </p>
@@ -120,7 +120,7 @@ export function FeedbackPopover() {
                         className={cn(
                           buttonVariants({
                             variant: "link",
-                            className: "font-normal text-sm",
+                            className: "text-sm font-normal",
                           }),
                         )}
                       >

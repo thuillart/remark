@@ -6,6 +6,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { RiKeyLine } from "@remixicon/react";
 
 import { useApiKeyStore } from "@/api-keys/lib/store";
 import type { ApiKey } from "@/api-keys/lib/types";
@@ -18,7 +19,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { EmptyState } from "@/core/components/empty-state";
-import { RiKeyLine } from "@remixicon/react";
 
 export function DataTable({
   data,

@@ -4,13 +4,13 @@ import { headers } from "next/headers";
 import { Suspense } from "react";
 
 import { columns } from "@/api-keys/components/columns";
-import { CreateDialog } from "@/api-keys/components/create-dialog";
+import { CreateApiKeyDialog } from "@/api-keys/components/create-api-key-dialog";
 import { DataTable } from "@/api-keys/components/data-table";
-import { DeleteDialog } from "@/api-keys/components/delete-dialog";
+import { DeleteApiKeyDialog } from "@/api-keys/components/delete-api-key-dialog";
 import { EndContent } from "@/api-keys/components/end-content";
 import { TableSkeleton } from "@/api-keys/components/table-skeleton";
-import { UpdateDialog } from "@/api-keys/components/update-dialog";
-import { ViewDialog } from "@/api-keys/components/view-dialog";
+import { UpdateApiKeyDialog } from "@/api-keys/components/update-api-key-dialog";
+import { ViewApiKeyValueDialog } from "@/api-keys/components/view-api-key-value-dialog";
 import type { ApiKey } from "@/api-keys/lib/types";
 import { PageTitle } from "@/core/components/page-title";
 import { auth } from "@/lib/auth";
@@ -32,9 +32,9 @@ async function getApiKeys(): Promise<ApiKey[]> {
 export default function ApiKeys() {
   return (
     <>
-      <CreateDialog />
-      <ViewDialog />
-      <DeleteDialog />
+      <CreateApiKeyDialog />
+      <ViewApiKeyValueDialog />
+      <DeleteApiKeyDialog />
       <Suspense fallback={<TableSkeleton />}>
         <Table />
       </Suspense>
@@ -51,8 +51,8 @@ async function Table() {
         title="API Keys"
         endContent={<EndContent hasApiKeys={apiKeys.length > 0} />}
       />
+      <UpdateApiKeyDialog apiKeys={apiKeys} />
       <DataTable data={apiKeys} columns={columns} />
-      <UpdateDialog apiKeys={apiKeys} />
     </>
   );
 }

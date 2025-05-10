@@ -34,7 +34,7 @@ function NavItem({
       asChild
       variant="ghost"
       className={cn(
-        "group w-full justify-start gap-2 font-normal hover:bg-accent",
+        "group hover:bg-accent w-full justify-start gap-2 font-normal",
         isActive && "bg-accent text-accent-foreground",
       )}
     >
@@ -77,7 +77,7 @@ export const navItems: Item[] = [
 
 export function Sidebar() {
   return (
-    <aside className="hidden h-screen w-3xs shrink-0 flex-col justify-between border-border border-r bg-background p-4 md:flex">
+    <aside className="border-border bg-background hidden h-screen w-3xs shrink-0 flex-col justify-between border-r p-4 md:flex">
       <div className="flex flex-col gap-8">
         <div className="ml-2.5 flex h-8 items-center">
           <LogoLink />

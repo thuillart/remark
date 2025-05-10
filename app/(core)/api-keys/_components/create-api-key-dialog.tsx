@@ -2,13 +2,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { BadgeAlertIcon, TriangleAlertIcon } from "lucide-react";
+import { BadgeAlertIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { deleteApiKey } from "@/actions/delete-api-key";
 import { useApiKeyStore } from "@/api-keys/lib/store";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { createApiKey } from "@/lib/db/actions";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -31,32 +30,25 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/lib/utils";
 
 const formSchema = z.object({
-  confirmation: z.string().min(1, "Confirmation is required"),
+  name: z.string().min(1).max(50),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
-export function DeleteDialog() {
-  const { open, setOpen, selectedApiKeyId } = useApiKeyStore();
+export function CreateApiKeyDialog() {
+  const { open, setOpen, setApiKey } = useApiKeyStore();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      confirmation: "",
+      name: "",
     },
   });
 
   async function onSubmit(values: FormValues) {
-    if (!selectedApiKeyId || values.confirmation !== "DELETE") {
-      form.setError("confirmation", {
-        type: "manual",
-        message: "Please type DELETE to confirm",
-      });
-      return;
-    }
-
-    const res = await deleteApiKey({
-      keyId: selectedApiKeyId,
+    const res = await createApiKey({
+      name: values.name,
+      pathname: "/api-keys",
     });
 
     if (res?.data?.failure) {
@@ -68,27 +60,23 @@ export function DeleteDialog() {
       });
     }
 
-    setOpen(null);
+    setOpen("view");
+    setApiKey(res?.data?.apiKey?.key ?? null);
     form.reset();
   }
 
   return (
-    <Dialog open={open === "delete"} onOpenChange={() => setOpen(null)}>
+    <Dialog open={open === "create"} onOpenChange={() => setOpen(null)}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete API key</DialogTitle>
+          <DialogTitle>Create API key</DialogTitle>
           <VisuallyHidden>
             <DialogDescription>
-              You are about to delete this API key. This action cannot be
-              undone.
+              Create a new API key so we know it&apos;s you when you make
+              requests.
             </DialogDescription>
           </VisuallyHidden>
         </DialogHeader>
-
-        <Alert variant="destructive">
-          <TriangleAlertIcon size={16} />
-          <AlertDescription>This action cannot be undone.</AlertDescription>
-        </Alert>
 
         <Form {...form}>
           <form
@@ -97,15 +85,10 @@ export function DeleteDialog() {
           >
             <FormField
               control={form.control}
-              name="confirmation"
+              name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>
-                    <div>
-                      Type <span className="font-bold font-mono">DELETE</span>{" "}
-                      to confirm
-                    </div>
-                  </FormLabel>
+                  <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -123,11 +106,10 @@ export function DeleteDialog() {
 
               <Button
                 type="submit"
-                variant="destructive"
                 loading={form.formState.isSubmitting}
                 disabled={!form.formState.isDirty}
               >
-                Delete
+                Create
               </Button>
             </DialogFooter>
           </form>

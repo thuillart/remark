@@ -25,7 +25,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn, toast } from "@/lib/utils";
 
-export function ViewDialog() {
+export function ViewApiKeyValueDialog() {
   const { open, setOpen, apiKey, setApiKey } = useApiKeyStore();
 
   const [isCopied, setIsCopied] = React.useState(false);
@@ -78,7 +78,7 @@ export function ViewDialog() {
             className="pr-20 font-mono"
           />
 
-          <div className="-translate-y-1/2 absolute top-1/2 right-1.5 flex gap-1">
+          <div className="absolute top-1/2 right-1.5 flex -translate-y-1/2 gap-1">
             <Button
               size="icon"
               variant="ghost"

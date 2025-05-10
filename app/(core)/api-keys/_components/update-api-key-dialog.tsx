@@ -8,7 +8,7 @@ import { z } from "zod";
 
 import { useApiKeyStore } from "@/api-keys/lib/store";
 import type { ApiKey } from "@/api-keys/lib/types";
-import { updateApiKey } from "@/app/actions/update-api-key";
+import { updateApiKey } from "@/lib/db/actions";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -28,16 +28,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { apiKeyNameSchema } from "@/lib/schemas";
 import { toast } from "@/lib/utils";
 
 const formSchema = z.object({
-  name: apiKeyNameSchema,
+  name: z.string().min(1).max(50),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
-export function UpdateDialog({ apiKeys }: { apiKeys: ApiKey[] }) {
+export function UpdateApiKeyDialog({ apiKeys }: { apiKeys: ApiKey[] }) {
   const { open, setOpen, selectedApiKeyId } = useApiKeyStore();
 
   const form = useForm<FormValues>({

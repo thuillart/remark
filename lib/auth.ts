@@ -147,9 +147,7 @@ export const auth = betterAuth({
         secret: process.env.POLAR_WEBHOOK_SECRET,
         onSubscriptionUpdated: async (payload: SubscriptionUpdateProduct) => {
           const slug = getSlugFromProductId(payload.productId);
-          const { updateApiKeysLimits } = await import(
-            "@/app/actions/update-api-keys-limits"
-          );
+          const { updateApiKeysLimits } = await import("@/lib/db/actions");
           await updateApiKeysLimits({ plan: slug });
         },
       },

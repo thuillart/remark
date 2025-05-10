@@ -24,19 +24,19 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     ...components,
     h1: (props: React.ComponentPropsWithoutRef<"h1">) => (
       <h1
-        className="mb-12 border-b pb-3 font-semibold text-2xl text-neutral-950 tracking-tight dark:text-neutral-50"
+        className="mb-12 border-b pb-3 text-2xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50"
         {...props}
       />
     ),
     h2: (props: React.ComponentPropsWithoutRef<"h2">) => (
       <h2
-        className="mt-16 mb-6 font-semibold text-neutral-950 text-xl tracking-tight dark:text-neutral-50"
+        className="mt-16 mb-6 text-xl font-semibold tracking-tight text-neutral-950 dark:text-neutral-50"
         {...props}
       />
     ),
     h3: ({ className, ...props }: React.ComponentPropsWithoutRef<"h3">) => (
       <h3
-        className="not-first:mt-8 mb-4 font-medium text-base tracking-tight"
+        className="mb-4 text-base font-medium tracking-tight not-first:mt-8"
         {...props}
       />
     ),
@@ -59,7 +59,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
             {...props}
           >
             {children}
-            <ArrowUpRightIcon className="group-hover/link:-translate-y-px absolute mt-1.25 inline-block size-[1em] text-muted-foreground no-underline transition duration-[inherit] ease-[inherit] group-hover/link:translate-x-px group-hover/link:text-primary" />
+            <ArrowUpRightIcon className="text-muted-foreground group-hover/link:text-primary absolute mt-1.25 inline-block size-[1em] no-underline transition duration-[inherit] ease-[inherit] group-hover/link:translate-x-px group-hover/link:-translate-y-px" />
           </Link>
         );
       }
@@ -75,17 +75,17 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       return (
         <a href={href} target="_blank" className={cn(className)} {...props}>
           {children}{" "}
-          <ArrowUpRightIcon className="group-hover/link:-translate-y-px absolute mt-1.5 ml-0.5 inline-block size-[1em] text-muted-foreground no-underline transition duration-[inherit] ease-[inherit] group-hover/link:translate-x-px group-hover/link:text-primary" />
+          <ArrowUpRightIcon className="text-muted-foreground group-hover/link:text-primary absolute mt-1.5 ml-0.5 inline-block size-[1em] no-underline transition duration-[inherit] ease-[inherit] group-hover/link:translate-x-px group-hover/link:-translate-y-px" />
         </a>
       );
     },
     hr: (props: React.ComponentPropsWithoutRef<"hr">) => (
-      <hr {...props} className="my-12 bg-border" />
+      <hr {...props} className="bg-border my-12" />
     ),
     ul: (props: React.ComponentPropsWithoutRef<"ul">) => (
       <ul
         {...props}
-        className="my-5 list-disc pl-6 [&_li]:pl-1.5 [&_li]:text-base/relaxed [&_li]:marker:text-muted-foreground"
+        className="[&_li]:marker:text-muted-foreground my-5 list-disc pl-6 [&_li]:pl-1.5 [&_li]:text-base/relaxed"
       />
     ),
     li: (props: React.ComponentPropsWithoutRef<"li">) => (
@@ -93,7 +93,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     ),
     code: (props: React.ComponentPropsWithoutRef<"code">) => (
       <code
-        className="font-mono font-semibold text-neutral-950 text-sm/6 dark:text-neutral-50"
+        className="font-mono text-sm/6 font-semibold text-neutral-950 dark:text-neutral-50"
         {...props}
       />
     ),
@@ -167,18 +167,18 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       <Link
         href={href}
         target={href.startsWith("http") ? "_blank" : undefined}
-        className="group/card relative inline cursor-pointer text-inherit no-underline transition-200 ease-out"
+        className="group/card transition-200 relative inline cursor-pointer text-inherit no-underline ease-out"
       >
         <div
           className={cn(
-            "relative flex size-full select-none flex-col gap-4 overflow-hidden rounded-lg rounded-tr-3xl px-4 pt-5 pb-4 text-muted-foreground leading-loose shadow-[inset_0_0_0_1px_var(--color-border)] transition-[180ms] group-hover/card:rounded-tr-[2.25rem] group-hover/card:bg-foreground/2.5",
-            "before:-translate-y-1/2 group-hover/card:before:-translate-y-1/2 before:absolute before:top-0 before:right-0 before:z-3 before:size-7.5 before:translate-x-1/2 before:rotate-45 before:bg-background before:shadow-[0_1px_0_0_var(--color-border)] before:transition-[inherit] before:content-[''] group-hover/card:before:size-10.5 group-hover/card:before:translate-x-1/2 group-hover/card:before:rotate-45",
-            "after:-translate-y-2 group-hover/card:after:-translate-y-0 after:absolute after:top-0 after:right-0 after:z-2 after:size-7 after:translate-x-2 after:rounded-bl-md after:bg-foreground/2.5 after:shadow-[-1px_1px_0_0_var(--color-border)] after:transition-[inherit] after:content-[''] group-hover/card:after:translate-x-0",
+            "text-muted-foreground group-hover/card:bg-foreground/2.5 relative flex size-full flex-col gap-4 overflow-hidden rounded-lg rounded-tr-3xl px-4 pt-5 pb-4 leading-loose shadow-[inset_0_0_0_1px_var(--color-border)] transition-[180ms] select-none group-hover/card:rounded-tr-[2.25rem]",
+            "before:bg-background before:absolute before:top-0 before:right-0 before:z-3 before:size-7.5 before:translate-x-1/2 before:-translate-y-1/2 before:rotate-45 before:shadow-[0_1px_0_0_var(--color-border)] before:transition-[inherit] before:content-[''] group-hover/card:before:size-10.5 group-hover/card:before:translate-x-1/2 group-hover/card:before:-translate-y-1/2 group-hover/card:before:rotate-45",
+            "after:bg-foreground/2.5 after:absolute after:top-0 after:right-0 after:z-2 after:size-7 after:translate-x-2 after:-translate-y-2 after:rounded-bl-md after:shadow-[-1px_1px_0_0_var(--color-border)] after:transition-[inherit] after:content-[''] group-hover/card:after:translate-x-0 group-hover/card:after:-translate-y-0",
           )}
         >
           {children}
           <div className="flex flex-col gap-2">
-            <h3 className="font-medium text-base text-foreground">{title}</h3>
+            <h3 className="text-foreground text-base font-medium">{title}</h3>
             {description && <p className="text-sm">{description}</p>}
           </div>
         </div>
