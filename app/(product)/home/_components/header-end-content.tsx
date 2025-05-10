@@ -1,10 +1,8 @@
-import "server-only";
-
 import { Suspense } from "react";
+import { headers } from "next/headers";
 
 import { HeaderAuthButtons } from "@/home/components/header-auth-buttons";
 import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 
 export function HeaderEndContent() {
   return (

@@ -1,7 +1,7 @@
-import "server-only";
-
 export default function LegalsLayout({
   children,
-}: { children: React.ReactNode }) {
+}: {
+  children: React.ReactNode;
+}) {
   return <main className="container">{children}</main>;
 }

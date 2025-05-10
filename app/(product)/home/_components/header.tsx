@@ -1,5 +1,3 @@
-import "server-only";
-
 import { LogoLink } from "@/components/logo";
 import { HeaderEndContent } from "@/home/components/header-end-content";
 import { HeaderLayout } from "@/home/components/header-layout";

@@ -136,13 +136,13 @@ export function Sidebar() {
         <motion.div
           // Smooth scroll-aware positioning
           animate={{ "--translate-y": hasScrolled ? "0px" : "24px" }}
-          className="relative h-full overflow-y-scroll pt-17.5 pb-10 [scrollbar-width:none] after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:block after:h-10 after:w-full after:content-[''] after:[background-image:linear-gradient(transparent,var(--color-background))]"
+          className="relative h-full overflow-y-scroll pt-17.5 pb-10 [scrollbar-width:none] after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:block after:h-10 after:w-full after:[background-image:linear-gradient(transparent,var(--color-background))] after:content-['']"
           transition={{ type: "spring", bounce: 0, duration: 0.45 }}
         >
-          <nav className="relative block w-full select-none p-0">
+          <nav className="relative block w-full p-0 select-none">
             {items.map(({ title, items }) => (
               <div key={title} className="group/section">
-                <p className="mb-2 font-medium text-sm/4">{title}</p>
+                <p className="mb-2 text-sm/4 font-medium">{title}</p>
                 <ul className="group-not-last/section:pb-6">
                   {items.map(({ href, title, items }) => (
                     <li key={title} className="relative">
@@ -152,7 +152,7 @@ export function Sidebar() {
                           onClick={(event) => handleClick(href, event, !!items)}
                           data-active={href === pathname}
                           className={cn(
-                            "inline-flex w-full items-center py-1.5 text-sm opacity-40 transition-[opacity,font-weight] duration-200 hover:opacity-70 data-[active=true]:font-medium data-[active=true]:opacity-100 dark:opacity-50 dark:data-[active=true]:opacity-100 dark:hover:opacity-70",
+                            "inline-flex w-full items-center py-1.5 text-sm opacity-40 transition-[opacity,font-weight] duration-200 hover:opacity-70 data-[active=true]:font-medium data-[active=true]:opacity-100 dark:opacity-50 dark:hover:opacity-70 dark:data-[active=true]:opacity-100",
                           )}
                         >
                           {title}
@@ -163,11 +163,11 @@ export function Sidebar() {
                             type="button"
                             onClick={() => handleOpen(href)}
                             data-open={open[href]}
-                            className="group/button absolute inset-0 left-auto flex size-8 cursor-pointer items-center justify-center rounded-full opacity-40 transition-opacity hover:opacity-70 data-[open=true]:opacity-100 dark:opacity-50 dark:data-[open=true]:opacity-100 dark:hover:opacity-70"
+                            className="group/button absolute inset-0 left-auto flex size-8 cursor-pointer items-center justify-center rounded-full opacity-40 transition-opacity hover:opacity-70 data-[open=true]:opacity-100 dark:opacity-50 dark:hover:opacity-70 dark:data-[open=true]:opacity-100"
                           >
                             <ChevronRightIcon
                               size={16}
-                              className="transition-transform duration-200 group-data-[open=true]/button:rotate-90 group-data-[open=true]/button:scale-110"
+                              className="transition-transform duration-200 group-data-[open=true]/button:scale-110 group-data-[open=true]/button:rotate-90"
                             />
                           </button>
                         )}
@@ -191,7 +191,7 @@ export function Sidebar() {
                               >
                                 <span
                                   data-active={href === pathname}
-                                  className="opacity-40 transition-[opacity,font-weight] duration-200 hover:opacity-70 data-[active=true]:font-medium data-[active=true]:opacity-100 dark:opacity-50 dark:data-[active=true]:opacity-100 dark:hover:opacity-70"
+                                  className="opacity-40 transition-[opacity,font-weight] duration-200 hover:opacity-70 data-[active=true]:font-medium data-[active=true]:opacity-100 dark:opacity-50 dark:hover:opacity-70 dark:data-[active=true]:opacity-100"
                                 >
                                   {title}
                                 </span>

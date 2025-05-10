@@ -1,14 +1,13 @@
-import "server-only";
-
 import type { CustomerState } from "@polar-sh/sdk/dist/commonjs/models/components/customerstate";
 import { headers } from "next/headers";
 import { cache } from "react";
-import { type ReactNode, Suspense } from "react";
+import React, { Suspense } from "react";
 
 import { PricingCard } from "@/home/components/pricing-card";
-import { PricingSkeleton } from "@/home/components/pricing-skeleton";
 import { getSlugFromProductId } from "@/lib/configs/products";
 import { getBaseUrl } from "@/lib/utils";
+import { SubscriptionSlug } from "@/lib/schema";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Cache the fetch request for auth state
 const getCachedSubscriptionState = cache(async () => {
@@ -21,10 +20,10 @@ const getCachedSubscriptionState = cache(async () => {
 });
 
 type Plan = {
-  id: "free" | "plus" | "pro";
+  id: SubscriptionSlug;
   name: string;
   price: number;
-  features: { id: string; content: string | ReactNode }[];
+  features: { id: string; content: string | React.ReactNode }[];
   description: string;
 };
 
@@ -70,15 +69,23 @@ export async function Pricing() {
     <section className="container">
       <div className="py-12 md:pt-24 md:pb-12">
         <div className="space-y-3 md:px-6">
-          <h2 className="font-semibold text-4xl/14 tracking-tight">
+          <h2 className="text-4xl/14 font-semibold tracking-tight">
             Forget about your bill.
           </h2>
-          <p className="font-medium text-muted-foreground text-xl tracking-tight">
+          <p className="text-muted-foreground text-xl font-medium tracking-tight">
             Use the core product for free, forever.
           </p>
         </div>
         <div className="mt-18 grid gap-4 md:grid-cols-3">
-          <Suspense fallback={<PricingSkeleton />}>
+          <Suspense
+            fallback={
+              <>
+                <Skeleton className="h-97.5 rounded-2xl border" />
+                <Skeleton className="h-97.5 rounded-2xl border" />
+                <Skeleton className="h-97.5 rounded-2xl border" />
+              </>
+            }
+          >
             <PricingCards />
           </Suspense>
         </div>
@@ -102,12 +109,12 @@ async function PricingCards() {
   }
 
   const productId = state?.activeSubscriptions[0]?.productId;
-  const currentPlan = productId ? getSlugFromProductId(productId) : "free";
+  const slug = productId ? getSlugFromProductId(productId) : "free";
 
   return (
     <>
       {plans.map(({ id, ...plan }) => (
-        <PricingCard id={id} key={id} currentPlan={currentPlan} {...plan} />
+        <PricingCard id={id} key={id} currentSlug={slug} {...plan} />
       ))}
     </>
   );

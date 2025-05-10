@@ -1,5 +1,3 @@
-import "server-only";
-
 import { Demo } from "@/home/components/demo";
 import { FAQs } from "@/home/components/faqs";
 import { Features } from "@/home/components/features";

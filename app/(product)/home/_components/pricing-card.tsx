@@ -2,42 +2,41 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckIcon } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
 
 import { CircleArrow } from "@/components/circle-arrow";
 import { Button } from "@/components/ui/button";
-import type { SubscriptionTier } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { SubscriptionSlug } from "@/lib/schema";
 
 export function PricingCard({
   id,
   name,
   price,
   features,
-  currentPlan,
+  currentSlug,
   description,
 }: {
-  id: SubscriptionTier;
+  id: SubscriptionSlug;
   name: string;
   price: number;
   features: { id: string; content: React.ReactNode | string }[];
   description: string;
-  currentPlan?: SubscriptionTier;
+  currentSlug?: SubscriptionSlug;
 }) {
   const [isLoading, setIsLoading] = React.useState(false);
   const [isHovering, setIsHovering] = React.useState(false);
 
   const planOrder = ["free", "plus", "pro"];
-  const isCurrent = id === currentPlan;
+  const isCurrent = id === currentSlug;
 
   const router = useRouter();
 
   function handleClick() {
     setIsLoading(true);
 
-    if (currentPlan === "free") {
+    if (currentSlug === "free") {
       // Not subscribed yet, allow checkout for paid plans only
       if (id !== "free") {
         router.push(`/api/auth/checkout/${id}`);
@@ -56,16 +55,16 @@ export function PricingCard({
     <div
       className={cn(
         "flex flex-1 flex-col rounded-2xl border",
-        id === "plus" ? "border-ring outline-4 outline-ring/50" : "",
+        id === "plus" ? "border-ring outline-ring/50 outline-4" : "",
       )}
     >
       <div className="flex flex-col gap-2 p-6">
-        <h3 className="font-semibold text-xl tracking-tight">{name}</h3>
+        <h3 className="text-xl font-semibold tracking-tight">{name}</h3>
         <span className="inline-block whitespace-nowrap">
-          <span className="font-semibold text-3xl tracking-tight">
+          <span className="text-3xl font-semibold tracking-tight">
             ${price}
           </span>{" "}
-          <span className="-translate-y-px inline-block text-muted-foreground text-sm">
+          <span className="text-muted-foreground inline-block -translate-y-px text-sm">
             {id === "pro" && " starts at"} per month
           </span>
         </span>
@@ -76,7 +75,7 @@ export function PricingCard({
         {id === "free" ? (
           <div className="mb-3 h-5" />
         ) : (
-          <span className="mb-3 block text-muted-foreground text-sm">
+          <span className="text-muted-foreground mb-3 block text-sm">
             Everything in {name === "Plus" ? "Free" : "Plus"}, and:
           </span>
         )}
@@ -84,7 +83,7 @@ export function PricingCard({
           {features.map(({ id, content }) => (
             <li
               key={id}
-              className="flex items-center gap-x-2 text-pretty text-sm [&_bold]:font-medium"
+              className="flex items-center gap-x-2 text-sm text-pretty [&_bold]:font-medium"
             >
               <CheckIcon size={16} className="shrink-0" />
               {content}
@@ -141,7 +140,7 @@ export function PricingCard({
             </span>
           ) : (
             (() => {
-              const currentIndex = planOrder.indexOf(currentPlan ?? "free");
+              const currentIndex = planOrder.indexOf(currentSlug ?? "free");
               const thisIndex = planOrder.indexOf(id);
               if (thisIndex > currentIndex) {
                 return `Upgrade to ${name}`;

@@ -1,5 +1,3 @@
-import "server-only";
-
 import { FAQsCollapsible } from "@/home/components/faqs-collapsible";
 import { FAQsContactUs } from "@/home/components/faqs-contact-us";
 
@@ -8,7 +6,7 @@ export function FAQs() {
     <section id="faqs" className="container scroll-mt-18">
       <div className="pt-9 pb-12 md:pt-18 md:pb-24">
         <div className="grid w-full grid-cols-1 gap-8 md:grid-cols-[1fr_2fr] md:gap-18">
-          <h2 className="font-semibold text-4xl/14 tracking-tight">FAQs.</h2>
+          <h2 className="text-4xl/14 font-semibold tracking-tight">FAQs.</h2>
           <div className="space-y-8">
             <FAQsCollapsible items={questionsAndAnswers} />
             <FAQsContactUs />

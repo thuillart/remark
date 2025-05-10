@@ -1,5 +1,3 @@
-import "server-only";
-
 import {
   RiDiscordFill,
   RiGithubFill,
@@ -8,8 +6,7 @@ import {
 } from "@remixicon/react";
 import Link from "next/link";
 
-import { DISCORD_URL, X_URL, YOUTUBE_URL } from "@/lib/constants";
-import { GITHUB_URL } from "@/lib/constants";
+import { DISCORD_URL, GITHUB_URL, X_URL, YOUTUBE_URL } from "@/lib/constants";
 
 export function Footer() {
   return (
@@ -18,9 +15,9 @@ export function Footer() {
         {socials.map(({ name, href, Icon }) => (
           <Link
             key={name}
-            href={href || ""}
+            href={href}
             target="_blank"
-            className="text-muted-foreground transition-colors hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground transition-colors"
           >
             <Icon size={20} />
           </Link>

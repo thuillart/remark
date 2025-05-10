@@ -1,8 +1,10 @@
-import PageTitle from "@/legals/components/page-title";
+import { PageTitle } from "@/legals/components/page-title";
 
-export default function LegalsNoticeLayout({
+export default function LegalNoticeLayout({
   children,
-}: { children: React.ReactNode }) {
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <>
       <PageTitle title="Legal Notice" />

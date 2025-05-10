@@ -1,5 +1,3 @@
-import "server-only";
-
 import type { Metadata } from "next";
 import { Borel, IBM_Plex_Mono, Inter } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";

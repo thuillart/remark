@@ -1,18 +1,16 @@
-import "server-only";
-
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import Link from "next/link";
 
 export function HeaderStartContent() {
   return (
     <>
-      <hr className="h-4 w-px bg-border max-sm:hidden" />
+      <hr className="bg-border h-4 w-px max-sm:hidden" />
       <Link
         href="/docs"
         className={buttonVariants({
           variant: "link",
           className:
-            "inline-flex font-normal text-muted-foreground hover:text-foreground hover:no-underline max-sm:hidden",
+            "text-muted-foreground hover:text-foreground inline-flex font-normal hover:no-underline max-sm:hidden",
         })}
       >
         Documentation

@@ -1,5 +1,3 @@
-import "server-only";
-
 import {
   RiDiscordFill,
   RiGithubFill,
@@ -107,13 +105,13 @@ function FooterMenu() {
     <ul className="flex flex-wrap gap-x-24 gap-y-12">
       {menuItems.map(({ label, items }) => (
         <li key={label}>
-          <h3 className="font-medium text-sm">{label}</h3>
+          <h3 className="text-sm font-medium">{label}</h3>
           <ul>
             {items.map(({ label, href }) => (
               <li key={label}>
                 <Link
                   href={href}
-                  className="mt-4 block not-hover:text-muted-foreground text-sm transition-colors"
+                  className="not-hover:text-muted-foreground mt-4 block text-sm transition-colors"
                 >
                   {label}
                 </Link>

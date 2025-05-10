@@ -1,5 +1,3 @@
-import "server-only";
-
 import {
   CodeIcon,
   LockOpenIcon,
@@ -44,7 +42,7 @@ export function Features() {
   return (
     <section className="container">
       <div className="space-y-12 py-12 md:py-24">
-        <h2 className="font-semibold text-4xl/14 tracking-tight md:px-6">
+        <h2 className="text-4xl/14 font-semibold tracking-tight md:px-6">
           As it should be.
         </h2>
 
@@ -70,7 +68,7 @@ export function Features() {
                     <Icon size={32} strokeWidth={1.5} />
                     <h3 className="font-semibold">{title}</h3>
                   </div>
-                  <p className="font-medium text-muted-foreground">
+                  <p className="text-muted-foreground font-medium">
                     {description}
                   </p>
                 </article>
@@ -86,12 +84,12 @@ export function Features() {
 function DocsCard() {
   return (
     <div className="relative flex h-75 flex-col-reverse overflow-hidden rounded-2xl border p-4 md:p-8">
-      <h3 className="-tracking-[.015em] self-start font-medium text-lg/6 [&_span]:opacity-50">
+      <h3 className="self-start text-lg/6 font-medium -tracking-[.015em] [&_span]:opacity-50">
         Clear and comprehensive docs.{" "}
         <span>Developer documentation the way it should be.</span>
       </h3>
-      <div className="-z-1 absolute inset-0 bg-gradient-to-t from-20% from-background to-transparent" />
-      <div className="-z-2 flex select-none flex-col items-start gap-6 overflow-hidden rounded-xl border border-b-0 px-6 pt-4 shadow-xs md:inset-8 md:px-8 md:pt-7">
+      <div className="from-background absolute inset-0 -z-1 bg-gradient-to-t from-20% to-transparent" />
+      <div className="-z-2 flex flex-col items-start gap-6 overflow-hidden rounded-xl border border-b-0 px-6 pt-4 shadow-xs select-none md:inset-8 md:px-8 md:pt-7">
         <Logo className="-ml-1.75 scale-80" />
         <div className="grid w-full grid-cols-[1fr_3fr] gap-2">
           <div className="flex h-full flex-col gap-2">
@@ -99,7 +97,7 @@ function DocsCard() {
               <div
                 key={width}
                 style={{ width: `${width}%` }}
-                className="h-2 rounded-full bg-border"
+                className="bg-border h-2 rounded-full"
               />
             ))}
           </div>
@@ -129,12 +127,12 @@ const example = ts`
 function BundleSizeCard() {
   return (
     <div className="relative flex h-75 flex-col gap-4 overflow-hidden rounded-2xl border p-4 md:p-8">
-      <h3 className="-tracking-[.015em] self-start font-medium text-lg/6 [&_span]:text-muted-foreground">
+      <h3 className="[&_span]:text-muted-foreground self-start text-lg/6 font-medium -tracking-[.015em]">
         Tiny by design.{" "}
         <span>So lightweight your bundle size will shrink.</span>
       </h3>
       <FeaturesButton />
-      <div className="dark -mr-8 -mb-8 relative h-full overflow-hidden rounded-tl-xl bg-background shadow-xs">
+      <div className="dark bg-background relative -mr-8 -mb-8 h-full overflow-hidden rounded-tl-xl shadow-xs">
         <CodeExample example={example} className="*:md:w-min" />
       </div>
     </div>
