@@ -1,5 +1,3 @@
-import "server-only";
-
 import { Nav } from "@/auth/components/nav";
 
 export default function AuthLayout({

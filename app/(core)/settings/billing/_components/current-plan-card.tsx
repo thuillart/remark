@@ -15,16 +15,16 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { APP_NAME } from "@/lib/constants";
-import type { SubscriptionTier } from "@/lib/types";
+
 import { capitalizeFirstLetter } from "@/lib/utils";
+import { SubscriptionSlug } from "@/lib/schema";
 
 export function CurrentPlanCard({
-  plan,
+  slug,
   periodEnd,
   cancelAtPeriodEnd,
 }: {
-  plan: SubscriptionTier;
-  status: string;
+  slug: SubscriptionSlug;
   periodEnd?: Date | null;
   cancelAtPeriodEnd?: boolean;
 }) {
@@ -48,7 +48,7 @@ export function CurrentPlanCard({
             <>
               Thanks for being a{" "}
               <TextShimmer>
-                {`${APP_NAME} ${capitalizeFirstLetter(plan)}`}
+                {`${APP_NAME} ${capitalizeFirstLetter(slug)}`}
               </TextShimmer>{" "}
               member.
             </>
@@ -56,7 +56,7 @@ export function CurrentPlanCard({
             <>
               Your{" "}
               <TextShimmer>
-                {`${APP_NAME} ${capitalizeFirstLetter(plan)}`}
+                {`${APP_NAME} ${capitalizeFirstLetter(slug)}`}
               </TextShimmer>{" "}
               plan will end in {differenceInDays(periodEnd, new Date())} days.
             </>
@@ -76,7 +76,7 @@ export function CurrentPlanCard({
           ) : (
             <>
               <GlowEffect borderWidth={2} />
-              I've changed my mind
+              I&apos;ve changed my mind
             </>
           )}
         </Button>

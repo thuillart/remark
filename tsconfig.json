@@ -23,15 +23,16 @@
       "@/core/lib/*": ["app/(core)/_lib/*"],
       "@/api-keys/lib/*": ["app/(core)/api-keys/_lib/*"],
       "@/core/components/*": ["app/(core)/_components/*"],
-      "@/docs/components/*": ["app/(docs)/_components/*"],
       "@/auth/components/*": ["app/(auth)/_components/*"],
-      "@/home/components/*": ["app/(product)/home/_components/*"],
       "@/usage/components/*": ["app/(core)/settings/usage/_components/*"],
-      "@/legals/components/*": ["app/(product)/(legals)/_components/*"],
       "@/profile/components/*": ["app/(core)/profile/_components/*"],
       "@/billing/components/*": ["app/(core)/settings/billing/_components/*"],
       "@/settings/components/*": ["app/(core)/settings/_components/*"],
-      "@/api-keys/components/*": ["app/(core)/api-keys/_components/*"]
+      "@/api-keys/components/*": ["app/(core)/api-keys/_components/*"],
+      "@/public/components/*": ["app/(public)/_components/*"],
+      "@/docs/components/*": ["app/(public)/(docs)/_components/*"],
+      "@/legals/components/*": ["app/(public)/(legals)/_components/*"],
+      "@/home/components/*": ["app/(public)/(marketing)/(home)/_components/*"]
     }
   },
   "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],

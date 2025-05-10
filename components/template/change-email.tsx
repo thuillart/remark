@@ -43,8 +43,8 @@ export function ChangeEmailTemplate({
                 Hello,
               </Text>
 
-              <Text className="my-4 whitespace-pre-line text-left text-base/6 text-slate-600">
-                Someone's trying to change your email to{" "}
+              <Text className="my-4 text-left text-base/6 whitespace-pre-line text-slate-600">
+                Someone&apos;s trying to change your email to{" "}
                 <strong className="font-semibold text-slate-600">
                   {newEmail}
                 </strong>
@@ -53,14 +53,14 @@ export function ChangeEmailTemplate({
 
               <Button
                 href={url}
-                className="block rounded-md bg-slate-800 p-2.5 text-center font-semibold text-base/none text-white no-underline"
+                className="block rounded-md bg-slate-800 p-2.5 text-center text-base/none font-semibold text-white no-underline"
               >
                 Change my email
               </Button>
 
-              <Text className="my-4 whitespace-pre-line text-left text-base/6 text-slate-600">
-                If you don't want to change your email or didn't request this,
-                just ignore and delete this message.
+              <Text className="my-4 text-left text-base/6 whitespace-pre-line text-slate-600">
+                If you don&apos;t want to change your email or didn&apos;t
+                request this, just ignore and delete this message.
               </Text>
 
               <Text className="my-4 text-left text-base/6 text-slate-600">
@@ -69,7 +69,7 @@ export function ChangeEmailTemplate({
 
               <Hr className="my-5 border-slate-200" />
 
-              <Text className="text-slate-500 text-xs">
+              <Text className="text-xs text-slate-500">
                 This email was sent to{" "}
                 <strong className="font-medium text-slate-500">{email}</strong>.
               </Text>

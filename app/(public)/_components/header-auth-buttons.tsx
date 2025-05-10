@@ -5,7 +5,7 @@ import React from "react";
 
 import { CircleArrow } from "@/components/circle-arrow";
 import { Button } from "@/components/ui/button";
-import { FadeIn } from "@/home/components/fade-in";
+import { FadeIn } from "@/public/components/fade-in";
 
 export function HeaderAuthButtons({ isSignedIn }: { isSignedIn: boolean }) {
   const [isHovering, setIsHovering] = React.useState(false);

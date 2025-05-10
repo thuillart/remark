@@ -7,7 +7,7 @@ import {
 import Link from "next/link";
 
 import { LogoLink } from "@/components/logo";
-import { FooterArtwork } from "@/home/components/footer-artwork";
+import { FooterArtwork } from "@/public/components/footer-artwork";
 import {
   DISCORD_URL,
   GITHUB_URL,
@@ -15,71 +15,6 @@ import {
   X_URL,
   YOUTUBE_URL,
 } from "@/lib/constants";
-
-const menuItems = [
-  {
-    label: "Developers",
-    items: [
-      {
-        label: "Documentation",
-        href: "/docs",
-      },
-    ],
-  },
-  {
-    label: "Resources",
-    items: [
-      {
-        label: "News",
-        href: "/news",
-      },
-      {
-        label: "Q&A",
-        href: "/home#faqs",
-      },
-    ],
-  },
-  {
-    label: "Company",
-    items: [
-      {
-        label: "Contact",
-        href: `mailto:${SUPPORT_EMAIL}`,
-      },
-      {
-        label: "Notice",
-        href: "/notice",
-      },
-      {
-        label: "Terms",
-        href: "/terms",
-      },
-    ],
-  },
-];
-
-const socialItems = [
-  {
-    label: "X",
-    href: X_URL,
-    Icon: RiTwitterXFill,
-  },
-  {
-    label: "GitHub",
-    href: GITHUB_URL,
-    Icon: RiGithubFill,
-  },
-  {
-    label: "Discord",
-    href: DISCORD_URL,
-    Icon: RiDiscordFill,
-  },
-  {
-    label: "YouTube",
-    href: YOUTUBE_URL,
-    Icon: RiYoutubeFill,
-  },
-];
 
 export function Footer() {
   return (
@@ -149,3 +84,68 @@ function FooterSocial() {
     </ul>
   );
 }
+
+const menuItems = [
+  {
+    label: "Developers",
+    items: [
+      {
+        label: "Documentation",
+        href: "/docs",
+      },
+    ],
+  },
+  {
+    label: "Resources",
+    items: [
+      {
+        label: "News",
+        href: "/news",
+      },
+      {
+        label: "Q&A",
+        href: "/home#faqs",
+      },
+    ],
+  },
+  {
+    label: "Company",
+    items: [
+      {
+        label: "Contact",
+        href: `mailto:${SUPPORT_EMAIL}`,
+      },
+      {
+        label: "Notice",
+        href: "/notice",
+      },
+      {
+        label: "Terms",
+        href: "/terms",
+      },
+    ],
+  },
+];
+
+const socialItems = [
+  {
+    label: "X",
+    href: X_URL,
+    Icon: RiTwitterXFill,
+  },
+  {
+    label: "GitHub",
+    href: GITHUB_URL,
+    Icon: RiGithubFill,
+  },
+  {
+    label: "Discord",
+    href: DISCORD_URL,
+    Icon: RiDiscordFill,
+  },
+  {
+    label: "YouTube",
+    href: YOUTUBE_URL,
+    Icon: RiYoutubeFill,
+  },
+];

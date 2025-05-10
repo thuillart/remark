@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { headers } from "next/headers";
 
-import { HeaderAuthButtons } from "@/home/components/header-auth-buttons";
+import { HeaderAuthButtons } from "@/public/components/header-auth-buttons";
 import { auth } from "@/lib/auth";
 
 export function HeaderEndContent() {
@@ -17,13 +17,5 @@ async function AuthProvider() {
     headers: await headers(),
   });
 
-  return (
-    <>
-      <HeaderAuthButtons isSignedIn={!!session} />
-    </>
-  );
-}
-
-async function DesktopMenu({ isSignedIn }: { isSignedIn: boolean }) {
-  return;
+  return <HeaderAuthButtons isSignedIn={!!session} />;
 }

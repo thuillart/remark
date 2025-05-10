@@ -65,13 +65,12 @@ async function BillingCard() {
           layout="row"
           variant="warning"
         >
-          <p className="text-sm">Your subscription isn't active.</p>
+          <p className="text-sm">Your subscription isn&apos;t active.</p>
         </Alert>
       )}
 
       <CurrentPlanCard
-        plan={getSlugFromProductId(subscription.productId)}
-        status={subscription.status}
+        slug={getSlugFromProductId(subscription.productId)}
         periodEnd={subscription.endsAt}
         cancelAtPeriodEnd={subscription.cancelAtPeriodEnd ?? false}
       />

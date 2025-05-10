@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  RiGithubFill,
-  RiGitlabFill,
-  RiKey2Line,
-  RiKeyLine,
-} from "@remixicon/react";
+import { RiGithubFill, RiGitlabFill, RiKeyLine } from "@remixicon/react";
 import type { Account } from "better-auth";
 import type { Passkey } from "better-auth/plugins/passkey";
 import { format } from "date-fns";
@@ -234,7 +229,7 @@ export function SignInMethods() {
       <CardContent>
         {showProviders && (
           <>
-            <div className="mb-4 border-border border-b pb-4 font-semibold text-sm">
+            <div className="border-border mb-4 border-b pb-4 text-sm font-semibold">
               Add new
             </div>
 
@@ -307,7 +302,7 @@ export function SignInMethods() {
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <Logo className={cn({ "fill-[#FC6D26]": isGitlab })} />
-                        <div className="font-medium text-sm">
+                        <div className="text-sm font-medium">
                           {providerName}
                         </div>
                       </div>
@@ -335,8 +330,8 @@ export function SignInMethods() {
                           <DialogTitle>Unlink {providerName}</DialogTitle>
                           <DialogDescription>
                             You are about to unlink your {providerName} account.
-                            After removing it, you won't be able to use it to
-                            log in.
+                            After removing it, you won&apos;t be able to use it
+                            to log in.
                           </DialogDescription>
 
                           <DialogFooter>
@@ -367,7 +362,7 @@ export function SignInMethods() {
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <KeyRoundIcon size={20} />
-                        <div className="font-medium text-sm">Passkey</div>
+                        <div className="text-sm font-medium">Passkey</div>
                       </div>
                     </TableCell>
 
@@ -393,7 +388,7 @@ export function SignInMethods() {
                           <DialogTitle>Remove Passkey</DialogTitle>
                           <DialogDescription>
                             You are about to remove your passkey. After removing
-                            it, you won't be able to use it to log in.
+                            it, you won&apos;t be able to use it to log in.
                           </DialogDescription>
 
                           <DialogFooter>

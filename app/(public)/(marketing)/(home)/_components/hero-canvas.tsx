@@ -28,10 +28,11 @@ export function HeroCanvas() {
     materialRef.current.uniforms.lineColor.value = isDark ? white : black;
   }, [scheme]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: We need to re-render the canvas when the theme changes
   React.useEffect(() => {
     if (!containerRef.current) return;
 
+    // It is used, but we do not need to use it in the cleanup function (otherwise, makes animation lag)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     let cancelFrame: number;
     const scene = new THREE.Scene();
     const width = containerRef.current.clientWidth;
@@ -92,6 +93,8 @@ export function HeroCanvas() {
       window.removeEventListener("resize", handleResize);
       renderer.dispose();
     };
+    // We want to re-render the canvas when the theme changes so we do not add scheme to the dependencies
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function applyNoiseToGeometry(geometry: THREE.PlaneGeometry) {

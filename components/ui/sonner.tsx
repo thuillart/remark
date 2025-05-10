@@ -19,14 +19,13 @@ function Toast({
   Icon,
   title,
   variant = "default",
-  position,
   description,
 }: ToastProps) {
   return (
-    <div className="flex w-[var(--width)] items-center justify-between gap-4 rounded-lg border border-border bg-background p-4 shadow-black/5 shadow-lg">
+    <div className="border-border bg-background flex w-[var(--width)] items-center justify-between gap-4 rounded-lg border p-4 shadow-lg shadow-black/5">
       <div
         className={cn(
-          "flex size-9 shrink-0 items-center justify-center rounded-full border border-border",
+          "border-border flex size-9 shrink-0 items-center justify-center rounded-full border",
           variant === "destructive" && "text-destructive",
         )}
       >
@@ -34,7 +33,7 @@ function Toast({
       </div>
 
       <div className="flex w-full flex-col gap-1">
-        <p className="font-medium text-sm">{title}</p>
+        <p className="text-sm font-medium">{title}</p>
         {description && (
           <p className="text-muted-foreground text-xs">{description}</p>
         )}
@@ -61,6 +60,7 @@ function showToast(toast: Omit<ToastProps, "id">) {
         title={toast.title}
         button={toast.button}
         variant={toast.variant}
+        position={toast.position}
         description={toast.description}
       />
     ),

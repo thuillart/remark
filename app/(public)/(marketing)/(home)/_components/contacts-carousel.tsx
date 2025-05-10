@@ -92,7 +92,7 @@ export function ContactsCarousel() {
       opts={{ loop: true, align: "center" }}
       setApi={setApi}
       plugins={[plugin.current]}
-      className="relative select-none before:absolute before:inset-0 before:top-auto before:z-1 before:h-4 before:bg-gradient-to-t before:from-background before:to-transparent after:absolute after:inset-0 after:bottom-auto after:z-1 after:h-4 after:bg-gradient-to-b after:from-background after:to-transparent after:md:h-10 before:md:h-10"
+      className="before:from-background after:from-background relative select-none before:absolute before:inset-0 before:top-auto before:z-1 before:h-4 before:bg-gradient-to-t before:to-transparent after:absolute after:inset-0 after:bottom-auto after:z-1 after:h-4 after:bg-gradient-to-b after:to-transparent before:md:h-10 after:md:h-10"
       orientation="vertical"
       onMouseLeave={() => plugin.current.play()}
     >
@@ -151,7 +151,7 @@ function FeedbackCard({
       </div>
       <div className="p-4 pt-0">
         <blockquote className="mt-2 border-l-2 pl-3 text-sm italic">
-          "{contact.body}"
+          &quot;{contact.body}&quot;
         </blockquote>
       </div>
     </motion.div>

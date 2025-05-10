@@ -18,7 +18,7 @@ export const PRODUCT_CONFIGS = {
 
 export const getSlugFromProductId = (productId: string): Product => {
   const product = Object.entries(PRODUCT_CONFIGS).find(
-    ([_, config]) => config.productId === productId,
+    ([, config]) => config.productId === productId,
   )?.[0];
 
   return product as Product;

@@ -88,7 +88,6 @@ function tsx(strings: TemplateStringsArray, ...args: string[]) {
 
 function CodeExample({
   example,
-  unstyled = false,
   filename,
   className,
   showLineNumbers = false,
@@ -96,19 +95,18 @@ function CodeExample({
 }: React.HTMLAttributes<HTMLDivElement> & {
   example: { code: string; lang: string };
   filename?: string;
-  unstyled?: boolean;
   showLineNumbers?: boolean;
 }) {
   return (
-    <div className={cn("dark rounded-xl bg-background", className)} {...props}>
-      <div className="rounded-xl p-1 text-sm dark:inset-ring dark:inset-ring-border">
+    <div className={cn("dark bg-background rounded-xl", className)} {...props}>
+      <div className="dark:inset-ring-border rounded-xl p-1 text-sm dark:inset-ring">
         {filename && (
-          <div className="dark px-3 pt-1 pb-1.5 text-muted-foreground text-xs">
+          <div className="dark text-muted-foreground px-3 pt-1 pb-1.5 text-xs">
             {filename}
           </div>
         )}
         <Suspense
-          fallback={<div className="h-8 animate-pulse rounded bg-muted" />}
+          fallback={<div className="bg-muted h-8 animate-pulse rounded" />}
         >
           <HighlightedCode
             example={example}
@@ -167,9 +165,9 @@ async function HighlightedCode({
   return (
     <div
       className={cn(
-        "*:inset-ring *:flex *:*:max-w-none *:*:shrink-0 *:*:grow *:overflow-auto *:rounded-lg *:bg-background/2.5! *:p-5 *:focus-visible:outline-none dark:*:inset-ring-border **:[.line]:isolate **:[.line]:not-last:min-h-[1lh]",
+        "*:bg-background/2.5! dark:*:inset-ring-border *:flex *:*:max-w-none *:*:shrink-0 *:*:grow *:overflow-auto *:rounded-lg *:p-5 *:inset-ring *:focus-visible:outline-none **:[.line]:isolate **:[.line]:not-last:min-h-[1lh]",
         showLineNumbers &&
-          "[&_.line]:ml-9 [&_.line]:[counter-increment:line] [&_.line]:before:absolute [&_.line]:before:left-0 [&_.line]:before:w-6 [&_.line]:before:select-none [&_.line]:before:text-right [&_.line]:before:font-mono [&_.line]:before:text-muted-foreground/40 [&_.line]:before:content-[counter(line)] max-sm:[&_.line]:ml-0 max-sm:[&_.line]:before:hidden [&_code]:relative [&_code]:[counter-reset:line]",
+          "[&_.line]:before:text-muted-foreground/40 [&_.line]:ml-9 [&_.line]:[counter-increment:line] [&_.line]:before:absolute [&_.line]:before:left-0 [&_.line]:before:w-6 [&_.line]:before:text-right [&_.line]:before:font-mono [&_.line]:before:content-[counter(line)] [&_.line]:before:select-none max-sm:[&_.line]:ml-0 max-sm:[&_.line]:before:hidden [&_code]:relative [&_code]:[counter-reset:line]",
         className,
       )}
       // biome-ignore lint/security/noDangerouslySetInnerHtml: Sanitized by shiki

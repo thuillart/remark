@@ -36,7 +36,7 @@ export function MagicLinkTemplate({ url }: { url: string }) {
 
             <Text className="text-base/snug text-neutral-600">
               This link and code will only be valid for the next 5 minutes. If
-              you didn't request this, you can safely ignore this email.
+              you didn&apos;t request this, you can safely ignore this email.
             </Text>
 
             <Hr className="mt-10 mb-6 border-neutral-200" />

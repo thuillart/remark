@@ -106,12 +106,12 @@ export function SignInSignUpForm({ mode }: { mode: Mode }) {
           </div>
 
           <div className="flex flex-col gap-1.5 text-center">
-            <h2 className="font-semibold text-lg tracking-tight">
+            <h2 className="text-lg font-semibold tracking-tight">
               Check your inbox
             </h2>
-            <p className="text-balance text-muted-foreground text-sm">
-              Click the link we've just sent you to{" "}
-              <span className="font-medium text-foreground">
+            <p className="text-muted-foreground text-sm text-balance">
+              Click the link we&apos;ve just sent you to{" "}
+              <span className="text-foreground font-medium">
                 {form.getValues("email")}
               </span>
               .
@@ -125,11 +125,11 @@ export function SignInSignUpForm({ mode }: { mode: Mode }) {
   return (
     <>
       <div className="flex flex-col items-center gap-2">
-        <div className="flex size-11 shrink-0 select-none items-center justify-center rounded-full border">
+        <div className="flex size-11 shrink-0 items-center justify-center rounded-full border select-none">
           <Logo variant="icon" className="h-4.5 text-2xl" />
         </div>
         <div className="flex flex-col text-center">
-          <h2 className="font-semibold text-lg tracking-tight">
+          <h2 className="text-lg font-semibold tracking-tight">
             {isSignUp ? "Create an account" : "Welcome back"}
           </h2>
           <p className="text-muted-foreground text-sm">
@@ -181,7 +181,7 @@ export function SignInSignUpForm({ mode }: { mode: Mode }) {
         </form>
       </Form>
 
-      <div className="flex items-center gap-3 before:h-px before:flex-1 before:bg-border after:h-px after:flex-1 after:bg-border">
+      <div className="before:bg-border after:bg-border flex items-center gap-3 before:h-px before:flex-1 after:h-px after:flex-1">
         <span className="text-muted-foreground text-xs uppercase">Or</span>
       </div>
 
@@ -207,7 +207,7 @@ export function SignInSignUpForm({ mode }: { mode: Mode }) {
         </Button>
       </div>
 
-      <p className="text-center text-muted-foreground text-xs">
+      <p className="text-muted-foreground text-center text-xs">
         By signing up you agree to our{" "}
         <Button asChild variant="link" className="text-xs">
           <Link href="/terms" target="_blank">

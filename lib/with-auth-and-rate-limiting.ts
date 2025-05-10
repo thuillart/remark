@@ -9,12 +9,16 @@ import {
   getStartOfMonth,
   getTimeUntilNextMonth,
 } from "@/lib/utils";
-import { SubscriptionSlug } from "./schema";
+import { SubscriptionSlug } from "@/lib/schema";
 
 type ApiKey = Awaited<ReturnType<typeof auth.api.listApiKeys>>[number];
 type Handler = (
   request: NextRequest,
-  context?: { apiKey: any; slug?: SubscriptionSlug; polarCustomerId?: string },
+  context?: {
+    apiKey: unknown;
+    slug?: SubscriptionSlug;
+    polarCustomerId?: string;
+  },
 ) => Promise<Response>;
 
 type SubscriptionLimits = {
@@ -24,7 +28,7 @@ type SubscriptionLimits = {
 };
 
 export const SUBSCRIPTION_LIMITS: Record<
-  Uppercase<SubscriptionTier>,
+  Uppercase<SubscriptionSlug>,
   SubscriptionLimits
 > = {
   FREE: {

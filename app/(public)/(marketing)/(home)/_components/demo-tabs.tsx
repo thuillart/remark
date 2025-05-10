@@ -74,14 +74,14 @@ export function DemoTabs() {
             >
               <hr
                 className={cn(
-                  "rounded-full border-primary border-t-3 transition-colors duration-200 ease-in-out",
+                  "border-primary rounded-full border-t-3 transition-colors duration-200 ease-in-out",
                   { "border-muted-foreground": id !== tab },
                 )}
               />
 
               <h3
                 className={cn(
-                  "font-semibold text-2xl/8 tracking-tight transition-colors duration-200 ease-in-out",
+                  "text-2xl/8 font-semibold tracking-tight transition-colors duration-200 ease-in-out",
                   { "text-muted-foreground": id !== tab },
                 )}
               >
@@ -107,25 +107,10 @@ export function DemoTabs() {
 
 function View({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative size-full overflow-hidden rounded-2xl border bg-background p-4 after:absolute after:inset-0 after:bg-gradient-to-t after:from-background after:to-transparent md:p-6 md:pb-0">
+    <div className="bg-background after:from-background relative size-full overflow-hidden rounded-2xl border p-4 after:absolute after:inset-0 after:bg-gradient-to-t after:to-transparent md:p-6 md:pb-0">
       <div className="relative size-full rounded-2xl rounded-t-lg rounded-b-none border border-b-0 shadow-sm">
         {children}
       </div>
     </div>
-  );
-}
-
-function Frame() {
-  return (
-    <>
-      <hr className="-inset-x-12 absolute top-12 hidden md:block" />
-      <div className="-bottom-12 absolute top-0 left-0 hidden md:block">
-        <hr className="h-full border-l" />
-      </div>
-      <hr className="-inset-x-12 absolute bottom-0 hidden md:block" />
-      <div className="-bottom-12 absolute top-0 right-0 hidden md:block">
-        <hr className="h-full border-l" />
-      </div>
-    </>
   );
 }

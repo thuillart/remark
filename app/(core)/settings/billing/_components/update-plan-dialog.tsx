@@ -17,10 +17,10 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import type { SubscriptionTier } from "@/lib/types";
+import type { SubscriptionSlug } from "@/lib/schema";
 
 type Plan = {
-  value: SubscriptionTier;
+  value: SubscriptionSlug;
   label: string;
   price: string;
 };
@@ -48,14 +48,14 @@ export function UpdatePlanDialog({
   currentPlan,
 }: {
   children: React.ReactNode;
-  currentPlan: SubscriptionTier;
+  currentPlan: SubscriptionSlug;
 }) {
   const router = useRouter();
 
   const [isLoading, setIsLoading] = React.useState(false);
   const [selectedPlan, setSelectedPlan] = React.useState(currentPlan);
 
-  async function onUpgrade(slug: SubscriptionTier) {
+  async function onUpgrade(slug: SubscriptionSlug) {
     setIsLoading(true);
 
     // Redirect to Polar checkout
@@ -68,7 +68,7 @@ export function UpdatePlanDialog({
       <DialogContent>
         <div className="mb-2 flex flex-col gap-2">
           <div
-            className="flex size-11 shrink-0 items-center justify-center rounded-full border border-border"
+            className="border-border flex size-11 shrink-0 items-center justify-center rounded-full border"
             aria-hidden="true"
           >
             <RefreshCcwIcon className="opacity-80" size={16} strokeWidth={2} />
@@ -83,14 +83,14 @@ export function UpdatePlanDialog({
 
         <form className="space-y-5">
           <RadioGroup
-            className="-space-y-px gap-0 rounded-lg shadow-black/5 shadow-xs"
+            className="gap-0 -space-y-px rounded-lg shadow-xs shadow-black/5"
             defaultValue={currentPlan}
             onValueChange={(v) => setSelectedPlan(v as SubscriptionTier)}
           >
             {plans.map((plan) => (
               <div
                 key={plan.value}
-                className="relative flex h-14 flex-col justify-center gap-4 border border-input p-4 first:rounded-t-lg last:rounded-b-lg has-[[data-state=checked]]:z-10 has-[[data-state=checked]]:border-ring has-[[data-state=checked]]:bg-accent"
+                className="border-input has-[[data-state=checked]]:border-ring has-[[data-state=checked]]:bg-accent relative flex h-14 flex-col justify-center gap-4 border p-4 first:rounded-t-lg last:rounded-b-lg has-[[data-state=checked]]:z-10"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -120,14 +120,14 @@ export function UpdatePlanDialog({
 
           <div className="space-y-3">
             <p>
-              <strong className="font-medium text-sm">Features include:</strong>
+              <strong className="text-sm font-medium">Features include:</strong>
             </p>
-            <ul className="space-y-2 text-muted-foreground text-sm">
+            <ul className="text-muted-foreground space-y-2 text-sm">
               <li className="flex gap-2">
                 <CheckIcon
                   size={16}
                   strokeWidth={2}
-                  className="mt-0.5 shrink-0 text-primary"
+                  className="text-primary mt-0.5 shrink-0"
                   aria-hidden="true"
                 />
                 Create unlimited projects.
@@ -136,7 +136,7 @@ export function UpdatePlanDialog({
                 <CheckIcon
                   size={16}
                   strokeWidth={2}
-                  className="mt-0.5 shrink-0 text-primary"
+                  className="text-primary mt-0.5 shrink-0"
                   aria-hidden="true"
                 />
                 Remove watermarks.
@@ -145,7 +145,7 @@ export function UpdatePlanDialog({
                 <CheckIcon
                   size={16}
                   strokeWidth={2}
-                  className="mt-0.5 shrink-0 text-primary"
+                  className="text-primary mt-0.5 shrink-0"
                   aria-hidden="true"
                 />
                 Add unlimited users and free viewers.
@@ -154,7 +154,7 @@ export function UpdatePlanDialog({
                 <CheckIcon
                   size={16}
                   strokeWidth={2}
-                  className="mt-0.5 shrink-0 text-primary"
+                  className="text-primary mt-0.5 shrink-0"
                   aria-hidden="true"
                 />
                 Upload unlimited files.
@@ -163,7 +163,7 @@ export function UpdatePlanDialog({
                 <CheckIcon
                   size={16}
                   strokeWidth={2}
-                  className="mt-0.5 shrink-0 text-primary"
+                  className="text-primary mt-0.5 shrink-0"
                   aria-hidden="true"
                 />
                 7-day money back guarantee.
@@ -172,7 +172,7 @@ export function UpdatePlanDialog({
                 <CheckIcon
                   size={16}
                   strokeWidth={2}
-                  className="mt-0.5 shrink-0 text-primary"
+                  className="text-primary mt-0.5 shrink-0"
                   aria-hidden="true"
                 />
                 Advanced permissions.
