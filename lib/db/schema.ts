@@ -6,7 +6,8 @@ import {
   text,
   timestamp,
 } from "drizzle-orm/pg-core";
-import { nanoid } from "nanoid";
+
+import { ContactMetadata } from "@/lib/schema";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -105,25 +106,49 @@ export const passkey = pgTable("passkey", {
 });
 
 export const feedback = pgTable("feedback", {
-  id: text("id").primaryKey().default(nanoid()),
+  /**
+   * randomUUID()
+   */
+  id: text("id").primaryKey(),
+  /**
+   * Sender email address.
+   */
   from: text("from").notNull(),
+  /**
+   * Our user id.
+   * @internal
+   */
   referenceId: text("reference_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
+  /**
+   * Raw feedback text.
+   */
   text: text("text").notNull(),
+  /**
+   * 1-6 words summary of the feedback.
+   */
+  subject: text("subject"),
+  /**
+   * AI rewritten version of the raw feedback text.
+   */
+  summary: text("summary"),
+  /**
+   * Array of tags for categorization.
+   */
+  tags: text("tags").$type<string[]>(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
 export const contact = pgTable("contact", {
-  id: text("id").primaryKey().default(nanoid()),
+  id: text("id").primaryKey(),
   email: text("email").notNull(),
   referenceId: text("reference_id")
     .notNull()
     .references(() => user.id),
-  firstName: text("first_name"),
-  lastName: text("last_name"),
-  metadata: jsonb("metadata").$type<string[]>(),
+  name: text("name"),
+  metadata: jsonb("metadata").$type<ContactMetadata[]>(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

@@ -11,10 +11,16 @@ import { getSlugFromProductId } from "@/lib/configs/products";
 import { APP_NAME } from "@/lib/constants";
 import { db } from "@/lib/db/drizzle";
 import { contact } from "@/lib/db/schema";
-import type { SubscriptionTier } from "@/lib/types";
+import type { SubscriptionSlug } from "@/lib/schema";
 import { getBaseUrl, tryCatch } from "@/lib/utils";
 import { UpgradeButton } from "@/usage/components/upgrade-button";
 import { UsageSkeleton } from "@/usage/components/usage-skeleton";
+import { CONTACT_CONFIG } from "@/lib/configs/contact";
+
+interface ApiKey {
+  requestCount?: number;
+  lastRequest?: string | Date;
+}
 
 export default function UsagePage() {
   return (
@@ -31,11 +37,12 @@ async function UsageCards() {
 
   const state = (await response.json()) as CustomerState;
 
-  const tier = state.activeSubscriptions?.[0]?.productId
+  const slug = state.activeSubscriptions?.[0]?.productId
     ? getSlugFromProductId(state.activeSubscriptions[0].productId)
     : "free";
-  const config = API_KEY_CONFIG[tier];
-  const twentyFourHoursInSeconds = 60 * 60 * 24 * 30;
+
+  const apiKeyConfig = API_KEY_CONFIG[slug];
+  const contactConfig = CONTACT_CONFIG[slug];
 
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -59,22 +66,25 @@ async function UsageCards() {
     return accumulator + (apiKey.requestCount ?? 0);
   }, 0);
 
+  const requestsMadeToday = countRequestsToday(apiKeys);
+
   const transactionalLimits = [
     {
       title: "Monthly limit",
-      total: config.rateLimitMax ?? 0,
+      total: apiKeyConfig.refillAmount ?? 0,
       used: totalRequestsCount,
     },
     {
       title: "Daily limit",
-      total: config.rateLimitTimeWindow === twentyFourHoursInSeconds ? null : 0,
+      total: apiKeyConfig.rateLimitMax ?? 0,
+      used: requestsMadeToday,
     },
   ];
 
   const internalLimits = [
     {
       title: "Contacts limit",
-      total: 1000,
+      total: contactConfig.limit ?? 0,
       used: contactsCount[0].count,
     },
     {
@@ -86,13 +96,13 @@ async function UsageCards() {
   return (
     <main className="container">
       <UsageCard
-        tier={tier}
+        slug={slug}
         title="External"
         limits={transactionalLimits}
         description={`Integrate feedback into your app using the ${APP_NAME} API.`}
       />
       <UsageCard
-        tier={tier}
+        slug={slug}
         title="Internal"
         limits={internalLimits}
         description="Know who's behind the feedback and segment them."
@@ -102,12 +112,12 @@ async function UsageCards() {
 }
 
 function UsageCard({
-  tier,
+  slug,
   title,
   limits,
   description,
 }: {
-  tier: SubscriptionTier;
+  slug: SubscriptionSlug;
   title: string;
   limits: { title: string; total: number | string; used?: number }[];
   description: string;
@@ -128,22 +138,22 @@ function UsageCard({
   };
 
   return (
-    <div className="flex flex-col border-slate-4 border-b py-4 md:flex-row md:pt-8 md:pb-16">
+    <div className="border-slate-4 flex flex-col border-b py-4 md:flex-row md:pt-8 md:pb-16">
       <div className="flex w-full justify-between md:block md:w-1/2">
-        <h2 className="mb-1 font-bold text-xl tracking-tight">{title}</h2>
-        <span className="mb-4 hidden text-muted-foreground text-sm md:block md:w-1/2">
+        <h2 className="mb-1 text-xl font-bold tracking-tight">{title}</h2>
+        <span className="text-muted-foreground mb-4 hidden text-sm md:block md:w-1/2">
           {description}
         </span>
-        <UpgradeButton tier={tier} />
+        <UpgradeButton slug={slug} />
       </div>
       <div className="w-full md:w-1/2">
-        <h3 className="font-medium text-base capitalize">{tier}</h3>
+        <h3 className="text-base font-medium capitalize">{slug}</h3>
         <div className="relative w-full overflow-x-auto overflow-y-hidden">
           <table className="m-0 mb-2 w-max min-w-full border-separate border-spacing-0 border-none p-0 py-4 text-left md:w-full">
             <tbody>
               {limits.map((limit) => (
                 <tr key={limit.title}>
-                  <td className="h-10 w-[32px] overflow-hidden text-ellipsis whitespace-nowrap border-b px-0 text-center text-sm">
+                  <td className="h-10 w-[32px] overflow-hidden border-b px-0 text-center text-sm text-ellipsis whitespace-nowrap">
                     <svg
                       width="22"
                       height="22"
@@ -176,10 +186,10 @@ function UsageCard({
                       />
                     </svg>
                   </td>
-                  <td className="h-10 w-3/5 overflow-hidden text-ellipsis whitespace-nowrap border-b px-0 py-3.5 text-sm">
+                  <td className="h-10 w-3/5 overflow-hidden border-b px-0 py-3.5 text-sm text-ellipsis whitespace-nowrap">
                     {limit.title}
                   </td>
-                  <td className="h-10 overflow-hidden text-ellipsis whitespace-nowrap border-b px-0 text-right text-sm">
+                  <td className="h-10 overflow-hidden border-b px-0 text-right text-sm text-ellipsis whitespace-nowrap">
                     {limit.total === null ? (
                       "Unlimited"
                     ) : (
@@ -196,4 +206,15 @@ function UsageCard({
       </div>
     </div>
   );
+}
+
+function countRequestsToday(apiKeys: ApiKey[]): number {
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+  return apiKeys.reduce((total, key) => {
+    if (!key.lastRequest) return total;
+    const lastRequestDate = new Date(key.lastRequest);
+    if (lastRequestDate < startOfDay) return total;
+    return total + (key.requestCount ?? 0);
+  }, 0);
 }

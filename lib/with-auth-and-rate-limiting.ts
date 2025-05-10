@@ -15,8 +15,8 @@ type ApiKey = Awaited<ReturnType<typeof auth.api.listApiKeys>>[number];
 type Handler = (
   request: NextRequest,
   context?: {
-    apiKey: unknown;
     slug?: SubscriptionSlug;
+    apiKey: unknown;
     polarCustomerId?: string;
   },
 ) => Promise<Response>;
@@ -47,6 +47,8 @@ export const SUBSCRIPTION_LIMITS: Record<
 
 export function withAuthAndRateLimiting(handler: Handler): Handler {
   return async (request, context) => {
+    console.log("i've been called (withAuthAndRateLimiting)");
+
     // Authentication step
     const apiKey = request.headers.get("x-api-key");
 
@@ -96,6 +98,8 @@ export function withAuthAndRateLimiting(handler: Handler): Handler {
     }
 
     if (!key) {
+      console.log("seems there's an error with the api key");
+
       return new Response(
         JSON.stringify({
           error:
@@ -140,7 +144,12 @@ export function withAuthAndRateLimiting(handler: Handler): Handler {
     // 2. Get user's subscription.
     const result = await getSubscription({});
 
-    if (!result?.data || !result.data.subscription[0]?.polarCustomerId) {
+    if (!result?.data || !result.data.subscription?.polarCustomerId) {
+      console.log(
+        "seems there's an error with the subscription retrieval",
+        result,
+      );
+
       return new Response(
         JSON.stringify({
           error:
@@ -153,8 +162,8 @@ export function withAuthAndRateLimiting(handler: Handler): Handler {
       );
     }
 
-    const slug: SubscriptionSlug = result.data.subscription[0].slug;
-    const polarCustomerId = result.data.subscription[0].polarCustomerId;
+    const slug: SubscriptionSlug = result.data.subscription.slug;
+    const polarCustomerId = result.data.subscription.polarCustomerId;
 
     // Count requests made this month, to know if they've exceeded monthly limit.
     const requestsMadeThisMonth = countRequestsInPeriod(
@@ -220,6 +229,11 @@ export function withAuthAndRateLimiting(handler: Handler): Handler {
         );
 
         if (error) {
+          console.log(
+            "seems there's an error with the polar event ingestion",
+            error,
+          );
+
           return new Response(
             JSON.stringify({
               error:

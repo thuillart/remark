@@ -5,13 +5,13 @@ import React from "react";
 
 import { UpdatePlanDialog } from "@/billing/components/update-plan-dialog";
 import { Button } from "@/components/ui/button";
-import type { SubscriptionTier } from "@/lib/types";
+import type { SubscriptionSlug } from "@/lib/schema";
 
-export function UpgradeButton({ tier }: { tier: SubscriptionTier }) {
+export function UpgradeButton({ slug }: { slug: SubscriptionSlug }) {
   const router = useRouter();
   const [isLoading, setIsLoading] = React.useState(false);
 
-  if (tier === "free") {
+  if (slug === "free") {
     return (
       <UpdatePlanDialog currentPlan="free">
         <Button size="sm">Upgrade</Button>

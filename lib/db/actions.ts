@@ -1,18 +1,26 @@
 "use server";
 
+import { openai } from "@ai-sdk/openai";
+import { generateText } from "ai";
+import { randomUUID } from "crypto";
+import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { z } from "zod";
 
 import { auth } from "@/lib/auth";
 import { API_KEY_CONFIG } from "@/lib/configs/api-key";
-import { actionClient, subscriptionActionClient } from "@/lib/safe-action";
-import { tryCatch } from "@/lib/utils";
+import { getFeedbackPrompt } from "@/lib/configs/feedback";
 import { APP_NAME } from "@/lib/constants";
 import { db } from "@/lib/db/drizzle";
-import { feedback } from "@/lib/db/schema";
-import { authActionClient } from "@/lib/safe-action";
+import { contact, feedback } from "@/lib/db/schema";
+import {
+  actionClient,
+  authActionClient,
+  subscriptionActionClient,
+} from "@/lib/safe-action";
 import { SubscriptionSlugSchema } from "@/lib/schema";
+import { tryCatch } from "@/lib/utils";
 
 export const createFeedback = authActionClient
   .schema(
@@ -23,9 +31,10 @@ export const createFeedback = authActionClient
   .action(async ({ parsedInput: { text }, ctx: { user } }) => {
     const { error } = await tryCatch(
       db.insert(feedback).values({
+        id: randomUUID(),
         from: user.email,
         text,
-        referenceId: ADMIN_ID,
+        referenceId: process.env.ADMIN_ID,
       }),
     );
 
@@ -34,6 +43,42 @@ export const createFeedback = authActionClient
     }
 
     return { success: true };
+  });
+
+export const enrichFeedback = actionClient
+  .schema(
+    z.object({
+      from: z.string().email(),
+      text: z.string(),
+      slug: SubscriptionSlugSchema,
+    }),
+  )
+  .action(async ({ parsedInput: { from, text, slug } }) => {
+    // 1. Lookup for a contact with the same email
+    const existingContact = await db.query.contact.findFirst({
+      where: eq(contact.email, from),
+    });
+
+    // 2. Generate classification
+    const { text: output } = await generateText({
+      model: openai("gpt-4.1-nano"),
+      prompt: getFeedbackPrompt({
+        from,
+        text,
+        name: existingContact
+          ? `${existingContact.firstName} ${existingContact.lastName}`
+          : undefined,
+        metadata: {
+          tier: slug,
+        },
+      }),
+    });
+
+    return {
+      success: true,
+      contact: existingContact,
+      classification: JSON.parse(output),
+    };
   });
 
 export const createApiKey = subscriptionActionClient
