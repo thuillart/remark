@@ -116,7 +116,7 @@ export const auth = betterAuth({
   plugins: [
     admin({
       adminUserIds: [
-        "7erXjGNKA410dCWethaiSrRNic2XxROt", // team@remark.sh
+        process.env.ADMIN_ID, // team@remark.sh
       ],
     }),
     apiKey({
@@ -148,7 +148,7 @@ export const auth = betterAuth({
         onSubscriptionUpdated: async (payload: SubscriptionUpdateProduct) => {
           const slug = getSlugFromProductId(payload.productId);
           const { updateApiKeysLimits } = await import("@/lib/db/actions");
-          await updateApiKeysLimits({ plan: slug });
+          await updateApiKeysLimits({ newSlug: slug });
         },
       },
       enableCustomerPortal: true,

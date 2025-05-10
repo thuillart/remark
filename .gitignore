@@ -33,7 +33,6 @@ yarn-error.log*
 
 # environment
 .env
-.env.*
 !.env.example
 
 # prisma

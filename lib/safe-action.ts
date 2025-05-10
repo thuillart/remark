@@ -5,8 +5,8 @@ import { headers } from "next/headers";
 
 import { auth } from "@/lib/auth";
 import { getSlugFromProductId } from "@/lib/configs/products";
-import type { SubscriptionTier } from "@/lib/types";
 import { getBaseUrl } from "@/lib/utils";
+import type { SubscriptionSlug } from "@/lib/schema";
 
 export const actionClient = createSafeActionClient();
 
@@ -41,7 +41,7 @@ export const subscriptionActionClient = authActionClient.use(
     const activeSubscriptions =
       state.activeSubscriptions as CustomerStateSubscription[];
 
-    const tier: SubscriptionTier = activeSubscriptions.length
+    const slug: SubscriptionSlug = activeSubscriptions.length
       ? getSlugFromProductId(activeSubscriptions[0].productId)
       : "free";
 
@@ -49,7 +49,7 @@ export const subscriptionActionClient = authActionClient.use(
       ctx: {
         ...user,
         subscription: {
-          tier,
+          slug,
           polarCustomerId: state.id,
         },
       },

@@ -21,14 +21,14 @@ export function MagicLinkTemplate({ url }: { url: string }) {
           <Preview>Your magic link</Preview>
 
           <Container className="mx-auto py-5 pb-12">
-            <Heading className="my-4 pt-4 font-normal text-2xl/snug text-neutral-700 tracking-tight">
+            <Heading className="my-4 pt-4 text-2xl/snug font-normal tracking-tight text-neutral-700">
               Your magic link
             </Heading>
 
             <Section className="py-7">
               <Button
                 href={url}
-                className="block rounded bg-neutral-900 px-6 py-3 text-center font-semibold text-base/4 text-neutral-50 no-underline"
+                className="block rounded bg-neutral-900 px-6 py-3 text-center text-base/4 font-semibold text-neutral-50 no-underline"
               >
                 Login
               </Button>
@@ -41,7 +41,7 @@ export function MagicLinkTemplate({ url }: { url: string }) {
 
             <Hr className="mt-10 mb-6 border-neutral-200" />
 
-            <Text className="text-neutral-500 text-sm/4">Nucleon</Text>
+            <Text className="text-sm/4 text-neutral-500">Nucleon</Text>
           </Container>
         </Body>
       </Tailwind>

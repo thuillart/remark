@@ -1,5 +1,5 @@
 import type { auth } from "@/lib/auth";
-import type { SubscriptionTier } from "@/lib/types/subscription";
+import type { SubscriptionSlug } from "@/lib/schema";
 
 type ApiKeyConfig = Pick<
   Parameters<typeof auth.api.createApiKey>[0]["body"],
@@ -10,29 +10,28 @@ type ApiKeyConfig = Pick<
   | "rateLimitEnabled"
   | "rateLimitTimeWindow"
 >;
-export const API_KEY_CONFIG: Record<SubscriptionTier, ApiKeyConfig> = {
+export const API_KEY_CONFIG: Record<SubscriptionSlug, ApiKeyConfig> = {
+  /**
+   * 250 requests each month, 25 requests per day
+   */
   free: {
-    remaining: 250,
+    remaining: 250, // Initial remaining requests
     refillAmount: 250,
-    rateLimitMax: 250,
-    refillInterval: 60 * 60 * 24 * 30, // 30 days in seconds
+    refillInterval: 60 * 60 * 24 * 30, // Refill 250 requests every month
     rateLimitEnabled: true,
-    rateLimitTimeWindow: 60 * 60 * 24 * 30, // 30 days in seconds
+    rateLimitTimeWindow: 1000 * 60 * 60 * 24, // 1 day
+    rateLimitMax: 25, // Max requests per day
   },
+  /**
+   * 2500 requests each month, no daily limit
+   */
   plus: {
     remaining: 2500,
     refillAmount: 2500,
-    rateLimitMax: 2500,
     refillInterval: 60 * 60 * 24 * 30,
-    rateLimitEnabled: true,
-    rateLimitTimeWindow: 60 * 60 * 24 * 30,
   },
-  pro: {
-    remaining: undefined,
-    refillAmount: undefined,
-    rateLimitMax: undefined,
-    refillInterval: undefined,
-    rateLimitEnabled: false,
-    rateLimitTimeWindow: undefined,
-  },
+  /**
+   * Unlimited requests (metered by middleware)
+   */
+  pro: {},
 } as const;
