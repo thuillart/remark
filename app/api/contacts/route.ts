@@ -1,11 +1,13 @@
-import { NextRequest } from "next/server";
+import { randomUUID } from "crypto";
 import { eq } from "drizzle-orm";
+import { NextRequest } from "next/server";
 import { z } from "zod";
 
 import { auth } from "@/lib/auth";
-import { withAuth } from "@/lib/with-auth";
-import { contact } from "@/lib/db/schema";
 import { db } from "@/lib/db/drizzle";
+import { contact } from "@/lib/db/schema";
+import { ContactMetadataSchema } from "@/lib/schema";
+import { withAuth } from "@/lib/with-auth";
 
 type Context = {
   apiKey: Awaited<ReturnType<typeof auth.api.verifyApiKey>>["key"];
@@ -18,20 +20,15 @@ const bodySchema = z.object({
    */
   email: z.string().email(),
   /**
-   * @description The last name of the contact.
+   * @description The name of the contact.
    * @optional
    */
-  lastName: z.string().optional(),
-  /**
-   * @description The first name of the contact.
-   * @optional
-   */
-  firstName: z.string().optional(),
+  name: z.string().optional(),
   /**
    * @description Any additional metadata about the contact.
    * @optional
    */
-  metadata: z.array(z.string()).optional(),
+  metadata: ContactMetadataSchema,
 });
 
 async function secretPOST(request: NextRequest, context: Context) {
@@ -40,7 +37,7 @@ async function secretPOST(request: NextRequest, context: Context) {
   } = context;
 
   const body = await request.json();
-  const { email, lastName, firstName, metadata } = bodySchema.parse(body);
+  const { name, email, metadata } = bodySchema.parse(body);
 
   const [existingContact] = await db
     .select()
@@ -54,11 +51,11 @@ async function secretPOST(request: NextRequest, context: Context) {
   }
 
   await db.insert(contact).values({
+    id: randomUUID(),
+    name,
     email,
-    lastName,
-    firstName,
-    referenceId: userId,
     metadata,
+    referenceId: userId,
   });
 
   return new Response(JSON.stringify({ status: 200 }), {

@@ -19,21 +19,41 @@ import {
   authActionClient,
   subscriptionActionClient,
 } from "@/lib/safe-action";
-import { SubscriptionSlugSchema } from "@/lib/schema";
+import {
+  FeedbackEnrichmentSchema,
+  FeedbackMetadataSchema,
+  SubscriptionSlugSchema,
+} from "@/lib/schema";
 import { tryCatch } from "@/lib/utils";
 
 export const createFeedback = authActionClient
   .schema(
     z.object({
       text: z.string(),
+      metadata: FeedbackMetadataSchema,
     }),
   )
-  .action(async ({ parsedInput: { text }, ctx: { user } }) => {
+  .action(async ({ parsedInput: { text, metadata }, ctx: { user } }) => {
+    // 1. Enrich the feedback
+    const result = await enrichFeedback({
+      from: user.email,
+      text,
+      metadata,
+    });
+
+    if (!result.data) {
+      return { failure: "Something went wrong" };
+    }
+
     const { error } = await tryCatch(
       db.insert(feedback).values({
         id: randomUUID(),
         from: user.email,
         text,
+        tags: result.data.enrichment.tags,
+        subject: result.data.enrichment.subject,
+        summary: result.data.enrichment.summary,
+        metadata,
         referenceId: process.env.ADMIN_ID,
       }),
     );
@@ -50,10 +70,10 @@ export const enrichFeedback = actionClient
     z.object({
       from: z.string().email(),
       text: z.string(),
-      slug: SubscriptionSlugSchema,
+      metadata: FeedbackMetadataSchema,
     }),
   )
-  .action(async ({ parsedInput: { from, text, slug } }) => {
+  .action(async ({ parsedInput: { from, text, metadata } }) => {
     // 1. Lookup for a contact with the same email
     const existingContact = await db.query.contact.findFirst({
       where: eq(contact.email, from),
@@ -65,20 +85,16 @@ export const enrichFeedback = actionClient
       prompt: getFeedbackPrompt({
         from,
         text,
-        name: existingContact
-          ? `${existingContact.firstName} ${existingContact.lastName}`
-          : undefined,
-        metadata: {
-          tier: slug,
-        },
+        name: existingContact?.name,
+        metadata,
       }),
     });
 
-    return {
-      success: true,
-      contact: existingContact,
-      classification: JSON.parse(output),
-    };
+    // 3. Extract information from the output
+    const parsedOutput = z.string().parse(output);
+    const enrichment = FeedbackEnrichmentSchema.parse(JSON.parse(parsedOutput));
+
+    return { enrichment };
   });
 
 export const createApiKey = subscriptionActionClient

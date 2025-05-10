@@ -1,3 +1,5 @@
+import { FeedbackInput } from "@/lib/schema";
+
 export const FEEDBACK_CLASSIFICATION_PROMPT = `**Act as a feedback classification engine.**
 
 Input is ONE single-line JS object with these keys:
@@ -133,18 +135,6 @@ Input:
   }
 }
 \`\`\``;
-
-interface FeedbackMetadata {
-  tier?: string;
-  path?: string;
-}
-
-interface FeedbackInput {
-  from: string;
-  text: string;
-  name?: string;
-  metadata?: FeedbackMetadata;
-}
 
 export function getFeedbackPrompt(input: FeedbackInput): string {
   const inputJson = JSON.stringify(input, null, 2);

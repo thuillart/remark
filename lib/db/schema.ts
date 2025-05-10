@@ -7,7 +7,7 @@ import {
   timestamp,
 } from "drizzle-orm/pg-core";
 
-import { ContactMetadata } from "@/lib/schema";
+import { ContactMetadata, FeedbackMetadata, FeedbackTag } from "@/lib/schema";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -136,7 +136,11 @@ export const feedback = pgTable("feedback", {
   /**
    * Array of tags for categorization.
    */
-  tags: text("tags").$type<string[]>(),
+  tags: text("tags").$type<FeedbackTag[]>(),
+  /**
+   * Metadata about the feedback.
+   */
+  metadata: jsonb("metadata").$type<FeedbackMetadata>(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -148,7 +152,7 @@ export const contact = pgTable("contact", {
     .notNull()
     .references(() => user.id),
   name: text("name"),
-  metadata: jsonb("metadata").$type<ContactMetadata[]>(),
+  metadata: jsonb("metadata").$type<ContactMetadata>(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

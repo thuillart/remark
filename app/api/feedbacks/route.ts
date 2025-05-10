@@ -1,16 +1,14 @@
-import { NextRequest } from "next/server";
-import { object, z } from "zod";
 import { randomUUID } from "crypto";
-import { generateText } from "ai";
-import { openai } from "@ai-sdk/openai";
-import { eq } from "drizzle-orm";
+import { NextRequest } from "next/server";
+import { z } from "zod";
 
 import { auth } from "@/lib/auth";
-import { withAuthAndRateLimiting } from "@/lib/with-auth-and-rate-limiting";
+import { enrichFeedback } from "@/lib/db/actions";
 import { db } from "@/lib/db/drizzle";
-import { contact, feedback } from "@/lib/db/schema";
-import type { SubscriptionSlug } from "@/lib/schema";
+import { feedback } from "@/lib/db/schema";
+import { FeedbackMetadataSchema, type SubscriptionSlug } from "@/lib/schema";
 import { tryCatch } from "@/lib/utils";
+import { withAuthAndRateLimiting } from "@/lib/with-auth-and-rate-limiting";
 
 type Context = {
   slug?: SubscriptionSlug;
@@ -27,6 +25,10 @@ const bodySchema = z.object({
    * @description The plain text version of the message.
    */
   text: z.string(),
+  /**
+   * @description Metadata about the feedback.
+   */
+  metadata: FeedbackMetadataSchema,
 });
 
 async function secretPOST(request: NextRequest, context: Context) {
@@ -35,13 +37,14 @@ async function secretPOST(request: NextRequest, context: Context) {
   } = context;
 
   const body = await request.json();
-  const { from, text } = bodySchema.parse(body);
+  const { from, text, metadata } = bodySchema.parse(body);
 
   const { error } = await tryCatch(
     db.insert(feedback).values({
       id: randomUUID(),
       from,
       text,
+      metadata,
       referenceId: userId,
     }),
   );
@@ -59,44 +62,14 @@ async function secretPOST(request: NextRequest, context: Context) {
     );
   }
 
-  // 1. We search for a contact with the same email
-  const existingContact = await db.query.contact.findFirst({
-    where: eq(contact.email, from),
+  const result = await enrichFeedback({
+    from,
+    text,
+    metadata,
   });
 
-  let enrichedFeedback: {
-    from: string;
-    text: string;
-    referenceId?: string;
-    firstName?: string;
-    lastName?: string;
-    metadata?: string[];
-  };
-
-  if (existingContact) {
-    enrichedFeedback = {
-      ...existingContact,
-      lastName: existingContact.lastName,
-      metadata: existingContact.metadata,
-      firstName: existingContact.firstName,
-    };
-  } else {
-    enrichedFeedback = {
-      from,
-      text,
-    };
-  }
-
-  if (context.slug !== "free") {
-    const { text: response } = await generateText({
-      model: openai("gpt-4.1-nano"),
-      prompt: `You are a helpful assistant that summarizes feedback.
-      
-      Feedback: ${text}
-      
-      Summary:`,
-    });
-  }
+  console.log("raw result", result);
+  console.log("pretty result", JSON.stringify(result, null, 2));
 
   return new Response(JSON.stringify({ status: 200 }), {
     headers: { "Content-Type": "application/json" },
