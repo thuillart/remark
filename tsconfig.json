@@ -26,12 +26,12 @@
       "@/docs/components/*": ["app/(docs)/_components/*"],
       "@/auth/components/*": ["app/(auth)/_components/*"],
       "@/home/components/*": ["app/(product)/home/_components/*"],
+      "@/usage/components/*": ["app/(core)/settings/usage/_components/*"],
+      "@/legals/components/*": ["app/(product)/(legals)/_components/*"],
       "@/profile/components/*": ["app/(core)/profile/_components/*"],
       "@/billing/components/*": ["app/(core)/settings/billing/_components/*"],
       "@/settings/components/*": ["app/(core)/settings/_components/*"],
-      "@/api-keys/components/*": ["app/(core)/api-keys/_components/*"],
-      "@/usage/components/*": ["app/(core)/settings/usage/_components/*"],
-      "@/legals/components/*": ["app/(product)/(legals)/_components/*"]
+      "@/api-keys/components/*": ["app/(core)/api-keys/_components/*"]
     }
   },
   "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],

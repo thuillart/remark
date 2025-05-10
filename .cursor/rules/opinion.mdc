@@ -1,3 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
 Code style & structure: 
 
 - `let` > `const` most of the time: Usually you want let. If you want to forbid assignment to this variable, you can use const.

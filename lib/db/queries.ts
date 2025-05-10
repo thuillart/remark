@@ -7,13 +7,20 @@ import { db } from "@/lib/db/drizzle";
 import { feedback } from "@/lib/db/schema";
 import { authActionClient } from "@/lib/safe-action";
 import { tryCatch } from "@/lib/utils";
+import { subscriptionActionClient } from "@/lib/safe-action";
 
-const schema = z.object({
-  cursor: z.string().optional(),
-});
+export const getSubscription = subscriptionActionClient.action(
+  async ({ ctx: { user, subscription } }) => {
+    return { user, subscription };
+  },
+);
 
 export const getFeedbacks = authActionClient
-  .schema(schema)
+  .schema(
+    z.object({
+      cursor: z.string().optional(),
+    }),
+  )
   .action(async ({ parsedInput: { cursor }, ctx: { user } }) => {
     const { data, error } = await tryCatch(
       db

@@ -36,10 +36,6 @@ export const auth = betterAuth({
       },
       update: {
         after: async (user) => {
-          console.log(
-            "DB HOOK: updating user, we've received email: ",
-            user.email,
-          );
           // Update feedbacks with new email
           await db
             .update(feedback)

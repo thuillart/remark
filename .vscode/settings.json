@@ -1,4 +1,15 @@
 {
+  "files.exclude": {
+    ".next": true,
+    "bun.lock": true,
+    ".gitignore": true,
+    ".prettierrc": true,
+    "node_modules": true,
+    "next-env.d.ts": true,
+    "eslint.config.mjs": true,
+    "postcss.config.mjs": true
+  },
+
   "typescript.tsdk": "node_modules/typescript/lib",
 
   "editor.formatOnSave": true,
