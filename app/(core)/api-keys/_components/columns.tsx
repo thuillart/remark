@@ -31,12 +31,12 @@ export const columns: ColumnDef<ApiKey>[] = [
 
       return (
         <div className="flex items-center gap-2">
-          <div className="size-8 rounded-lg border border-border p-0.5">
+          <div className="border-border size-8 rounded-lg border p-0.5">
             <div
               className={cn(
                 "flex size-full items-center justify-center rounded-md border",
                 isActive
-                  ? "border-success/20 bg-success/10 text-success"
+                  ? "bg-green-50 text-green-700 ring-green-600/20 dark:bg-green-400/10 dark:text-green-400 dark:ring-green-500/20"
                   : "border-border bg-foreground/5 text-muted-foreground",
               )}
             >

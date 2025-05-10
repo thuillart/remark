@@ -1,6 +1,7 @@
 import {
   boolean,
   integer,
+  jsonb,
   pgTable,
   text,
   timestamp,
@@ -122,7 +123,7 @@ export const contact = pgTable("contact", {
     .references(() => user.id),
   firstName: text("first_name"),
   lastName: text("last_name"),
-  subscribed: boolean("subscribed").notNull(),
+  metadata: jsonb("metadata").$type<string[]>(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

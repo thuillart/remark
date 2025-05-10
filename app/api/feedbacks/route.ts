@@ -1,9 +1,17 @@
-import { NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { z } from "zod";
 
+import { auth } from "@/lib/auth";
+import { withAuthAndRateLimiting } from "@/lib/with-auth-and-rate-limiting";
 import { db } from "@/lib/db/drizzle";
 import { feedback } from "@/lib/db/schema";
-import { rateLimitedRoute } from "@/lib/safe-route";
+import type { SubscriptionTier } from "@/lib/types";
+
+type Context = {
+  tier?: SubscriptionTier;
+  apiKey: Awaited<ReturnType<typeof auth.api.verifyApiKey>>["key"];
+  polarCustomerId?: string;
+};
 
 const bodySchema = z.object({
   /**
@@ -16,14 +24,23 @@ const bodySchema = z.object({
   text: z.string(),
 });
 
-export const POST = rateLimitedRoute
-  .body(bodySchema)
-  .handler(async (_req, { ctx, body }) => {
-    await db.insert(feedback).values({
-      from: body.from,
-      text: body.text,
-      referenceId: ctx.apiKey.userId,
-    });
+async function secretPOST(request: NextRequest, context: Context) {
+  const {
+    apiKey: { userId },
+  } = context;
 
-    return NextResponse.json({ status: 200 });
+  const body = await request.json();
+  const { from, text } = bodySchema.parse(body);
+
+  await db.insert(feedback).values({
+    from,
+    text,
+    referenceId: userId,
   });
+
+  return new Response(JSON.stringify({ status: 200 }), {
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+export const POST = withAuthAndRateLimiting(secretPOST);

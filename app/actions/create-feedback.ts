@@ -23,6 +23,7 @@ export const createFeedback = authActionClient
     );
 
     if (error) {
+      console.error(error);
       return { failure: error?.message };
     }
 

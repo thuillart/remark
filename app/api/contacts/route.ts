@@ -1,10 +1,15 @@
+import { NextRequest } from "next/server";
 import { eq } from "drizzle-orm";
-import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { db } from "@/lib/db/drizzle";
+import { auth } from "@/lib/auth";
+import { withAuth } from "@/lib/with-auth";
 import { contact } from "@/lib/db/schema";
-import { authRoute } from "@/lib/safe-route";
+import { db } from "@/lib/db/drizzle";
+
+type Context = {
+  apiKey: Awaited<ReturnType<typeof auth.api.verifyApiKey>>["key"];
+};
 
 const bodySchema = z.object({
   /**
@@ -23,49 +28,69 @@ const bodySchema = z.object({
    */
   firstName: z.string().optional(),
   /**
-   * @description Metadata about the contact.
+   * @description Any additional metadata about the contact.
    * @optional
    */
-  metadata: z.record(z.string(), z.string()).optional(),
+  metadata: z.array(z.string()).optional(),
 });
 
-export const POST = authRoute
-  .body(bodySchema)
-  .handler(async (_req, { ctx, body }) => {
-    const [existingContact] = await db
-      .select()
-      .from(contact)
-      .where(
-        eq(contact.referenceId, ctx.apiKey.userId) &&
-          eq(contact.email, body.email),
-      );
+async function secretPOST(request: NextRequest, context: Context) {
+  const {
+    apiKey: { userId },
+  } = context;
 
-    if (existingContact) {
-      return NextResponse.json(
-        { error: "Contact already exists" },
-        { status: 409 },
-      );
-    }
+  const body = await request.json();
+  const { email, lastName, firstName, metadata } = bodySchema.parse(body);
 
-    await db.insert(contact).values({
-      email: body.email,
-      lastName: body.lastName,
-      metadata: body.metadata,
-      firstName: body.firstName,
-      subscribed: body.subscribed,
-      referenceId: ctx.apiKey.userId,
+  const [existingContact] = await db
+    .select()
+    .from(contact)
+    .where(eq(contact.referenceId, userId) && eq(contact.email, email));
+
+  if (existingContact) {
+    return new Response(JSON.stringify({ error: "Contact already exists" }), {
+      status: 409,
     });
+  }
 
-    return NextResponse.json({ status: 200 });
+  await db.insert(contact).values({
+    email,
+    lastName,
+    firstName,
+    referenceId: userId,
+    metadata,
   });
 
-export const DELETE = authRoute.handler(async (_req, { ctx, body }) => {
+  return new Response(JSON.stringify({ status: 200 }), {
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+export const POST = withAuth(secretPOST);
+
+const deleteBodySchema = z.object({
+  /**
+   * @description The email address of the contact to delete.
+   * @required
+   */
+  email: z.string().email(),
+});
+
+async function secretDELETE(request: NextRequest, context: Context) {
+  const {
+    apiKey: { userId },
+  } = context;
+
+  const body = await request.json();
+  const { email } = deleteBodySchema.parse(body);
+
   await db
     .delete(contact)
-    .where(
-      eq(contact.email, body.email) &&
-        eq(contact.referenceId, ctx.apiKey.userId),
-    );
+    .where(eq(contact.email, email) && eq(contact.referenceId, userId));
 
-  return NextResponse.json({ status: 200 });
-});
+  return new Response(JSON.stringify({ status: 200 }), {
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+export const DELETE = withAuth(secretDELETE);
