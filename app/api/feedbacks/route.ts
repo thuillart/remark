@@ -32,18 +32,14 @@ const bodySchema = z.object({
 });
 
 async function secretPOST(request: NextRequest, context: Context) {
-  console.log("[route.ts] Received feedback request");
   const {
     apiKey: { userId },
   } = context;
 
   const body = await request.json();
-  console.log("[route.ts] Request body:", body);
   const { from, text, metadata } = bodySchema.parse(body);
-  console.log("[route.ts] Parsed body:", { from, text, metadata });
 
   // First enrich the feedback
-  console.log("[route.ts] Starting enrichment");
   const result = await enrichFeedback({
     from,
     text,
@@ -51,7 +47,6 @@ async function secretPOST(request: NextRequest, context: Context) {
   });
 
   if (!result.data) {
-    console.log("[route.ts] Enrichment failed");
     return new Response(
       JSON.stringify({
         error: "Failed to process feedback. Please try again.",
@@ -62,8 +57,6 @@ async function secretPOST(request: NextRequest, context: Context) {
       },
     );
   }
-
-  console.log("[route.ts] Enrichment result:", result);
 
   // Then create the feedback with enrichment data
   const { error } = await tryCatch(
@@ -80,7 +73,6 @@ async function secretPOST(request: NextRequest, context: Context) {
   );
 
   if (error) {
-    console.log("[route.ts] Error creating feedback:", error);
     return new Response(
       JSON.stringify({
         error: "Failed to create feedback. Please try again.",

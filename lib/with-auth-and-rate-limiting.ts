@@ -1,15 +1,15 @@
 import { NextRequest } from "next/server";
 
-import { getSubscription } from "@/lib/db/queries";
 import { auth } from "@/lib/auth";
 import { polarClient } from "@/lib/configs/polar";
-import { tryCatch } from "@/lib/utils";
+import { getSubscription } from "@/lib/db/queries";
+import { SubscriptionSlug } from "@/lib/schema";
 import {
   getStartOfDay,
   getStartOfMonth,
   getTimeUntilNextMonth,
+  tryCatch,
 } from "@/lib/utils";
-import { SubscriptionSlug } from "@/lib/schema";
 
 type ApiKey = Awaited<ReturnType<typeof auth.api.listApiKeys>>[number];
 type Handler = (
@@ -47,8 +47,6 @@ export const SUBSCRIPTION_LIMITS: Record<
 
 export function withAuthAndRateLimiting(handler: Handler): Handler {
   return async (request, context) => {
-    console.log("i've been called (withAuthAndRateLimiting)");
-
     // Authentication step
     const apiKey = request.headers.get("x-api-key");
 
@@ -98,8 +96,6 @@ export function withAuthAndRateLimiting(handler: Handler): Handler {
     }
 
     if (!key) {
-      console.log("seems there's an error with the api key");
-
       return new Response(
         JSON.stringify({
           error:
@@ -145,11 +141,6 @@ export function withAuthAndRateLimiting(handler: Handler): Handler {
     const result = await getSubscription({});
 
     if (!result?.data || !result.data.subscription?.polarCustomerId) {
-      console.log(
-        "seems there's an error with the subscription retrieval",
-        result,
-      );
-
       return new Response(
         JSON.stringify({
           error:
@@ -229,11 +220,6 @@ export function withAuthAndRateLimiting(handler: Handler): Handler {
         );
 
         if (error) {
-          console.log(
-            "seems there's an error with the polar event ingestion",
-            error,
-          );
-
           return new Response(
             JSON.stringify({
               error:

@@ -90,7 +90,6 @@ export function SignInMethods() {
         const { data } = await authClient.passkey.listUserPasskeys();
         setPasskeys(data ?? []);
       } catch (error) {
-        console.log(error);
         toast({
           Icon: AlertTriangle,
           title: "Something went wrong",
@@ -144,7 +143,6 @@ export function SignInMethods() {
       }
 
       try {
-        console.log("Deleting passkey:", passkeyId);
         const { error: deleteError } = await authClient.passkey.deletePasskey({
           id: passkeyId,
         });
@@ -161,8 +159,6 @@ export function SignInMethods() {
           throw new Error(listError.message);
         }
 
-        console.log("Updated passkeys:", updatedPasskeys);
-
         // Check if the passkey was actually deleted
         const passkeyStillExists = updatedPasskeys?.some(
           (p) => p.credentialID === passkeyId,
@@ -178,7 +174,6 @@ export function SignInMethods() {
           description: "Passkey has been removed.",
         });
       } catch (error) {
-        console.error("Error deleting passkey:", error);
         toast({
           Icon: AlertTriangle,
           title: "Something went wrong",
