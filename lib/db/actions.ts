@@ -20,8 +20,8 @@ import {
   subscriptionActionClient,
 } from "@/lib/safe-action";
 import {
-  FeedbackEnrichmentSchema,
-  FeedbackMetadataSchema,
+  feedbackEnrichmentSchema,
+  feedbackMetadataSchema,
   SubscriptionSlugSchema,
 } from "@/lib/schema";
 import { tryCatch } from "@/lib/utils";
@@ -30,7 +30,7 @@ export const createFeedback = authActionClient
   .schema(
     z.object({
       text: z.string(),
-      metadata: FeedbackMetadataSchema,
+      metadata: feedbackMetadataSchema,
     }),
   )
   .action(async ({ parsedInput: { text, metadata }, ctx: { user } }) => {
@@ -51,6 +51,7 @@ export const createFeedback = authActionClient
         from: user.email,
         text,
         tags: result.data.enrichment.tags,
+        impact: result.data.enrichment.impact,
         subject: result.data.enrichment.subject,
         summary: result.data.enrichment.summary,
         metadata,
@@ -70,7 +71,7 @@ export const enrichFeedback = actionClient
     z.object({
       from: z.string().email(),
       text: z.string(),
-      metadata: FeedbackMetadataSchema,
+      metadata: feedbackMetadataSchema,
     }),
   )
   .action(async ({ parsedInput: { from, text, metadata } }) => {
@@ -92,7 +93,7 @@ export const enrichFeedback = actionClient
 
     // 3. Extract information from the output
     const parsedOutput = z.string().parse(output);
-    const enrichment = FeedbackEnrichmentSchema.parse(JSON.parse(parsedOutput));
+    const enrichment = feedbackEnrichmentSchema.parse(JSON.parse(parsedOutput));
 
     return { enrichment };
   });

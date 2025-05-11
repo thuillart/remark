@@ -32,7 +32,9 @@
       "@/public/components/*": ["app/(public)/_components/*"],
       "@/docs/components/*": ["app/(public)/(docs)/_components/*"],
       "@/legals/components/*": ["app/(public)/(legals)/_components/*"],
-      "@/home/components/*": ["app/(public)/(marketing)/(home)/_components/*"]
+      "@/home/components/*": ["app/(public)/(marketing)/(home)/_components/*"],
+      "@/feedbacks/components/*": ["app/(core)/feedbacks/_components/*"],
+      "@/feedbacks/lib/*": ["app/(core)/feedbacks/_lib/*"]
     }
   },
   "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],

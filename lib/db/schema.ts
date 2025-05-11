@@ -7,7 +7,12 @@ import {
   timestamp,
 } from "drizzle-orm/pg-core";
 
-import { ContactMetadata, FeedbackMetadata, FeedbackTag } from "@/lib/schema";
+import {
+  ContactMetadata,
+  FeedbackImpact,
+  FeedbackMetadata,
+  FeedbackTag,
+} from "@/lib/schema";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -125,6 +130,10 @@ export const feedback = pgTable("feedback", {
    * Raw feedback text.
    */
   text: text("text").notNull(),
+  /**
+   * How much impact the feedback has on the user.
+   */
+  impact: text("impact").$type<FeedbackImpact>(),
   /**
    * 1-6 words summary of the feedback.
    */

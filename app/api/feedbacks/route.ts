@@ -6,7 +6,7 @@ import { auth } from "@/lib/auth";
 import { enrichFeedback } from "@/lib/db/actions";
 import { db } from "@/lib/db/drizzle";
 import { feedback } from "@/lib/db/schema";
-import { FeedbackMetadataSchema, type SubscriptionSlug } from "@/lib/schema";
+import { feedbackMetadataSchema, type SubscriptionSlug } from "@/lib/schema";
 import { tryCatch } from "@/lib/utils";
 import { withAuthAndRateLimiting } from "@/lib/with-auth-and-rate-limiting";
 
@@ -28,7 +28,7 @@ const bodySchema = z.object({
   /**
    * @description Metadata about the feedback.
    */
-  metadata: FeedbackMetadataSchema,
+  metadata: feedbackMetadataSchema,
 });
 
 async function secretPOST(request: NextRequest, context: Context) {
@@ -64,11 +64,12 @@ async function secretPOST(request: NextRequest, context: Context) {
       id: randomUUID(),
       from,
       text,
-      metadata,
-      referenceId: userId,
       tags: result.data.enrichment.tags,
+      impact: result.data.enrichment.impact,
       subject: result.data.enrichment.subject,
       summary: result.data.enrichment.summary,
+      metadata,
+      referenceId: userId,
     }),
   );
 
