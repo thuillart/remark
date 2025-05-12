@@ -54,7 +54,7 @@ export const columns: ColumnDef<Feedback>[] = [
     accessorKey: "from",
     header: "From",
     meta: {
-      className: "w-18.75",
+      width: "w-18.75",
     },
     cell: ({ row }) => {
       const email = row.original.from;
@@ -82,6 +82,9 @@ export const columns: ColumnDef<Feedback>[] = [
   {
     accessorKey: "impact",
     header: "Impact",
+    meta: {
+      width: "w-20",
+    },
     cell: ({ row }) => {
       const impact = row.original.impact;
 
@@ -101,6 +104,9 @@ export const columns: ColumnDef<Feedback>[] = [
   {
     accessorKey: "subject",
     header: "Subject",
+    meta: {
+      width: "w-19",
+    },
     cell: ({ row }) => {
       const subject = row.original.subject;
       return <div className="text-sm">{subject}</div>;
@@ -109,6 +115,9 @@ export const columns: ColumnDef<Feedback>[] = [
   {
     accessorKey: "sentAt",
     header: "Sent",
+    meta: {
+      width: "w-11",
+    },
     cell: ({ row }) => {
       const distance = formatDistanceToNow(row.original.createdAt, {
         addSuffix: true,
@@ -277,11 +286,12 @@ export function DataTable({ data }: { data: Feedback[] }) {
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="hover:bg-transparent">
                 {headerGroup.headers.map((header) => {
+                  const metadata = header.column.columnDef.meta as
+                    | { width?: string }
+                    | undefined;
+
                   return (
-                    <TableHead
-                      key={header.id}
-                      className={cn(header.column.columnDef.meta?.className)}
-                    >
+                    <TableHead key={header.id} className={cn(metadata?.width)}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
