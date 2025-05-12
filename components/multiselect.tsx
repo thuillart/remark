@@ -450,7 +450,8 @@ const MultipleSelector = ({
             "p-1": selected.length !== 0,
             "cursor-text": !disabled && selected.length !== 0,
           },
-          !hideClearAllButton && "pe-9",
+          !hideClearAllButton &&
+            "before:from-background pe-9 before:pointer-events-none before:absolute before:inset-y-0 before:end-8.5 before:z-1 before:w-9 before:bg-red-500 before:bg-gradient-to-l before:to-transparent before:content-['']",
           className,
         )}
         onClick={() => {

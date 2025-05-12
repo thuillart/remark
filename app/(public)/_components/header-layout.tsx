@@ -25,14 +25,14 @@ export function HeaderLayout({ children }: { children: React.ReactNode }) {
   return (
     <motion.div
       animate={{ y: hasScrolled ? -24 : 0 }}
-      className="max-md:!transform-none fixed inset-0 bottom-auto z-50 bg-background"
+      className="bg-background fixed inset-0 bottom-auto z-50 max-md:!transform-none"
       transition={transition}
     >
       {children}
       <motion.hr
         initial={{ opacity: 0 }}
         animate={{ opacity: hasScrolled ? 1 : 0 }}
-        className="absolute inset-x-0 bottom-0 mx-auto max-w-5xl"
+        className="absolute inset-x-0 bottom-0 mx-auto max-w-[calc(var(--container-5xl)+3rem)]"
         transition={{ type: "spring", bounce: 0, duration: 0.45 }}
       />
     </motion.div>

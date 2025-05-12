@@ -1,13 +1,37 @@
 "use client";
 
-import { RiChat1Line } from "@remixicon/react";
+import {
+  RiArrowLeftSLine,
+  RiArrowRightSLine,
+  RiChat1Line,
+  RiFilter3Line,
+  RiSkipLeftLine,
+  RiSkipRightLine,
+} from "@remixicon/react";
 import {
   type ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useQueryState } from "nuqs";
 
+import MultipleSelector, { Option } from "@/components/multiselect";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+} from "@/components/ui/pagination";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -18,19 +42,6 @@ import {
 } from "@/components/ui/table";
 import { EmptyState } from "@/core/components/empty-state";
 import { Feedback } from "@/feedbacks/lib/schema";
-
-import { RiFilter3Line } from "@remixicon/react";
-import { useQueryState } from "nuqs";
-
-import MultipleSelector, { Option } from "@/components/multiselect";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { FeedbackImpact } from "@/lib/schema";
 
 function Topbar() {
@@ -143,6 +154,8 @@ function Filters() {
   );
 }
 
+type Rows = "5" | "10" | "25" | "50";
+
 export function DataTable({
   data,
   columns,
@@ -150,10 +163,26 @@ export function DataTable({
   data: Feedback[];
   columns: ColumnDef<Feedback>[];
 }) {
+  const [rows, setRows] = useQueryState<Rows>("rows", {
+    parse: (v) => (v as Rows) || "5",
+    serialize: (v) => (v === "5" ? null : v),
+  });
+
+  const [page, setPage] = useQueryState<number>("page", {
+    parse: (v) => Number(v) || 0,
+    serialize: (v) => (v === 0 ? null : String(v)),
+  });
+
   const table = useReactTable<Feedback>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    state: {
+      pagination: {
+        pageSize: Number(rows ?? "5"),
+        pageIndex: page ?? 0,
+      },
+    },
   });
 
   if (table.getRowModel().rows.length === 0) {
@@ -171,7 +200,8 @@ export function DataTable({
   return (
     <div className="container">
       <Topbar />
-      <div className="bg-background overflow-hidden rounded-md border">
+
+      <div className="bg-background mb-4 overflow-hidden rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -210,6 +240,117 @@ export function DataTable({
             ))}
           </TableBody>
         </Table>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex items-center justify-between gap-8">
+        {/* Results per page */}
+        <div className="flex items-center gap-3">
+          <Label className="max-sm:sr-only">Rows per page</Label>
+          <Select
+            value={table.getState().pagination.pageSize.toString()}
+            onValueChange={(value) => {
+              setRows(value as Rows);
+            }}
+          >
+            <SelectTrigger className="w-fit whitespace-nowrap">
+              <SelectValue placeholder="Select number of results" />
+            </SelectTrigger>
+            <SelectContent className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2">
+              {[5, 10, 25, 50].map((pageSize) => (
+                <SelectItem key={pageSize} value={pageSize.toString()}>
+                  {pageSize}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Page number information */}
+        <div className="text-muted-foreground flex grow justify-end text-sm whitespace-nowrap">
+          <p
+            className="text-muted-foreground text-sm whitespace-nowrap"
+            aria-live="polite"
+          >
+            Page{" "}
+            <span className="text-foreground">
+              {table.getState().pagination.pageIndex *
+                table.getState().pagination.pageSize +
+                1}
+              {" – "}
+              {Math.min(
+                (table.getState().pagination.pageIndex + 1) *
+                  table.getState().pagination.pageSize,
+                table.getRowCount(),
+              )}
+            </span>{" "}
+            of <span className="text-foreground">{table.getRowCount()}</span>{" "}
+            {table.getRowCount() === 1 ? "feedback" : "feedbacks"}
+          </p>
+        </div>
+
+        {/* Pagination buttons */}
+        <div>
+          <Pagination>
+            <PaginationContent>
+              {/* First page button */}
+              <PaginationItem>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="disabled:pointer-events-none disabled:opacity-50"
+                  onClick={() => setPage(0)}
+                  disabled={!table.getCanPreviousPage()}
+                  aria-label="Go to first page"
+                >
+                  <RiSkipLeftLine size={16} aria-hidden="true" />
+                </Button>
+              </PaginationItem>
+
+              {/* Previous page button */}
+              <PaginationItem>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="disabled:pointer-events-none disabled:opacity-50"
+                  onClick={() => setPage((page ?? 0) - 1)}
+                  disabled={!table.getCanPreviousPage()}
+                  aria-label="Go to previous page"
+                >
+                  <RiArrowLeftSLine size={16} aria-hidden="true" />
+                </Button>
+              </PaginationItem>
+
+              {/* Next page button */}
+              <PaginationItem>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="disabled:pointer-events-none disabled:opacity-50"
+                  onClick={() => setPage((page ?? 0) + 1)}
+                  disabled={!table.getCanNextPage()}
+                  aria-label="Go to next page"
+                >
+                  <RiArrowRightSLine size={16} aria-hidden="true" />
+                </Button>
+              </PaginationItem>
+
+              {/* Last page button */}
+              <PaginationItem>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="disabled:pointer-events-none disabled:opacity-50"
+                  onClick={() => setPage(table.getPageCount() - 1)}
+                  disabled={!table.getCanNextPage()}
+                  aria-label="Go to last page"
+                >
+                  <RiSkipRightLine size={16} aria-hidden="true" />
+                </Button>
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
       </div>
     </div>
   );
