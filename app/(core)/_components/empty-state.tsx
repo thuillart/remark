@@ -15,7 +15,7 @@ interface EmptyStateProps {
       }
     | React.ReactNode;
   className?: string;
-  description: string;
+  description: string | React.ReactNode;
 }
 
 const isActionObject = (
@@ -39,33 +39,33 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "group w-full rounded-xl border-2 border-border border-dashed bg-background p-14 text-center transition duration-500 hover:border-border/80 hover:bg-muted/50 hover:duration-200",
+        "group border-border bg-background hover:border-border/80 hover:bg-muted/50 w-full rounded-xl border-2 border-dashed p-14 text-center transition duration-500 hover:duration-200",
         className,
       )}
     >
       <div className="isolate flex justify-center">
         {icons.length === 3 ? (
           <>
-            <div className="-rotate-6 group-hover:-translate-x-5 group-hover:-translate-y-0.5 group-hover:-rotate-12 relative top-1.5 left-2.5 grid size-12 place-items-center rounded-xl bg-background shadow-lg ring-1 ring-border transition duration-500 group-hover:duration-200">
+            <div className="bg-background ring-border relative top-1.5 left-2.5 grid size-12 -rotate-6 place-items-center rounded-xl shadow-lg ring-1 transition duration-500 group-hover:-translate-x-5 group-hover:-translate-y-0.5 group-hover:-rotate-12 group-hover:duration-200">
               {createElement(icons[0], {
                 className: "w-6 h-6 text-muted-foreground",
               })}
             </div>
 
-            <div className="group-hover:-translate-y-0.5 relative z-10 grid size-12 place-items-center rounded-xl bg-background shadow-lg ring-1 ring-border transition duration-500 group-hover:duration-200">
+            <div className="bg-background ring-border relative z-10 grid size-12 place-items-center rounded-xl shadow-lg ring-1 transition duration-500 group-hover:-translate-y-0.5 group-hover:duration-200">
               {createElement(icons[1], {
                 className: "w-6 h-6 text-muted-foreground",
               })}
             </div>
 
-            <div className="group-hover:-translate-y-0.5 relative top-1.5 right-2.5 grid size-12 rotate-6 place-items-center rounded-xl bg-background shadow-lg ring-1 ring-border transition duration-500 group-hover:translate-x-5 group-hover:rotate-12 group-hover:duration-200">
+            <div className="bg-background ring-border relative top-1.5 right-2.5 grid size-12 rotate-6 place-items-center rounded-xl shadow-lg ring-1 transition duration-500 group-hover:translate-x-5 group-hover:-translate-y-0.5 group-hover:rotate-12 group-hover:duration-200">
               {createElement(icons[2], {
                 className: "w-6 h-6 text-muted-foreground",
               })}
             </div>
           </>
         ) : (
-          <div className="group-hover:-translate-y-0.5 grid size-12 place-items-center rounded-xl bg-background shadow-lg ring-1 ring-border transition duration-500 group-hover:duration-200">
+          <div className="bg-background ring-border grid size-12 place-items-center rounded-xl shadow-lg ring-1 transition duration-500 group-hover:-translate-y-0.5 group-hover:duration-200">
             {icons[0] &&
               createElement(icons[0], {
                 className: "w-6 h-6 text-muted-foreground",
@@ -74,9 +74,9 @@ export function EmptyState({
         )}
       </div>
 
-      <h2 className="mt-6 font-medium text-foreground">{title}</h2>
+      <h2 className="text-foreground mt-6 font-medium">{title}</h2>
 
-      <p className="mt-1 whitespace-pre-line text-muted-foreground text-sm">
+      <p className="text-muted-foreground mt-1 text-sm whitespace-pre-line">
         {description}
       </p>
 

@@ -5,6 +5,7 @@ import {
   RiArrowRightSLine,
   RiArrowRightUpLine,
   RiChat1Line,
+  RiCloseLine,
   RiFilter3Line,
   RiSkipLeftLine,
   RiSkipRightLine,
@@ -13,13 +14,16 @@ import {
   type ColumnDef,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
 import { useQueryState } from "nuqs";
+import { useRef } from "react";
 
 import MultipleSelector, { Option } from "@/components/multiselect";
+import { TextShimmer } from "@/components/text-shimmer";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -44,8 +48,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { EmptyState } from "@/core/components/empty-state";
 import { Feedback } from "@/feedbacks/lib/schema";
+import { APP_NAME } from "@/lib/constants";
 import { FeedbackImpact } from "@/lib/schema";
 import { capitalizeFirstLetter, cn } from "@/lib/utils";
 
@@ -90,15 +100,44 @@ export const columns: ColumnDef<Feedback>[] = [
 
       if (impact === "critical") {
         return (
-          <Badge variant="destructive">{capitalizeFirstLetter(impact)}</Badge>
+          <Tooltip>
+            <TooltipTrigger>
+              <Badge variant="destructive">
+                {capitalizeFirstLetter(impact)}
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-3xs px-2 py-1">
+              <TextShimmer>{`${APP_NAME} AI`}</TextShimmer> thinks this could
+              lead to severe user frustration if not fixed.
+            </TooltipContent>
+          </Tooltip>
+        );
+      }
+      if (impact === "major") {
+        return (
+          <Tooltip>
+            <TooltipTrigger>
+              <Badge variant="warning">{capitalizeFirstLetter(impact)}</Badge>
+            </TooltipTrigger>
+            <TooltipContent className="max-w-3xs px-2 py-1">
+              <TextShimmer>{`${APP_NAME} AI`}</TextShimmer> believes this might
+              result in a leaving and disappointed user.
+            </TooltipContent>
+          </Tooltip>
         );
       }
 
-      if (impact === "major") {
-        return <Badge variant="warning">{capitalizeFirstLetter(impact)}</Badge>;
-      }
-
-      return <Badge variant="default">{capitalizeFirstLetter(impact)}</Badge>;
+      return (
+        <Tooltip>
+          <TooltipTrigger>
+            <Badge variant="default">{capitalizeFirstLetter(impact)}</Badge>
+          </TooltipTrigger>
+          <TooltipContent className="max-w-3xs px-2 py-1">
+            <TextShimmer>{`${APP_NAME} AI`}</TextShimmer> feels this
+            doesn&apos;t impact the user experience significantly.
+          </TooltipContent>
+        </Tooltip>
+      );
     },
   },
   {
@@ -144,18 +183,35 @@ function Searchbar() {
     serialize: (value) => value || null,
     defaultValue: "",
   });
+  const inputRef = useRef<HTMLInputElement>(null);
 
   return (
     <div className="relative">
       <Input
+        ref={inputRef}
+        type="text"
         value={search ?? ""}
-        className="peer ps-9"
         onChange={(e) => setSearch(e.target.value)}
-        placeholder="Filter by name or email..."
+        className="peer ps-9"
+        placeholder="Filter by email..."
       />
       <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
         <RiFilter3Line size={16} aria-hidden="true" />
       </div>
+      {Boolean(search) && (
+        <button
+          className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+          aria-label="Clear filter"
+          onClick={() => {
+            setSearch("");
+            if (inputRef.current) {
+              inputRef.current.focus();
+            }
+          }}
+        >
+          <RiCloseLine size={16} aria-hidden="true" />
+        </button>
+      )}
     </div>
   );
 }
@@ -252,19 +308,38 @@ export function DataTable({ data }: { data: Feedback[] }) {
     serialize: (v) => (v === 0 ? null : String(v)),
   });
 
+  const [search] = useQueryState("search", {
+    parse: (value) => value,
+    serialize: (value) => value || null,
+    defaultValue: "",
+  });
+
   const table = useReactTable<Feedback>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     state: {
       pagination: {
         pageSize: Number(rows ?? "5"),
         pageIndex: page ?? 0,
       },
+      globalFilter: search ?? "",
+    },
+    globalFilterFn: (row, columnId, filterValue) => {
+      const value = String(row.getValue(columnId) || "").toLowerCase();
+      const filter = String(filterValue).toLowerCase();
+      return (
+        value.includes(filter) ||
+        (row.original.from &&
+          row.original.from.toLowerCase().includes(filter)) ||
+        (row.original.subject &&
+          row.original.subject.toLowerCase().includes(filter))
+      );
     },
   });
 
-  if (table.getRowModel().rows.length === 0) {
+  if (table.getRowModel().rows.length === 0 && !search) {
     return (
       <div className="container">
         <EmptyState
@@ -291,7 +366,10 @@ export function DataTable({ data }: { data: Feedback[] }) {
                     | undefined;
 
                   return (
-                    <TableHead key={header.id} className={cn(metadata?.width)}>
+                    <TableHead
+                      key={header.id}
+                      className={cn("text-muted-foreground", metadata?.width)}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -305,19 +383,34 @@ export function DataTable({ data }: { data: Feedback[] }) {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                className="hover:bg-transparent"
-                data-state={row.getIsSelected() && "selected"}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
-                ))}
+            {table.getRowModel().rows.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="text-muted-foreground h-24 text-center"
+                >
+                  No results found for: &quot;
+                  <span className="text-foreground">{search}</span>&quot;.
+                </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  className="hover:bg-transparent"
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </div>

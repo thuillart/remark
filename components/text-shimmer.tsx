@@ -28,7 +28,7 @@ function ShimmerComponent({
   return (
     <MotionComponent
       className={cn(
-        "relative inline-block bg-[length:250%_100%] bg-clip-text bg-no-repeat text-transparent [--base-color:var(--color-muted-foreground)] [--bg:linear-gradient(90deg,transparent_calc(50%-var(--spread)),var(--gradient-color),transparent_calc(50%+var(--spread)))] [--gradient-color:var(--color-foreground)] [background-image:var(--bg),linear-gradient(var(--base-color),var(--base-color))]",
+        "relative inline-block [background-image:var(--bg),linear-gradient(var(--base-color),var(--base-color))] bg-[length:250%_100%] bg-clip-text bg-no-repeat text-transparent [--base-color:var(--color-muted-foreground)] [--bg:linear-gradient(90deg,transparent_calc(50%-var(--spread)),var(--gradient-color),transparent_calc(50%+var(--spread)))] [--gradient-color:var(--color-foreground)]",
         className,
       )}
       initial={{
