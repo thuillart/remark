@@ -48,7 +48,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     ),
     a: ({ href, children, ...props }: React.ComponentPropsWithoutRef<"a">) => {
       const className =
-        "group/link pr-4.5 whitespace-nowrap text-neutral-950 underline decoration-neutral-300 underline-offset-5 transition-[color,text-decoration-color] duration-150 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] hover:decoration-current dark:text-neutral-50 dark:decoration-neutral-600 dark:hover:decoration-current";
+        "group/link pr-4.5 w-fit whitespace-nowrap text-neutral-950 underline decoration-neutral-300 underline-offset-5 transition-[color,text-decoration-color] duration-150 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] hover:decoration-current dark:text-neutral-50 dark:decoration-neutral-600 dark:hover:decoration-current";
 
       if (href?.startsWith("/")) {
         return (
@@ -59,7 +59,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
             {...props}
           >
             {children}
-            <ArrowUpRightIcon className="text-muted-foreground group-hover/link:text-primary absolute mt-1.25 inline-block size-[1em] no-underline transition duration-[inherit] ease-[inherit] group-hover/link:translate-x-px group-hover/link:-translate-y-px" />
+            <ArrowUpRightIcon className="text-muted-foreground group-hover/link:text-primary absolute mt-1.25 ml-0.5 inline-block size-[1em] no-underline transition duration-[inherit] ease-[inherit] group-hover/link:translate-x-px group-hover/link:-translate-y-px" />
           </Link>
         );
       }
@@ -74,7 +74,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
 
       return (
         <a href={href} target="_blank" className={cn(className)} {...props}>
-          {children}{" "}
+          {children}
           <ArrowUpRightIcon className="text-muted-foreground group-hover/link:text-primary absolute mt-1.5 ml-0.5 inline-block size-[1em] no-underline transition duration-[inherit] ease-[inherit] group-hover/link:translate-x-px group-hover/link:-translate-y-px" />
         </a>
       );

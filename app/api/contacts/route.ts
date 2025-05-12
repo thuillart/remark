@@ -6,7 +6,7 @@ import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db/drizzle";
 import { contact } from "@/lib/db/schema";
-import { ContactMetadataSchema } from "@/lib/schema";
+import { contactMetadataSchema } from "@/lib/schema";
 import { withAuth } from "@/lib/with-auth";
 
 type Context = {
@@ -28,7 +28,7 @@ const bodySchema = z.object({
    * @description Any additional metadata about the contact.
    * @optional
    */
-  metadata: ContactMetadataSchema,
+  metadata: contactMetadataSchema,
 });
 
 async function secretPOST(request: NextRequest, context: Context) {

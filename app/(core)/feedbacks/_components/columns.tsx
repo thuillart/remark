@@ -1,8 +1,14 @@
+"use client";
+
 import { RiChat1Line } from "@remixicon/react";
 import { ColumnDef } from "@tanstack/react-table";
+import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
 import { Feedback } from "@/feedbacks/lib/schema";
+import { capitalizeFirstLetter, cn } from "@/lib/utils";
+import { formatDistanceToNow } from "date-fns";
 
 export const columns: ColumnDef<Feedback>[] = [
   {
@@ -17,7 +23,12 @@ export const columns: ColumnDef<Feedback>[] = [
               <RiChat1Line size={16} className="opacity-60" />
             </div>
           </div>
-          {email}
+          <Link
+            href={`/feedbacks/${row.original.id}`}
+            className={cn(buttonVariants({ variant: "link" }), "font-normal")}
+          >
+            {email}
+          </Link>
         </div>
       );
     },
@@ -29,14 +40,36 @@ export const columns: ColumnDef<Feedback>[] = [
       const impact = row.original.impact;
 
       if (impact === "critical") {
-        return <Badge variant="destructive">{impact}</Badge>;
+        return (
+          <Badge variant="destructive">{capitalizeFirstLetter(impact)}</Badge>
+        );
       }
 
       if (impact === "major") {
-        return <Badge variant="warning">{impact}</Badge>;
+        return <Badge variant="warning">{capitalizeFirstLetter(impact)}</Badge>;
       }
 
-      return <Badge>{impact}</Badge>;
+      return <Badge variant="default">{capitalizeFirstLetter(impact)}</Badge>;
+    },
+  },
+  {
+    accessorKey: "subject",
+    header: "Subject",
+    cell: ({ row }) => {
+      const subject = row.original.subject;
+      return <div className="text-sm">{subject}</div>;
+    },
+  },
+  {
+    accessorKey: "sentAt",
+    header: "Sent",
+    cell: ({ row }) => {
+      const distance = formatDistanceToNow(row.original.createdAt, {
+        addSuffix: true,
+      });
+      return capitalizeFirstLetter(
+        distance === "less than a minute ago" ? "Now" : distance,
+      );
     },
   },
 ];

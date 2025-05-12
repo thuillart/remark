@@ -18,9 +18,11 @@ export default function FeedbacksPage() {
 }
 
 async function FeedbacksTable() {
-  const result = await getFeedbacks({
-    cursor: null, // We don't have it yet.
-  });
-
-  return <DataTable data={feedbacks} columns={columns} />;
+  "use server";
+  const result = await getFeedbacks({});
+  return (
+    <>
+      <DataTable data={result?.data?.feedbacks} columns={columns} />
+    </>
+  );
 }
