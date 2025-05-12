@@ -20,7 +20,7 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
 import { useQueryState } from "nuqs";
-import { useRef } from "react";
+import React, { useRef } from "react";
 
 import MultipleSelector, { Option } from "@/components/multiselect";
 import { TextShimmer } from "@/components/text-shimmer";
@@ -94,6 +94,10 @@ export const columns: ColumnDef<Feedback>[] = [
     header: "Impact",
     meta: {
       width: "w-32",
+    },
+    filterFn: (row, id, filterValue) => {
+      const impact = row.getValue(id) as string;
+      return !filterValue.length || (filterValue as string[]).includes(impact);
     },
     cell: ({ row }) => {
       const impact = row.original.impact;
@@ -314,8 +318,21 @@ export function DataTable({ data }: { data: Feedback[] }) {
     defaultValue: "",
   });
 
+  const [selectedImpacts] = useQueryState<FeedbackImpact[]>("impact", {
+    parse: (value) => (value?.split(",") as FeedbackImpact[]) ?? [],
+    serialize: (value) => (value.length > 0 ? value.join(",") : null),
+    defaultValue: [],
+  });
+
+  // Filter data based on impacts
+  const filteredData = React.useMemo(() => {
+    if (!selectedImpacts?.length) return data;
+    const impactSet = new Set(selectedImpacts);
+    return data.filter((item) => impactSet.has(item.impact as FeedbackImpact));
+  }, [data, selectedImpacts]);
+
   const table = useReactTable<Feedback>({
-    data,
+    data: filteredData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -339,7 +356,11 @@ export function DataTable({ data }: { data: Feedback[] }) {
     },
   });
 
-  if (table.getRowModel().rows.length === 0 && !search) {
+  if (
+    table.getRowModel().rows.length === 0 &&
+    !search &&
+    !selectedImpacts?.length
+  ) {
     return (
       <div className="container">
         <EmptyState
@@ -350,6 +371,8 @@ export function DataTable({ data }: { data: Feedback[] }) {
       </div>
     );
   }
+
+  const hasSelectedImpacts = selectedImpacts?.length > 0;
 
   return (
     <div className="container">
@@ -389,8 +412,30 @@ export function DataTable({ data }: { data: Feedback[] }) {
                   colSpan={columns.length}
                   className="text-muted-foreground h-24 text-center"
                 >
-                  No results found for: &quot;
-                  <span className="text-foreground">{search}</span>&quot;.
+                  {search && (
+                    <>
+                      No results found for: &quot;
+                      <span className="text-foreground">{search}</span>&quot;
+                    </>
+                  )}
+                  {hasSelectedImpacts && (
+                    <>
+                      No{" "}
+                      {selectedImpacts.map((impact, index) => (
+                        <React.Fragment key={impact}>
+                          {index > 0 &&
+                            (index === selectedImpacts.length - 1
+                              ? " or "
+                              : index === selectedImpacts.length - 2
+                                ? " or "
+                                : ", ")}
+                          <span className="text-foreground">{impact}</span>
+                        </React.Fragment>
+                      ))}{" "}
+                      feedback{selectedImpacts.length > 1 ? "s" : ""} found
+                    </>
+                  )}
+                  .
                 </TableCell>
               </TableRow>
             ) : (
