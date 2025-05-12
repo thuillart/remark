@@ -3,6 +3,7 @@
 import {
   RiArrowLeftSLine,
   RiArrowRightSLine,
+  RiArrowRightUpLine,
   RiChat1Line,
   RiFilter3Line,
   RiSkipLeftLine,
@@ -14,10 +15,13 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { formatDistanceToNow } from "date-fns";
+import Link from "next/link";
 import { useQueryState } from "nuqs";
 
 import MultipleSelector, { Option } from "@/components/multiselect";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -43,6 +47,78 @@ import {
 import { EmptyState } from "@/core/components/empty-state";
 import { Feedback } from "@/feedbacks/lib/schema";
 import { FeedbackImpact } from "@/lib/schema";
+import { capitalizeFirstLetter, cn } from "@/lib/utils";
+
+export const columns: ColumnDef<Feedback>[] = [
+  {
+    accessorKey: "from",
+    header: "From",
+    meta: {
+      className: "w-18.75",
+    },
+    cell: ({ row }) => {
+      const email = row.original.from;
+      return (
+        <div className="flex items-center gap-2">
+          <div className="border-border size-8 rounded-lg border p-0.5">
+            <div className="flex size-full items-center justify-center rounded-md border bg-green-50 text-green-700 ring-green-600/20 dark:bg-green-400/10 dark:text-green-400 dark:ring-green-500/20">
+              <RiChat1Line size={16} className="opacity-60" />
+            </div>
+          </div>
+          <Link
+            href={`/feedbacks/${row.original.id}`}
+            className={cn(
+              buttonVariants({ variant: "link" }),
+              "group/link decoration-muted-foreground block pr-4.5 font-normal whitespace-nowrap underline underline-offset-5 transition-[color,text-decoration-color] duration-150 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] hover:decoration-current",
+            )}
+          >
+            {email}
+            <RiArrowRightUpLine className="text-muted-foreground group-hover/link:text-primary absolute mt-1.25 ml-0.5 inline-block size-[1em] no-underline transition duration-[inherit] ease-[inherit] group-hover/link:translate-x-px group-hover/link:-translate-y-px" />
+          </Link>
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "impact",
+    header: "Impact",
+    cell: ({ row }) => {
+      const impact = row.original.impact;
+
+      if (impact === "critical") {
+        return (
+          <Badge variant="destructive">{capitalizeFirstLetter(impact)}</Badge>
+        );
+      }
+
+      if (impact === "major") {
+        return <Badge variant="warning">{capitalizeFirstLetter(impact)}</Badge>;
+      }
+
+      return <Badge variant="default">{capitalizeFirstLetter(impact)}</Badge>;
+    },
+  },
+  {
+    accessorKey: "subject",
+    header: "Subject",
+    cell: ({ row }) => {
+      const subject = row.original.subject;
+      return <div className="text-sm">{subject}</div>;
+    },
+  },
+  {
+    accessorKey: "sentAt",
+    header: "Sent",
+    cell: ({ row }) => {
+      const distance = formatDistanceToNow(row.original.createdAt, {
+        addSuffix: true,
+      });
+      return capitalizeFirstLetter(
+        distance === "less than a minute ago" ? "Now" : distance,
+      );
+    },
+  },
+];
 
 function Topbar() {
   return (
@@ -156,13 +232,7 @@ function Filters() {
 
 type Rows = "5" | "10" | "25" | "50";
 
-export function DataTable({
-  data,
-  columns,
-}: {
-  data: Feedback[];
-  columns: ColumnDef<Feedback>[];
-}) {
+export function DataTable({ data }: { data: Feedback[] }) {
   const [rows, setRows] = useQueryState<Rows>("rows", {
     parse: (v) => (v as Rows) || "5",
     serialize: (v) => (v === "5" ? null : v),
@@ -210,7 +280,7 @@ export function DataTable({
                   return (
                     <TableHead
                       key={header.id}
-                      className="md:not-last:w-2/10 md:last:w-1/10"
+                      className={cn(header.column.columnDef.meta?.className)}
                     >
                       {header.isPlaceholder
                         ? null
