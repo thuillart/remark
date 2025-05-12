@@ -54,7 +54,7 @@ export const columns: ColumnDef<Feedback>[] = [
     accessorKey: "from",
     header: "From",
     meta: {
-      width: "w-18.75",
+      width: "w-75.5",
     },
     cell: ({ row }) => {
       const email = row.original.from;
@@ -83,7 +83,7 @@ export const columns: ColumnDef<Feedback>[] = [
     accessorKey: "impact",
     header: "Impact",
     meta: {
-      width: "w-20",
+      width: "w-32",
     },
     cell: ({ row }) => {
       const impact = row.original.impact;
@@ -105,7 +105,7 @@ export const columns: ColumnDef<Feedback>[] = [
     accessorKey: "subject",
     header: "Subject",
     meta: {
-      width: "w-19",
+      width: "w-76",
     },
     cell: ({ row }) => {
       const subject = row.original.subject;
@@ -116,7 +116,7 @@ export const columns: ColumnDef<Feedback>[] = [
     accessorKey: "sentAt",
     header: "Sent",
     meta: {
-      width: "w-11",
+      width: "w-42.5",
     },
     cell: ({ row }) => {
       const distance = formatDistanceToNow(row.original.createdAt, {
