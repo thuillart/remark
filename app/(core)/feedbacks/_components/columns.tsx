@@ -1,6 +1,6 @@
 "use client";
 
-import { RiChat1Line } from "@remixicon/react";
+import { RiArrowRightUpLine, RiChat1Line } from "@remixicon/react";
 import { ColumnDef } from "@tanstack/react-table";
 import Link from "next/link";
 
@@ -25,9 +25,13 @@ export const columns: ColumnDef<Feedback>[] = [
           </div>
           <Link
             href={`/feedbacks/${row.original.id}`}
-            className={cn(buttonVariants({ variant: "link" }), "font-normal")}
+            className={cn(
+              buttonVariants({ variant: "link" }),
+              "group/link decoration-muted-foreground block pr-4.5 font-normal whitespace-nowrap underline underline-offset-5 transition-[color,text-decoration-color] duration-150 ease-[cubic-bezier(0.25,0.46,0.45,0.94)] hover:decoration-current",
+            )}
           >
             {email}
+            <RiArrowRightUpLine className="text-muted-foreground group-hover/link:text-primary absolute mt-1.25 ml-0.5 inline-block size-[1em] no-underline transition duration-[inherit] ease-[inherit] group-hover/link:translate-x-px group-hover/link:-translate-y-px" />
           </Link>
         </div>
       );
