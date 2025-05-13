@@ -88,12 +88,12 @@ export default async function FeedbackPage({
           </TabsList>
 
           <TabsContent value="tab-1" className="-mt-px border p-4">
-            <p className="prose text-foreground whitespace-pre-line">
+            <p className="text-foreground whitespace-pre-line">
               {feedback?.summary}
             </p>
           </TabsContent>
           <TabsContent value="tab-2" className="-mt-px border p-4">
-            <p className="prose text-foreground whitespace-pre-line">
+            <p className="text-foreground whitespace-pre-line">
               {feedback?.text}
             </p>
           </TabsContent>
