@@ -11,6 +11,7 @@ import {
 } from "@remixicon/react";
 import {
   ColumnDef,
+  FilterFn,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -59,6 +60,13 @@ import { APP_NAME } from "@/lib/constants";
 import { FeedbackImpact } from "@/lib/schema";
 import { capitalizeFirstLetter, cn } from "@/lib/utils";
 
+declare module "@tanstack/table-core" {
+  interface FilterFns {
+    timeRange: FilterFn<Feedback>;
+    impact: FilterFn<Feedback>;
+  }
+}
+
 type ColumnDefMetadata = {
   width?: string;
 };
@@ -92,6 +100,7 @@ export const columns: ColumnDefWithWidth<Feedback>[] = [
     header: "Impact",
     accessorKey: "impact",
     meta: { width: "w-32" },
+    filterFn: "impact",
     cell: ({ row }) => {
       return (
         <Tooltip>
@@ -118,6 +127,7 @@ export const columns: ColumnDefWithWidth<Feedback>[] = [
     header: "Sent",
     accessorKey: "createdAt",
     meta: { width: "w-42.5" },
+    filterFn: "timeRange",
     cell: ({ row }) => {
       return (
         <Tooltip>
@@ -398,6 +408,28 @@ function getTimeRangeFromNumber(number: number): TimeRange {
   }
 }
 
+function getDateFromTimeRange(timeRange: TimeRange): Date | null {
+  const now = new Date();
+  const hoursInMs = 60 * 60 * 1000;
+
+  switch (timeRange) {
+    case "24-hours":
+      return new Date(now.getTime() - 24 * hoursInMs);
+    case "3-days":
+      return new Date(now.getTime() - 3 * 24 * hoursInMs);
+    case "7-days":
+      return new Date(now.getTime() - 7 * 24 * hoursInMs);
+    case "15-days":
+      return new Date(now.getTime() - 15 * 24 * hoursInMs);
+    case "30-days":
+      return new Date(now.getTime() - 30 * 24 * hoursInMs);
+    case "all":
+      return null;
+    default:
+      return null;
+  }
+}
+
 export function DataTable({ data }: { data: Feedback[] }) {
   const [rowsCount, setRowsCount] = useQueryState<RowsCount>("rows", {
     parse: (v) => `${v}-rows` as RowsCount,
@@ -444,6 +476,28 @@ export function DataTable({ data }: { data: Feedback[] }) {
         pageIndex: activePage ?? 0,
       },
       globalFilter: searchValue,
+      columnFilters: [
+        {
+          id: "impact",
+          value: selectedImpact,
+        },
+        {
+          id: "createdAt",
+          value: selectedTimeRange,
+        },
+      ],
+    },
+    filterFns: {
+      impact: (row, columnId, filterValue: Impact) => {
+        const impact = row.getValue(columnId) as FeedbackImpact;
+        return filterValue === "all" ? true : impact === filterValue;
+      },
+      timeRange: (row, columnId, filterValue: TimeRange) => {
+        const date = row.getValue(columnId) as Date;
+
+        const startDate = getDateFromTimeRange(filterValue);
+        return startDate ? date >= startDate : true;
+      },
     },
     onPaginationChange: (updater) => {
       if (typeof updater === "function") {
@@ -455,6 +509,15 @@ export function DataTable({ data }: { data: Feedback[] }) {
         setRowsCount(`${newState.pageSize}-rows` as RowsCount);
       }
     },
+  });
+
+  const currentPage = table.getState().pagination.pageIndex + 1;
+  const pagesCount = table.getPageCount() || 1;
+
+  const { pages, showLeftEllipsis, showRightEllipsis } = usePagination({
+    totalPages: table.getPageCount(),
+    currentPage: table.getState().pagination.pageIndex + 1,
+    paginationItemsToDisplay: 5,
   });
 
   const hasRows = table.getRowModel().rows.length > 0;
@@ -472,15 +535,6 @@ export function DataTable({ data }: { data: Feedback[] }) {
       </div>
     );
   }
-
-  const currentPage = table.getState().pagination.pageIndex + 1;
-  const pagesCount = table.getPageCount() || 1;
-
-  const { pages, showLeftEllipsis, showRightEllipsis } = usePagination({
-    currentPage: table.getState().pagination.pageIndex + 1,
-    totalPages: table.getPageCount(),
-    paginationItemsToDisplay: 5,
-  });
 
   return (
     <div className="container">
@@ -521,9 +575,15 @@ export function DataTable({ data }: { data: Feedback[] }) {
                     colSpan={columns.length}
                     className="text-muted-foreground h-24 text-center"
                   >
-                    No results found for: &quot;
-                    <span className="text-foreground">{searchValue}</span>
-                    &quot;.
+                    {searchValue ? (
+                      <>
+                        No results found for: &quot;
+                        <span className="text-foreground">{searchValue}</span>
+                        &quot;.
+                      </>
+                    ) : (
+                      "No results found."
+                    )}
                   </TableCell>
                 </TableRow>
               )}
