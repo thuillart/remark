@@ -91,6 +91,8 @@ export const enrichFeedback = actionClient
       }),
     });
 
+    console.log(output);
+
     // 3. Extract information from the output
     const parsedOutput = z.string().parse(output);
     const enrichment = feedbackEnrichmentSchema.parse(JSON.parse(parsedOutput));

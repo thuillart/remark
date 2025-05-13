@@ -6,6 +6,44 @@ import { AppIcon } from "@/feedbacks/components/app-icon";
 import { getFeedbackById } from "@/lib/db/queries";
 import { capitalizeFirstLetter } from "@/lib/utils";
 
+function formatFeedbackText(text: string) {
+  if (!text) return "";
+
+  // Helper to wrap /dashboard in <code> only in text
+  function formatPaths(line: string) {
+    return line.replace(
+      /(\/[a-zA-Z0-9-]+)/g,
+      (match) =>
+        `<code class=\"font-mono pl-1.5 pr-2 py-1 bg-muted rounded-md text-sm/6 font-medium text-foreground\">${match}</code> `,
+    );
+  }
+
+  // Try to split into intro and numbered list items
+  const numberedItemRegex = /(\d+\.\s[^\d]+)/g;
+  const items = [...text.matchAll(numberedItemRegex)].map((match) =>
+    match[0].trim(),
+  );
+  let intro = text;
+  if (items.length) {
+    const firstItemIndex = text.indexOf(items[0]);
+    intro = text.slice(0, firstItemIndex).trim();
+  }
+
+  let html = "";
+  if (intro) {
+    html += `<p class=\"not-last:mb-5 text-base/relaxed text-foreground\">${formatPaths(intro)}</p>`;
+  }
+  if (items.length) {
+    html += `<ul class=\"[&_li]:marker:text-muted-foreground not-last:my-5 list-decimal pl-6 [&_li]:pl-1.5 [&_li]:text-base/relaxed\">`;
+    for (const item of items) {
+      const itemText = item.replace(/^\d+\.\s*/, "");
+      html += `<li class=\"my-2 text-foreground\">${formatPaths(itemText)}</li>`;
+    }
+    html += `</ul>`;
+  }
+  return html;
+}
+
 export default async function FeedbackPage({
   params,
 }: {
@@ -87,15 +125,19 @@ export default async function FeedbackPage({
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="tab-1" className="-mt-px border p-4">
-            <p className="text-foreground whitespace-pre-line">
-              {feedback?.summary}
-            </p>
+          <TabsContent value="tab-1" className="-mt-px border p-4 pt-5">
+            <div
+              dangerouslySetInnerHTML={{
+                __html: formatFeedbackText(feedback?.summary || ""),
+              }}
+            />
           </TabsContent>
-          <TabsContent value="tab-2" className="-mt-px border p-4">
-            <p className="text-foreground whitespace-pre-line">
-              {feedback?.text}
-            </p>
+          <TabsContent value="tab-2" className="-mt-px border p-4 pt-5">
+            <div
+              dangerouslySetInnerHTML={{
+                __html: formatFeedbackText(feedback?.text || ""),
+              }}
+            />
           </TabsContent>
         </Tabs>
       </div>
