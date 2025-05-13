@@ -5,9 +5,8 @@ import { z } from "zod";
 
 import { db } from "@/lib/db/drizzle";
 import { feedback } from "@/lib/db/schema";
-import { authActionClient } from "@/lib/safe-action";
+import { authActionClient, subscriptionActionClient } from "@/lib/safe-action";
 import { tryCatch } from "@/lib/utils";
-import { subscriptionActionClient } from "@/lib/safe-action";
 
 export const getSubscription = subscriptionActionClient.action(
   async ({ ctx: { user, subscription } }) => {
@@ -44,4 +43,20 @@ export const getFeedbacks = authActionClient
       feedbacks: data?.slice(0, 10) ?? [],
       nextCursor: data?.[data.length - 1]?.id,
     };
+  });
+export const getFeedbackById = authActionClient
+  .schema(z.object({ id: z.string() }))
+  .action(async ({ parsedInput: { id }, ctx: { user } }) => {
+    const { data, error } = await tryCatch(
+      db
+        .select()
+        .from(feedback)
+        .where(and(eq(feedback.id, id), eq(feedback.referenceId, user.id))),
+    );
+
+    if (error) {
+      return { failure: error.message };
+    }
+
+    return { feedback: data?.[0] };
   });

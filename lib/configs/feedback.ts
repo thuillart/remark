@@ -1,17 +1,19 @@
 import { FeedbackInput } from "@/lib/schema";
 
-export const FEEDBACK_CLASSIFICATION_PROMPT = `**Act as a feedback classification assistant.**
+export const FEEDBACK_CLASSIFICATION_PROMPT = `Act as a feedback classification engine.
 
-Input is ONE single-line JS object with these keys:
+You receive exactly one single-line JS object with these keys:
 
-- **from**: string (user's email)
-- **text**: string (raw feedback)
-- **name?**: string (user's full name)
-- **metadata?**: object (optional extra info, can includes subscription tier, a pathname or both)
-    - **tier?**: string (subscription tier of the user, e.g., "free", "pro")
-    - **path?**: string (pathname where the feedback was submitted, e.g., "/search")
+- from: string (user's email)
+- text: string (raw feedback)
+- name?: string (user's full name)
+- metadata?: object (optional extra info, can includes subscription tier, a pathname or both)
+    - tier?: string (subscription tier of the user, e.g., "free", "pro")
+    - path?: string (pathname where the feedback was submitted, e.g., "/search")
 
-Return—and only return—a minified, valid JSON object with exactly these keys:
+Instruction: 
+
+Return exactly one minified JSON object with these four keys—no extra text:
 
 \`\`\`json
 {
@@ -22,46 +24,43 @@ Return—and only return—a minified, valid JSON object with exactly these keys
 }
 \`\`\`
 
-**Allowed tags (no others):**
+tags (pick ≥1, no others):
 
-- **bug** → A defect or error in the functionality of the product.
-- **feature_request** → A suggestion for a completely new functionality not currently available.
-- **enhancement** → A suggestion to improve or modify an existing feature.
-- **ui** → Issues related to the visual design and layout of the user interface (colors, fonts, spacing, etc.).
-- **ux** → Issues related to the usability and overall user experience (difficulty completing tasks, confusing navigation, etc.).
-- **performance** → Issues related to the speed, responsiveness, and efficiency of the product.
-- **security** → Potential vulnerabilities or concerns related to the security of the product or user data.
-- **billing** → Issues related to payments, subscriptions, or account billing.
-- **api** → Issues specifically related to the product's API (integration problems, errors, etc.).
-- **dx** → Issues related to the overall experience of developers using the product (documentation, tooling, onboarding, etc.).
-- **lang** → Issues related to translations, cultural appropriateness, or language support.
-- **legal** → Issues related to compliance with laws, regulations, or legal requirements (e.g., GDPR, CCPA).
+bug, feature_request, enhancement, ui, ux, performance, security, billing, api, dx, lang, legal, appraisal
 
-**Rules:**
+impact: one of "minor", "major", "critical", based on how much this issue will hurt user satisfaction or retention:
 
-1. Output exactly one JSON object—no extra text or line breaks.
-2. **impact**: either "minor", "major" or "critical".
-3. **summary**: Write as a human assistant would - use first name only, be conversational and natural. For example:
-   - Instead of "User requests dark mode feature", write "Alex is asking for dark mode support"
-   - Instead of "User reports mobile button size issue", write "Sarah noticed the mobile button is too small to tap"
-   - If no name is provided, use "The user" instead of a name, e.g. "The user is asking for dark mode support"
-4. **subject**: Write naturally but concisely (1-6 words). For example:
-   - Instead of "Requesting dark mode", write "Dark mode support"
-   - Instead of "Mobile button size issue", write "Mobile button too tiny"
-5. **tags**: choose ≥1 from allowed list; prefer one unless multiple issues clearly exist.
-6. Write as if you're a friendly human assistant - be natural, conversational, and empathetic.
-7. Maintain any URLs unchanged; do not inject new information.
+- minor → small annoyance or cosmetic issue unlikely to drive users away
+- major → significant usability or performance problem that may frustrate many users
+- critical → blocking bug or data loss that will cause users to churn immediately
 
-**Examples:**
+subject (1–6 words):
 
-**Example 1: Basic feature request**
+- For single-issue feedback, name that issue (e.g. "Dark mode support").
+- For multi-issue feedback, use a short umbrella phrase (e.g. "New search UI/UX issues").
+
+summary:
+
+- Write as a friendly human assistant (use first name if given; otherwise, use "The user").
+- If there are multiple distinct issues, enumerate them as a numbered list.
+- Preserve nuance: what fails, why it matters (lost data, unreadable text, etc.).
+- Preserve URLs exactly as given.
+
+---
+
+Examples:
+
+1. Multi-issue  
 
 Input:
 
 \`\`\`json
 {
   "from": "alice@example.com",
-  "text": "Please add a dark mode to reduce eye strain at night."
+  "text": "hey y'all, love the new ui but every time i try to search for 'budget', the dropdown just… disappears? also that lil feedback link is like so tiny i can't even click it lol. and dark mode text is barely visible 😂",
+  "metadata": {
+    "path": "/search"
+  }
 }
 \`\`\`
 
@@ -69,48 +68,46 @@ Output:
 
 \`\`\`json
 {
-  "tags": ["feature_request"],
-  "impact": "minor",
-  "subject": "Dark mode support",
-  "summary": "Alice is asking for dark mode to help with eye strain at night."
-}
-\`\`\`
-
-**Example 2: Bug report with metadata**
-Input:
-
-\`\`\`json
-{
-  "from": "c.perigord@example.com",
-  "name": "Carol de Talleyrand-Périgord",
-  "text": "The signup button is too small on mobile and hard to tap.",
-  "metadata": {
-    "plan": "free",
-    "path": "/billing"
-  }
-}
-\`\`\`
-
-Output:
-
-\`\`\`json
-{
-  "tags": ["ui", "ux"],
+  "tags": ["ui","ux"],
   "impact": "major",
-  "subject": "Too small mobile button",
-  "summary": "Carol is having trouble tapping the signup button on the billing page."
+  "subject": "New search UI/UX issues",
+  "summary": "Alice is having three issues:\n1. Latest /search updates make searching unusable because as soon he tries to search something, the dropdown dissapear.\n2. The feedback link seems too small for him to click on it, which makes navigation hard.\n3. Text, when in dark mode seems to be barely visible, which make reading very complex."
 }
 \`\`\`
 
-Example 3: Multiple-issue report
+1. Appraisal
+
 Input:
 
 \`\`\`json
 {
-  "from": "heidi@example.com",
-  "text": "The app crashes on iOS when opening the settings screen, and the layout is broken.",
+  "from": "bob@example.com",
+  "name": "Bob",
+  "text": "Just wanted to say the new onboarding flow is fantastic—smooth and intuitive!"
+}
+\`\`\`
+
+Output:
+
+\`\`\`json
+{
+  "tags": ["appraisal"],
+  "impact": "minor",
+  "subject": "New onboarding flow kudos",
+  "summary": "Bob is loving the new onboarding flow and finds it smooth and intuitive."
+}
+\`\`\`
+
+1. Single-issue
+
+Input:
+
+\`\`\`json
+{
+  "from": "danyboo@example.com",
+  "text": "When exporting as a PDF, it generates a corrupted file. I really need it resolved by the end of the week!",
   "metadata": {
-    "plan": "pro"
+    "path": "/reports"
   }
 }
 \`\`\`
@@ -119,20 +116,66 @@ Output:
 
 \`\`\`json
 {
-  "tags": ["bug", "performance", "ui", "ux"],
-  "impact": "critical",
-  "subject": "iOS settings crash",
-  "summary": "Heidi is experiencing crashes in the iOS settings screen and seeing layout issues."
+  "tags": ["bug"],
+  "impact": "major",
+  "subject": "Corrupted PDF export",
+  "summary": "The user reports that exporting a report as PDF on /reports produces a corrupted file."
 }
 \`\`\`
 
-Now classify this feedback:
+1. Feature request
+
+Input:
+
+\`\`\`json
+{
+  "from": "amoucas@example.com",
+  "name": "Amélie Oudéa-Castéra",
+  "text": "Could you add a way to switch between the light and dark themes? For instance, by clicking on the m key on my keyboard, this would be perfect!"
+}
+\`\`\`
+
+Output:
+
+\`\`\`json
+{
+  "tags": ["feature_request", "ui"],
+  "impact": "minor",
+  "subject": "Theme toggle shortcut",
+  "summary": "Amélie is requesting a keyboard shortcut (m key) to toggle between light and dark themes."
+}
+\`\`\`
+
+1. Inquiry
+
+Input:
+
+\`\`\`json
+{
+  "from": "jason@example.com",
+  "name": "Jason",
+  "text": "Hi, is there a way to export my project data as a CSV file? I couldn't find the option anywhere in the UI."
+}
+\`\`\`
+
+Output:
+
+\`\`\`json
+{
+  "tags": ["dx"],
+  "impact": "minor",
+  "subject": "Question about CSV export",
+  "summary": "Jason is asking how to export his project data as a CSV file, since he can't find the option anywhere in the app."
+}
+\`\`\`
+
+Classify this feedback:
 
 Input: \`\`\`json
 `;
 
 export function getFeedbackPrompt(input: FeedbackInput): string {
   const inputJson = JSON.stringify(input, null, 2);
-  const prompt = `${FEEDBACK_CLASSIFICATION_PROMPT}${inputJson}\n\`\`\``;
+  const prompt = `${FEEDBACK_CLASSIFICATION_PROMPT}${inputJson}\n\`\`\`\n\nA:`;
   return prompt;
 }
