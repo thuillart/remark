@@ -12,6 +12,7 @@ export const feedbackSchema = z.object({
   from: z.string().email(),
   impact: feedbackImpactSchema,
   subject: z.string(),
+  text: z.string(),
   summary: z.string(),
   metadata: feedbackMetadataSchema,
   createdAt: z.date(),

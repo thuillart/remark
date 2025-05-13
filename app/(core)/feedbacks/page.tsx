@@ -4,6 +4,7 @@ import { PageTitle } from "@/core/components/page-title";
 import { DataTable } from "@/feedbacks/components/data-table";
 import { TableSkeleton } from "@/feedbacks/components/table-skeleton";
 import { getFeedbacks } from "@/lib/db/queries";
+import { mockFeedbacks } from "./_lib/mock-data";
 
 export default function FeedbacksPage() {
   return (
@@ -21,7 +22,10 @@ async function FeedbacksTable() {
   const result = await getFeedbacks({});
   return (
     <>
-      <DataTable data={result?.data?.feedbacks} />
+      <DataTable
+        // data={result?.data?.feedbacks}
+        data={mockFeedbacks}
+      />
     </>
   );
 }

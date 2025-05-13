@@ -15,6 +15,8 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
   RowData,
   useReactTable,
 } from "@tanstack/react-table";
@@ -431,14 +433,17 @@ function getDateFromTimeRange(timeRange: TimeRange): Date | null {
 }
 
 export function DataTable({ data }: { data: Feedback[] }) {
+  // State from URL parameters
   const [rowsCount, setRowsCount] = useQueryState<RowsCount>("rows", {
     parse: (v) => `${v}-rows` as RowsCount,
     serialize: (v) => (v === "5-rows" ? null : v.replace("-rows", "")),
+    defaultValue: "5-rows",
   });
 
   const [activePage, setActivePage] = useQueryState<number>("page", {
     parse: (v) => Number(v) || 0,
     serialize: (v) => (v === 0 ? null : String(v)),
+    defaultValue: 0,
   });
 
   const [searchValue] = useQueryState("search", {
@@ -459,21 +464,34 @@ export function DataTable({ data }: { data: Feedback[] }) {
     defaultValue: "7-days",
   });
 
+  // Prevent recreating the table instance when URL parameters change
+  // by memoizing it with a stable reference
+  const tableMeta = React.useMemo(
+    () => ({
+      pageSize: getRowsCountNumber(rowsCount),
+      pageIndex: activePage,
+    }),
+    [rowsCount, activePage],
+  );
+
+  // Update the memoized reference values when URL parameters change
+  React.useEffect(() => {
+    tableMeta.pageSize = getRowsCountNumber(rowsCount);
+    tableMeta.pageIndex = activePage;
+  }, [tableMeta, rowsCount, activePage]);
+
   const table = useReactTable<Feedback>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    initialState: {
-      pagination: {
-        pageSize: getRowsCountNumber(rowsCount ?? "5-rows"),
-        pageIndex: activePage ?? 0,
-      },
-    },
+    getPaginationRowModel: getPaginationRowModel(),
+    // Get pagination state from the stable reference, not directly from URL params
     state: {
       pagination: {
-        pageSize: getRowsCountNumber(rowsCount ?? "5-rows"),
-        pageIndex: activePage ?? 0,
+        pageSize: tableMeta.pageSize,
+        pageIndex: tableMeta.pageIndex,
       },
       globalFilter: searchValue,
       columnFilters: [
@@ -494,33 +512,111 @@ export function DataTable({ data }: { data: Feedback[] }) {
       },
       timeRange: (row, columnId, filterValue: TimeRange) => {
         const date = row.getValue(columnId) as Date;
-
         const startDate = getDateFromTimeRange(filterValue);
-        return startDate ? date >= startDate : true;
+        return startDate ? date.getTime() >= startDate.getTime() : true;
       },
     },
+    manualPagination: true, // Important: manually control pagination
+    enableColumnFilters: true,
     onPaginationChange: (updater) => {
+      let newPagination;
+
       if (typeof updater === "function") {
-        const newState = updater({
-          pageIndex: activePage ?? 0,
-          pageSize: getRowsCountNumber(rowsCount ?? "5-rows"),
+        newPagination = updater({
+          pageIndex: tableMeta.pageIndex,
+          pageSize: tableMeta.pageSize,
         });
-        setActivePage(newState.pageIndex);
-        setRowsCount(`${newState.pageSize}-rows` as RowsCount);
+      } else {
+        newPagination = updater;
+      }
+
+      // Update the URL query parameter first
+      setActivePage(newPagination.pageIndex);
+
+      // Update the local stable reference
+      tableMeta.pageIndex = newPagination.pageIndex;
+
+      // If page size changed, update the rows count parameter
+      if (newPagination.pageSize !== tableMeta.pageSize) {
+        const newRowsCount = `${newPagination.pageSize}-rows` as RowsCount;
+        if (
+          ["5-rows", "10-rows", "25-rows", "50-rows"].includes(newRowsCount)
+        ) {
+          setRowsCount(newRowsCount);
+          tableMeta.pageSize = newPagination.pageSize;
+        }
       }
     },
   });
 
-  const currentPage = table.getState().pagination.pageIndex + 1;
-  const pagesCount = table.getPageCount() || 1;
+  // Get filtered data based on current filters
+  const filteredData = data.filter((item) => {
+    // Filter by impact
+    if (selectedImpact !== "all" && item.impact !== selectedImpact) {
+      return false;
+    }
+
+    // Filter by time range
+    const startDate = getDateFromTimeRange(selectedTimeRange);
+    if (startDate && item.createdAt.getTime() < startDate.getTime()) {
+      return false;
+    }
+
+    // Filter by search term
+    if (
+      searchValue &&
+      !item.from.toLowerCase().includes(searchValue.toLowerCase())
+    ) {
+      return false;
+    }
+
+    return true;
+  });
+
+  // Reset to first page when filters change if current page would be out of bounds
+  // Move useEffect before any conditional rendering to avoid React Hook warnings
+  React.useEffect(() => {
+    const maxPageIndex = Math.max(
+      0,
+      Math.ceil(filteredData.length / tableMeta.pageSize) - 1,
+    );
+    if (tableMeta.pageIndex > maxPageIndex) {
+      // Current page is now out of bounds due to filtering
+      setActivePage(0);
+      tableMeta.pageIndex = 0;
+    }
+  }, [
+    selectedImpact,
+    selectedTimeRange,
+    searchValue,
+    filteredData.length,
+    tableMeta,
+    setActivePage,
+  ]);
+
+  // Manually handle pagination
+  const startIndex = tableMeta.pageIndex * tableMeta.pageSize;
+  const paginatedData = filteredData.slice(
+    startIndex,
+    startIndex + tableMeta.pageSize,
+  );
+
+  // Calculate accurate pagination information based on filtered data
+  const pagesCount = Math.max(
+    1,
+    Math.ceil(filteredData.length / tableMeta.pageSize),
+  );
+  const currentPage = Math.min(tableMeta.pageIndex + 1, pagesCount);
+  const canPreviousPage = tableMeta.pageIndex > 0;
+  const canNextPage = startIndex + tableMeta.pageSize < filteredData.length;
 
   const { pages, showLeftEllipsis, showRightEllipsis } = usePagination({
-    totalPages: table.getPageCount(),
-    currentPage: table.getState().pagination.pageIndex + 1,
+    totalPages: pagesCount,
+    currentPage: currentPage,
     paginationItemsToDisplay: 5,
   });
 
-  const hasRows = table.getRowModel().rows.length > 0;
+  const hasRows = data.length > 0;
   const hasFilter = selectedTimeRange !== "7-days" || selectedImpact !== "all";
   const hasSearchQuery = searchValue !== "";
 
@@ -569,7 +665,7 @@ export function DataTable({ data }: { data: Feedback[] }) {
               ))}
             </TableHeader>
             <TableBody>
-              {!hasRows && (
+              {paginatedData.length === 0 && (
                 <TableRow>
                   <TableCell
                     colSpan={columns.length}
@@ -588,21 +684,62 @@ export function DataTable({ data }: { data: Feedback[] }) {
                 </TableRow>
               )}
 
-              {hasRows &&
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    className="hover:bg-transparent"
-                    data-state={row.getIsSelected() && "selected"}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
+              {paginatedData.length > 0 &&
+                paginatedData.map((row) => (
+                  <TableRow key={row.id} className="hover:bg-transparent">
+                    {/* From column */}
+                    <TableCell>
+                      <Link
+                        href={`/feedbacks/${row.id}`}
+                        className="group/link flex items-center gap-3"
+                      >
+                        <AppIcon />
+                        <span className="decoration-muted-foreground pr-4.5 whitespace-nowrap underline underline-offset-5 transition-[color,text-decoration-color] duration-150 ease-in-out group-hover/link:decoration-current">
+                          {row.from}
+                          <RiArrowRightUpLine className="text-muted-foreground group-hover/link:text-primary absolute mt-1.25 inline-block size-[1em] no-underline transition duration-[inherit] ease-[inherit] group-hover/link:translate-x-px group-hover/link:-translate-y-px" />
+                        </span>
+                      </Link>
+                    </TableCell>
+
+                    {/* Impact column */}
+                    <TableCell>
+                      <Tooltip>
+                        <TooltipTrigger asChild className="cursor-pointer">
+                          <Badge variant={getImpactBadgeVariant(row.impact)}>
+                            {capitalizeFirstLetter(row.impact)}
+                          </Badge>
+                        </TooltipTrigger>
+
+                        <TooltipContent className="max-w-3xs px-2 py-1">
+                          <TextShimmer>{`${APP_NAME} AI`}</TextShimmer>{" "}
+                          {getImpactTooltipText(row.impact)}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TableCell>
+
+                    {/* Subject column */}
+                    <TableCell>{row.subject}</TableCell>
+
+                    {/* Sent/Created column */}
+                    <TableCell>
+                      <Tooltip>
+                        <TooltipTrigger className="decoration-muted-foreground cursor-pointer underline underline-offset-5 transition-[text-decoration-color] duration-150 ease-in-out hover:decoration-current">
+                          {/* A nice-to-read date & time */}
+                          {capitalizeFirstLetter(
+                            formatDistance(row.createdAt, new Date(), {
+                              addSuffix: true,
+                            }).replace("about ", ""),
+                          )}
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          {/* The exact date & time */}
+                          {capitalizeFirstLetter(
+                            formatRelative(row.createdAt, new Date()),
+                          )}
+                          .
+                        </TooltipContent>
+                      </Tooltip>
+                    </TableCell>
                   </TableRow>
                 ))}
             </TableBody>
@@ -630,8 +767,12 @@ export function DataTable({ data }: { data: Feedback[] }) {
                     size="icon"
                     variant="outline"
                     className="disabled:pointer-events-none disabled:opacity-50"
-                    onClick={() => table.previousPage()}
-                    disabled={!table.getCanPreviousPage()}
+                    onClick={() => {
+                      if (canPreviousPage) {
+                        table.previousPage();
+                      }
+                    }}
+                    disabled={!canPreviousPage}
                     aria-label="Go to previous page"
                   >
                     <RiArrowLeftLine size={16} aria-hidden="true" />
@@ -647,14 +788,15 @@ export function DataTable({ data }: { data: Feedback[] }) {
 
                 {/* Page number buttons */}
                 {pages.map((page) => {
-                  const isActive =
-                    page === table.getState().pagination.pageIndex + 1;
+                  const isActive = page === currentPage;
                   return (
                     <PaginationItem key={page}>
                       <Button
                         size="icon"
                         variant={`${isActive ? "outline" : "ghost"}`}
-                        onClick={() => table.setPageIndex(page - 1)}
+                        onClick={() => {
+                          table.setPageIndex(page - 1);
+                        }}
                         aria-current={isActive ? "page" : undefined}
                       >
                         {page}
@@ -675,8 +817,12 @@ export function DataTable({ data }: { data: Feedback[] }) {
                   <Button
                     size="icon"
                     variant="outline"
-                    onClick={() => table.nextPage()}
-                    disabled={!table.getCanNextPage()}
+                    onClick={() => {
+                      if (canNextPage) {
+                        table.nextPage();
+                      }
+                    }}
+                    disabled={!canNextPage}
                     className="disabled:pointer-events-none disabled:opacity-50"
                     aria-label="Go to next page"
                   >
@@ -690,7 +836,7 @@ export function DataTable({ data }: { data: Feedback[] }) {
           {/* Results per page */}
           <div className="flex flex-1 justify-end">
             <Select
-              value={String(table.getState().pagination.pageSize)}
+              value={String(tableMeta.pageSize)}
               onValueChange={(value) => {
                 table.setPageSize(Number(value));
               }}
