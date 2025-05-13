@@ -1,6 +1,8 @@
 "use client";
 
 import {
+  RiArrowLeftLine,
+  RiArrowRightLine,
   RiArrowRightUpLine,
   RiCalendarLine,
   RiChat1Line,
@@ -22,7 +24,15 @@ import React from "react";
 
 import { TextShimmer } from "@/components/text-shimmer";
 import { Badge, BadgeProps } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  usePagination,
+} from "@/components/ui/pagination";
 import {
   Select,
   SelectContent,
@@ -466,6 +476,12 @@ export function DataTable({ data }: { data: Feedback[] }) {
   const currentPage = table.getState().pagination.pageIndex + 1;
   const pagesCount = table.getPageCount() || 1;
 
+  const { pages, showLeftEllipsis, showRightEllipsis } = usePagination({
+    currentPage: table.getState().pagination.pageIndex + 1,
+    totalPages: table.getPageCount(),
+    paginationItemsToDisplay: 5,
+  });
+
   return (
     <div className="container">
       <div className="space-y-4">
@@ -543,6 +559,73 @@ export function DataTable({ data }: { data: Feedback[] }) {
             Page <span className="text-foreground">{currentPage}</span> of{" "}
             <span className="text-foreground">{pagesCount}</span>
           </p>
+
+          {/* Pagination buttons */}
+          <div className="grow">
+            <Pagination>
+              <PaginationContent>
+                {/* Previous page button */}
+                <PaginationItem>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    className="disabled:pointer-events-none disabled:opacity-50"
+                    onClick={() => table.previousPage()}
+                    disabled={!table.getCanPreviousPage()}
+                    aria-label="Go to previous page"
+                  >
+                    <RiArrowLeftLine size={16} aria-hidden="true" />
+                  </Button>
+                </PaginationItem>
+
+                {/* Left ellipsis (...) */}
+                {showLeftEllipsis && (
+                  <PaginationItem>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                )}
+
+                {/* Page number buttons */}
+                {pages.map((page) => {
+                  const isActive =
+                    page === table.getState().pagination.pageIndex + 1;
+                  return (
+                    <PaginationItem key={page}>
+                      <Button
+                        size="icon"
+                        variant={`${isActive ? "outline" : "ghost"}`}
+                        onClick={() => table.setPageIndex(page - 1)}
+                        aria-current={isActive ? "page" : undefined}
+                      >
+                        {page}
+                      </Button>
+                    </PaginationItem>
+                  );
+                })}
+
+                {/* Right ellipsis (...) */}
+                {showRightEllipsis && (
+                  <PaginationItem>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                )}
+
+                {/* Next page button */}
+                <PaginationItem>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    onClick={() => table.nextPage()}
+                    disabled={!table.getCanNextPage()}
+                    className="disabled:pointer-events-none disabled:opacity-50"
+                    aria-label="Go to next page"
+                  >
+                    <RiArrowRightLine size={16} aria-hidden="true" />
+                  </Button>
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
 
           {/* Results per page */}
           <div className="flex flex-1 justify-end">
