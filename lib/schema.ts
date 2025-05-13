@@ -30,6 +30,7 @@ export const feedbackTagSchema = z.enum([
   "dx",
   "lang",
   "legal",
+  "appraisal",
 ]);
 export type FeedbackTag = z.infer<typeof feedbackTagSchema>;
 
