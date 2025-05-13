@@ -2,94 +2,89 @@ import { FeedbackInput } from "@/lib/schema";
 
 export const FEEDBACK_CLASSIFICATION_PROMPT = `Act as a feedback classification engine.
 
-You receive exactly one single-line JS object with these keys:
--   from: string (user’s email)
--   text: string (raw feedback)
--   name?: string (user’s full name)
--   metadata?: object (optional extra info, can include subscription tier or a pathname)
-    - tier?: string (e.g., "free", "pro")
-    - path?: string (e.g., "/search")
+You get exactly one single-line JS object with these keys:
+-  from: user’s email
+-  text: raw feedback
+-  name?: user’s full name
+-  metadata?: extra info
+  - tier?: user’s plan ("free" or "pro")
+  - path?: page where feedback came from (e.g. "/search")
 
-Instruction:
+What to do:
 
-Return exactly one minified JSON object with these four keys—no extra text:
+1. Return exactly one minified JSON object—no extra text or notes:
 
 \`\`\`json
 {"tags":["string"],"impact":"string","subject":"string","summary":"string"}
 \`\`\`
 
-Allowed tags (pick ≥1, no others):
+2. Follow this example for multi-issue feedback:
+
+\`\`\`json
+{"tags":["ui","ux"],"impact":"major","subject":"Example issues","summary":"User has two problems:\n1. First problem description.\n2. Second problem description."}
+\`\`\`
+
+3. Allowed tags (pick at least one):
 bug, feature_request, enhancement, ui, ux, performance, security, billing, api, dx, lang, legal, appraisal
 
-impact: one of "minor", "major", "critical", based on how much this issue will hurt user satisfaction or retention:
--   minor → small annoyance or cosmetic issue unlikely to drive users away
--   major → significant usability or performance problem that may frustrate many users
--   critical → blocking bug or data loss that will cause users to churn immediately
+4. Impact should be one of:
+-  minor (small annoyance)
+-  major (big problem)
+-  critical (blocks use or loses data)
 
-subject (1–6 words):
--   Single-issue → name that issue precisely (e.g. "Dark mode support").
--   Multi-issue → short umbrella phrase (e.g. "New search UI/UX issues").
+5. Subject: 1–6 words
+-  Single issue: name it (e.g. "Dark mode support")
+-  Multiple issues: a short title (e.g. "Latest update breaks search")
 
-summary:
--   Write as a friendly human assistant (use first name if given; otherwise, use "The user").
--   If there are multiple distinct issues, enumerate them as a numbered list (e.g. “1.…\n2.…\n3.…”).
--   Preserve nuance: what fails, why it matters (lost data, unreadable text, etc.).
--   Preserve URLs exactly as given.
+6. Summary:
+-  Talk like a helpful teammate. Use the first name if you have it; otherwise say "The user."
+-  If there are multiple issues, list them with numbers (\n1.…\n2.…).
+-  Keep important details: what broke and why it matters.
+-  Keep URLs as they are.
 
 ---
 
 Examples:
 
 1. Multi-issue  
-
 Input:
 \`\`\`json
-{  
-  "from": "alice@example.com",  
-  "text": "hey y'all, love the new ui but every time i try to search for 'budget', the dropdown just… disappears? also that lil feedback link is like so tiny i can't even click it lol. and dark mode text is barely visible 😂",  
-  "metadata": { "path": "/search" }  
-}  
+{
+  "from":"alice@example.com",
+  "text":"hey y'all… dropdown disappears, link too small, dark mode text unreadable",
+  "metadata":{"path":"/search"}
+}
 \`\`\`
 
 Output:
 \`\`\`json
-{"tags":["ui","ux"],"impact":"major","subject":"New search UI/UX issues","summary":"Alice is having three issues:\n1. Latest /search updates make searching unusable because as soon as she tries to search something, the dropdown disappears.\n2. The feedback link seems too small for her to click on it, which makes navigation hard.\n3. Text in dark mode has very low contrast, making it hard to read."}
+{"tags":["ui","ux"],"impact":"major","subject":"Search page problems","summary":"Alice has three problems:\n1. The dropdown disappears when she searches.\n2. The feedback link is too small to tap.\n3. Dark mode text is hard to read."}
 \`\`\`
 
 2. Appraisal  
-
 Input:
 \`\`\`json
-{  
-  "from": "bob@example.com",  
-  "name": "Bob",  
-  "text": "Just wanted to say the new onboarding flow is fantastic—smooth and intuitive!"  
-}  
+{"from":"bob@example.com","name":"Bob","text":"Love the new onboarding flow—so smooth!"}
 \`\`\`
 
 Output:
 \`\`\`json
-{"tags":["appraisal"],"impact":"minor","subject":"Smooth onboarding flow","summary":"Bob is loving the new onboarding flow and finds it smooth and intuitive."}
+{"tags":["appraisal"],"impact":"minor","subject":"Onboarding praise","summary":"Bob loves the new onboarding flow and finds it smooth."}
 \`\`\`
 
-3. Single-issue  
-
+3. Bug  
 Input:
 \`\`\`json
-{  
-  "from": "danyboo@example.com",  
-  "text": "When exporting as a PDF, it generates a corrupted file. I really need it resolved by the end of the week!",  
-  "metadata": { "path": "/reports" }  
-}  
+{"from":"danyboo@example.com","text":"PDF export creates a corrupted file","metadata":{"path":"/reports"}}
 \`\`\`
+
 
 Output:
 \`\`\`json
-{"tags":["bug"],"impact":"major","subject":"Corrupted PDF export","summary":"The user reports that exporting a report as PDF on /reports produces a corrupted file."}
+{"tags":["bug"],"impact":"major","subject":"Corrupted PDF export","summary":"The user says exporting a report as PDF on /reports makes a corrupted file."}
 \`\`\`
 
 4. Feature request  
-
 Input:
 \`\`\`json
 {  
@@ -101,11 +96,10 @@ Input:
 
 Output:
 \`\`\`json
-{"tags":["feature_request","ui"],"impact":"minor","subject":"Theme toggle shortcut","summary":"Amélie is requesting a keyboard shortcut (pressing “m”) to toggle between light and dark themes."}
+{"tags":["feature_request","ui"],"impact":"minor","subject":"Theme shortcut","summary":"Amélie wants to be able to press 'm' to switch between light and dark themes."}
 \`\`\`
 
-5. Inquiry  
-
+5. Question  
 Input:
 \`\`\`json
 {  
@@ -117,7 +111,7 @@ Input:
 
 Output:
 \`\`\`json
-{"tags":["dx"],"impact":"minor","subject":"CSV export question","summary":"Jason is asking how to export his project data as a CSV file, since he can’t find the option anywhere in the app."}
+{"tags":["dx"],"impact":"minor","subject":"CSV export question","summary":"Jason is asking how to export his data as a CSV file because he can’t find the option anywhere in the app."}
 \`\`\`
 
 Classify this feedback:
