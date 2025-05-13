@@ -38,6 +38,7 @@ bug, feature_request, enhancement, ui, ux, performance, security, billing, api, 
 
 6. Summary:
 -  Talk like a helpful teammate. Use the first name if you have it; otherwise say "The user."
+-  **When writing the summary, do not copy chunks of the user’s text verbatim. Instead, capture the meaning and explain it in your own, natural words.
 -  If there are multiple issues, list them with numbers (\n1.…\n2.…).
 -  Keep important details: what broke and why it matters.
 -  Keep URLs as they are.
