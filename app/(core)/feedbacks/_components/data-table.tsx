@@ -17,6 +17,7 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  PaginationState,
   RowData,
   useReactTable,
 } from "@tanstack/react-table";
@@ -57,6 +58,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { EmptyState } from "@/core/components/empty-state";
+import { AppIcon } from "@/feedbacks/components/app-icon";
 import { Feedback } from "@/feedbacks/lib/schema";
 import { APP_NAME } from "@/lib/constants";
 import { FeedbackImpact } from "@/lib/schema";
@@ -89,7 +91,7 @@ export const columns: ColumnDefWithWidth<Feedback>[] = [
           href={`/feedbacks/${row.original.id}`}
           className="group/link flex items-center gap-3"
         >
-          <AppIcon />
+          <AppIcon size="md" Icon={RiChat1Line} />
           <span className="decoration-muted-foreground pr-4.5 whitespace-nowrap underline underline-offset-5 transition-[color,text-decoration-color] duration-150 ease-in-out group-hover/link:decoration-current">
             {row.original.from}
             <RiArrowRightUpLine className="text-muted-foreground group-hover/link:text-primary absolute mt-1.25 inline-block size-[1em] no-underline transition duration-[inherit] ease-[inherit] group-hover/link:translate-x-px group-hover/link:-translate-y-px" />
@@ -172,18 +174,6 @@ function getImpactTooltipText(impact: FeedbackImpact) {
     return "believes this might result in a leaving and disappointed user.";
   }
   return "feels this doesn't impact the user experience significantly.";
-}
-
-function AppIcon() {
-  return (
-    <div className="size-8">
-      <div className="size-full rounded-lg p-1.25 ring ring-zinc-500/10 ring-inset dark:ring-zinc-400/20">
-        <div className="flex size-full items-center justify-center rounded bg-zinc-100 text-zinc-600 ring ring-zinc-500/10 ring-inset dark:bg-zinc-400/10 dark:text-zinc-400 dark:ring-zinc-400/20">
-          <RiChat1Line size={14} aria-hidden="true" />
-        </div>
-      </div>
-    </div>
-  );
 }
 
 type TimeRange =
@@ -519,7 +509,7 @@ export function DataTable({ data }: { data: Feedback[] }) {
     manualPagination: true, // Important: manually control pagination
     enableColumnFilters: true,
     onPaginationChange: (updater) => {
-      let newPagination;
+      let newPagination: PaginationState;
 
       if (typeof updater === "function") {
         newPagination = updater({
@@ -693,7 +683,7 @@ export function DataTable({ data }: { data: Feedback[] }) {
                         href={`/feedbacks/${row.id}`}
                         className="group/link flex items-center gap-3"
                       >
-                        <AppIcon />
+                        <AppIcon size="md" Icon={RiChat1Line} />
                         <span className="decoration-muted-foreground pr-4.5 whitespace-nowrap underline underline-offset-5 transition-[color,text-decoration-color] duration-150 ease-in-out group-hover/link:decoration-current">
                           {row.from}
                           <RiArrowRightUpLine className="text-muted-foreground group-hover/link:text-primary absolute mt-1.25 inline-block size-[1em] no-underline transition duration-[inherit] ease-[inherit] group-hover/link:translate-x-px group-hover/link:-translate-y-px" />
