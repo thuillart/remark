@@ -5,12 +5,23 @@ import {
   RiArrowLeftLine,
   RiArrowRightLine,
   RiArrowRightUpLine,
+  RiBookLine,
   RiBugLine,
   RiCalendarLine,
   RiChat1Line,
   RiCloseLine,
+  RiCodeLine,
   RiFilter3Line,
+  RiLightbulbLine,
+  RiMoneyDollarBoxLine,
   RiPaletteLine,
+  RiSettingsLine,
+  RiShieldLine,
+  RiSpeedLine,
+  RiTerminalLine,
+  RiThumbUpLine,
+  RiTranslate2,
+  RiUserVoiceLine,
 } from "@remixicon/react";
 import {
   ColumnDef,
@@ -31,7 +42,9 @@ import React from "react";
 import { TextShimmer } from "@/components/text-shimmer";
 import { Badge, BadgeProps } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Pagination,
   PaginationContent,
@@ -39,6 +52,11 @@ import {
   PaginationItem,
   usePagination,
 } from "@/components/ui/pagination";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -71,6 +89,7 @@ declare module "@tanstack/table-core" {
   interface FilterFns {
     timeRange: FilterFn<Feedback>;
     impact: FilterFn<Feedback>;
+    tags: FilterFn<Feedback>;
   }
 }
 
@@ -88,13 +107,13 @@ function getTag(tag: string): {
       };
     case "feature_request":
       return {
-        Icon: RiChat1Line,
-        label: "Feature Request",
-        variant: "purple",
+        Icon: RiLightbulbLine,
+        label: "Request",
+        variant: "yellow",
       };
     case "enhancement":
       return {
-        Icon: RiChat1Line,
+        Icon: RiSettingsLine,
         label: "Enhancement",
         variant: "teal",
       };
@@ -106,49 +125,55 @@ function getTag(tag: string): {
       };
     case "ux":
       return {
-        Icon: RiChat1Line,
+        Icon: RiUserVoiceLine,
         label: "UX",
         variant: "orange",
       };
+    case "performance":
+      return {
+        Icon: RiSpeedLine,
+        label: "Performance",
+        variant: "yellow",
+      };
     case "security":
       return {
-        Icon: RiChat1Line,
+        Icon: RiShieldLine,
         label: "Security",
         variant: "destructive",
       };
     case "billing":
       return {
-        Icon: RiChat1Line,
+        Icon: RiMoneyDollarBoxLine,
         label: "Billing",
         variant: "green",
       };
     case "api":
       return {
-        Icon: RiChat1Line,
+        Icon: RiCodeLine,
         label: "API",
         variant: "blue",
       };
     case "dx":
       return {
-        Icon: RiChat1Line,
+        Icon: RiTerminalLine,
         label: "DX",
         variant: "indigo",
       };
     case "lang":
       return {
-        Icon: RiChat1Line,
+        Icon: RiTranslate2,
         label: "Language",
         variant: "yellow",
       };
     case "legal":
       return {
-        Icon: RiChat1Line,
+        Icon: RiBookLine,
         label: "Legal",
         variant: "purple",
       };
     case "appraisal":
       return {
-        Icon: RiChat1Line,
+        Icon: RiThumbUpLine,
         label: "Appraisal",
         variant: "teal",
       };
@@ -367,9 +392,10 @@ const impacts: {
   },
 ];
 
-function SearchAndFilters() {
+function SearchAndFilters({ data }: { data: Feedback[] }) {
   // Search-related code
   const inputRef = React.useRef<HTMLInputElement>(null);
+  const id = React.useId();
 
   const [search, setSearch] = useQueryState("search", {
     parse: (v) => v,
@@ -394,6 +420,47 @@ function SearchAndFilters() {
     serialize: (v) => v,
     defaultValue: "all",
   });
+
+  const [selectedTags, setSelectedTags] = useQueryState<string[]>("tags", {
+    parse: (v) => (v ? v.split(",") : []),
+    serialize: (v) => (v.length ? v.join(",") : null),
+    defaultValue: [],
+  });
+
+  // Get unique tags from data
+  const uniqueTags = React.useMemo(() => {
+    const tags = new Set<string>();
+    data.forEach((item) => {
+      if (typeof item.tags === "string") {
+        parsePgArray(item.tags).forEach((tag) => tags.add(tag));
+      } else if (Array.isArray(item.tags)) {
+        item.tags.forEach((tag) => tags.add(tag));
+      }
+    });
+    return Array.from(tags).sort();
+  }, [data]);
+
+  // Get tag counts
+  const tagCounts = React.useMemo(() => {
+    const counts = new Map<string, number>();
+    data.forEach((item) => {
+      const tags =
+        typeof item.tags === "string" ? parsePgArray(item.tags) : item.tags;
+      tags.forEach((tag) => {
+        counts.set(tag, (counts.get(tag) || 0) + 1);
+      });
+    });
+    return counts;
+  }, [data]);
+
+  const handleTagChange = (checked: boolean, value: string) => {
+    const newTags = checked
+      ? [...selectedTags, value]
+      : selectedTags.filter((tag) => tag !== value);
+    setSelectedTags(newTags);
+  };
+
+  const hasSelectedTags = selectedTags.length > 0;
 
   return (
     <div className="mb-4 grid grid-cols-1 flex-col gap-3 sm:grid-cols-2 sm:gap-2">
@@ -426,7 +493,7 @@ function SearchAndFilters() {
       </div>
 
       {/* Filters */}
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-3 gap-2">
         {/* Time range selector */}
         <div className="group relative">
           <Select
@@ -449,6 +516,56 @@ function SearchAndFilters() {
             </SelectContent>
           </Select>
         </div>
+
+        {/* Tag filter */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" className="justify-between">
+              <div className="flex items-center gap-2">
+                <RiFilter3Line size={16} className="-ms-1 opacity-60" />
+                Tags
+              </div>
+              {hasSelectedTags && (
+                <span className="bg-background text-muted-foreground/70 -me-1 inline-flex h-5 max-h-full w-4.5 items-center justify-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
+                  {selectedTags.length}
+                </span>
+              )}
+            </Button>
+          </PopoverTrigger>
+
+          <PopoverContent className="w-39 p-3" align="start">
+            <div className="space-y-3">
+              <div className="text-muted-foreground text-xs font-medium">
+                Filter by tags
+              </div>
+              <div className="space-y-3">
+                {uniqueTags.map((tag, i) => {
+                  const tagMeta = getTag(tag);
+                  return (
+                    <div key={tag} className="flex items-center gap-2">
+                      <Checkbox
+                        id={`${id}-tag-${i}`}
+                        checked={selectedTags.includes(tag)}
+                        onCheckedChange={(checked: boolean) =>
+                          handleTagChange(checked, tag)
+                        }
+                      />
+                      <Label
+                        htmlFor={`${id}-tag-${i}`}
+                        className="flex grow justify-between gap-2 font-normal"
+                      >
+                        {tagMeta.label}
+                        <span className="text-muted-foreground ms-2 text-xs">
+                          {tagCounts.get(tag)}
+                        </span>
+                      </Label>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
 
         {/* Impact selector */}
         <Select
@@ -587,6 +704,12 @@ export function DataTable({ data }: { data: Feedback[] }) {
     defaultValue: "7-days",
   });
 
+  const [selectedTags] = useQueryState<string[]>("tags", {
+    parse: (v) => (v ? v.split(",") : []),
+    serialize: (v) => (v.length ? v.join(",") : null),
+    defaultValue: [],
+  });
+
   // Prevent recreating the table instance when URL parameters change
   // by memoizing it with a stable reference
   const tableMeta = React.useMemo(
@@ -610,7 +733,6 @@ export function DataTable({ data }: { data: Feedback[] }) {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    // Get pagination state from the stable reference, not directly from URL params
     state: {
       pagination: {
         pageSize: tableMeta.pageSize,
@@ -626,6 +748,10 @@ export function DataTable({ data }: { data: Feedback[] }) {
           id: "createdAt",
           value: selectedTimeRange,
         },
+        {
+          id: "tags",
+          value: selectedTags,
+        },
       ],
     },
     filterFns: {
@@ -637,6 +763,14 @@ export function DataTable({ data }: { data: Feedback[] }) {
         const date = row.getValue(columnId) as Date;
         const startDate = getDateFromTimeRange(filterValue);
         return startDate ? date.getTime() >= startDate.getTime() : true;
+      },
+      tags: (row, columnId, filterValue: string[]) => {
+        if (!filterValue?.length) return true;
+        const tags =
+          typeof row.original.tags === "string"
+            ? parsePgArray(row.original.tags)
+            : row.original.tags;
+        return filterValue.every((tag) => tags.includes(tag));
       },
     },
     manualPagination: true, // Important: manually control pagination
@@ -758,10 +892,9 @@ export function DataTable({ data }: { data: Feedback[] }) {
   return (
     <div className="container">
       <div className="flex flex-col gap-4">
-        <SearchAndFilters />
+        <SearchAndFilters data={data} />
 
         {/* Table */}
-
         <div className="w-full overflow-hidden">
           <div className="bg-background mb-4 rounded-md border">
             <Table className="shrink-0">
