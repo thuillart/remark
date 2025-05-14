@@ -21,7 +21,6 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   PaginationState,
-  RowData,
   useReactTable,
 } from "@tanstack/react-table";
 import { formatDistance, formatRelative } from "date-fns";
@@ -156,20 +155,11 @@ function getTag(tag: string): {
   }
 }
 
-type ColumnDefMetadata = {
-  width?: string;
-};
-
-type ColumnDefWithWidth<TData extends RowData> = ColumnDef<TData> & {
-  meta: ColumnDefMetadata;
-};
-
 // 1. Columns definition
-export const columns: ColumnDefWithWidth<Feedback>[] = [
+export const columns: ColumnDef<Feedback>[] = [
   {
     header: "From",
     accessorKey: "from",
-    meta: { width: "min-w-75.5" },
     cell: ({ row }) => {
       return (
         <Link
@@ -188,7 +178,6 @@ export const columns: ColumnDefWithWidth<Feedback>[] = [
   {
     header: "Impact",
     accessorKey: "impact",
-    meta: { width: "min-w-32" },
     filterFn: "impact",
     cell: ({ row }) => {
       return (
@@ -210,7 +199,7 @@ export const columns: ColumnDefWithWidth<Feedback>[] = [
   {
     header: "Tags",
     accessorKey: "tags",
-    meta: { width: "min-w-55" },
+
     cell: ({ row }) => {
       let tags: string[] = [];
 
@@ -224,7 +213,7 @@ export const columns: ColumnDefWithWidth<Feedback>[] = [
       const hasMore = otherTags.length > 0;
 
       return (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-nowrap gap-2">
           {firstTag && (
             <Badge variant={getTag(firstTag).variant} className="relative">
               {React.createElement(getTag(firstTag).Icon, { size: 16 })}
@@ -262,12 +251,10 @@ export const columns: ColumnDefWithWidth<Feedback>[] = [
   {
     header: "Subject",
     accessorKey: "subject",
-    meta: { width: "min-w-76" },
   },
   {
     header: "Sent",
     accessorKey: "createdAt",
-    meta: { width: "min-w-42.5" },
     filterFn: "timeRange",
     cell: ({ row }) => {
       return (
@@ -785,16 +772,10 @@ export function DataTable({ data }: { data: Feedback[] }) {
                     className="hover:bg-transparent"
                   >
                     {headerGroup.headers.map((header) => {
-                      const metadata = header.column.columnDef
-                        .meta as ColumnDefMetadata;
-
                       return (
                         <TableHead
                           key={header.id}
-                          className={cn(
-                            "text-muted-foreground",
-                            metadata?.width,
-                          )}
+                          className={cn("text-muted-foreground")}
                         >
                           {header.isPlaceholder
                             ? null
