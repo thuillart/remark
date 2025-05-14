@@ -111,28 +111,34 @@ export default async function FeedbackPage({
           <TabsList className="bg-background h-auto -space-x-px p-0 rtl:space-x-reverse">
             <TabsTrigger
               value="tab-1"
-              className="border-border data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative rounded-none border py-2 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-tl last:rounded-tr"
+              className="border-border data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative rounded-none border py-2 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-tl-lg last:rounded-tr-lg"
             >
               <RiChatAiLine size={16} className="-ms-0.5 me-1.5 opacity-60" />
               Summary
             </TabsTrigger>
             <TabsTrigger
               value="tab-2"
-              className="border-border data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative rounded-none border py-2 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-tl last:rounded-tr"
+              className="border-border data-[state=active]:bg-muted data-[state=active]:after:bg-primary relative rounded-none border py-2 after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 first:rounded-tl-lg last:rounded-tr-lg"
             >
               <RiChat1Line size={16} className="-ms-0.5 me-1.5 opacity-60" />
               Original
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="tab-1" className="-mt-px border p-4 pt-5">
+          <TabsContent
+            value="tab-1"
+            className="-mt-px rounded-lg rounded-tl-none border p-4 pt-5"
+          >
             <div
               dangerouslySetInnerHTML={{
                 __html: formatFeedbackText(feedback?.summary || ""),
               }}
             />
           </TabsContent>
-          <TabsContent value="tab-2" className="-mt-px border p-4 pt-5">
+          <TabsContent
+            value="tab-2"
+            className="-mt-px rounded-lg rounded-tl-none border p-4 pt-5"
+          >
             <div
               dangerouslySetInnerHTML={{
                 __html: formatFeedbackText(feedback?.text || ""),

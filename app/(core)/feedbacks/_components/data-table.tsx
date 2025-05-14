@@ -1,13 +1,16 @@
 "use client";
 
 import {
+  RemixiconComponentType,
   RiArrowLeftLine,
   RiArrowRightLine,
   RiArrowRightUpLine,
+  RiBugLine,
   RiCalendarLine,
   RiChat1Line,
   RiCloseLine,
   RiFilter3Line,
+  RiPaletteLine,
 } from "@remixicon/react";
 import {
   ColumnDef,
@@ -55,6 +58,7 @@ import {
 import {
   Tooltip,
   TooltipContent,
+  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { EmptyState } from "@/core/components/empty-state";
@@ -68,6 +72,87 @@ declare module "@tanstack/table-core" {
   interface FilterFns {
     timeRange: FilterFn<Feedback>;
     impact: FilterFn<Feedback>;
+  }
+}
+
+function getTag(tag: string): {
+  Icon: RemixiconComponentType;
+  label: string;
+  variant: BadgeProps["variant"];
+} {
+  switch (tag) {
+    case "bug":
+      return {
+        Icon: RiBugLine,
+        label: "Bug",
+        variant: "destructive",
+      };
+    case "feature_request":
+      return {
+        Icon: RiChat1Line,
+        label: "Feature Request",
+        variant: "purple",
+      };
+    case "enhancement":
+      return {
+        Icon: RiChat1Line,
+        label: "Enhancement",
+        variant: "teal",
+      };
+    case "ui":
+      return {
+        Icon: RiPaletteLine,
+        label: "UI",
+        variant: "pink",
+      };
+    case "ux":
+      return {
+        Icon: RiChat1Line,
+        label: "UX",
+        variant: "orange",
+      };
+    case "security":
+      return {
+        Icon: RiChat1Line,
+        label: "Security",
+        variant: "destructive",
+      };
+    case "billing":
+      return {
+        Icon: RiChat1Line,
+        label: "Billing",
+        variant: "green",
+      };
+    case "api":
+      return {
+        Icon: RiChat1Line,
+        label: "API",
+        variant: "blue",
+      };
+    case "dx":
+      return {
+        Icon: RiChat1Line,
+        label: "DX",
+        variant: "indigo",
+      };
+    case "lang":
+      return {
+        Icon: RiChat1Line,
+        label: "Language",
+        variant: "yellow",
+      };
+    case "legal":
+      return {
+        Icon: RiChat1Line,
+        label: "Legal",
+        variant: "purple",
+      };
+    case "appraisal":
+      return {
+        Icon: RiChat1Line,
+        label: "Appraisal",
+        variant: "teal",
+      };
   }
 }
 
@@ -119,6 +204,58 @@ export const columns: ColumnDefWithWidth<Feedback>[] = [
             {getImpactTooltipText(row.original.impact)}
           </TooltipContent>
         </Tooltip>
+      );
+    },
+  },
+  {
+    header: "Tags",
+    accessorKey: "tags",
+    meta: { width: "w-55" },
+    cell: ({ row }) => {
+      let tags: string[] = [];
+
+      if (typeof row.original.tags === "string") {
+        tags = parsePgArray(row.original.tags);
+      } else if (Array.isArray(row.original.tags)) {
+        tags = row.original.tags;
+      }
+
+      const [firstTag, ...otherTags] = tags;
+      const hasMore = otherTags.length > 0;
+
+      return (
+        <div className="flex flex-wrap gap-2">
+          {firstTag && (
+            <Badge variant={getTag(firstTag).variant} className="relative">
+              {React.createElement(getTag(firstTag).Icon, { size: 16 })}
+              {getTag(firstTag).label}
+            </Badge>
+          )}
+          {hasMore && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge variant="outline" className="cursor-pointer">
+                    +{otherTags.length}
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent className="p-1">
+                  <div className="flex flex-wrap gap-1">
+                    {otherTags.map((tag) => {
+                      const tagMeta = getTag(tag);
+                      return (
+                        <Badge key={tag} variant={tagMeta.variant}>
+                          {React.createElement(tagMeta.Icon, { size: 16 })}
+                          {tagMeta.label}
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
+        </div>
       );
     },
   },
@@ -234,12 +371,12 @@ const impacts: {
   {
     value: "minor",
     label: "Minor",
-    dotBgColor: "bg-blue-400",
+    dotBgColor: "bg-muted-foreground",
   },
   {
     value: "all",
     label: "All",
-    dotBgColor: "bg-muted-foreground",
+    dotBgColor: "bg-muted",
   },
 ];
 
@@ -420,6 +557,15 @@ function getDateFromTimeRange(timeRange: TimeRange): Date | null {
     default:
       return null;
   }
+}
+
+function parsePgArray(str: string): string[] {
+  if (!str) return [];
+  return str
+    .slice(1, -1) // remove {}
+    .split(/","|",?/) // split on "," or ,
+    .map((s) => s.replace(/^"|"$/g, "")) // remove leading/trailing quotes
+    .filter(Boolean);
 }
 
 export function DataTable({ data }: { data: Feedback[] }) {
@@ -675,61 +821,16 @@ export function DataTable({ data }: { data: Feedback[] }) {
               )}
 
               {paginatedData.length > 0 &&
-                paginatedData.map((row) => (
-                  <TableRow key={row.id} className="hover:bg-transparent">
-                    {/* From column */}
-                    <TableCell>
-                      <Link
-                        href={`/feedbacks/${row.id}`}
-                        className="group/link flex items-center gap-3"
-                      >
-                        <AppIcon size="md" Icon={RiChat1Line} />
-                        <span className="decoration-muted-foreground pr-4.5 whitespace-nowrap underline underline-offset-5 transition-[color,text-decoration-color] duration-150 ease-in-out group-hover/link:decoration-current">
-                          {row.from}
-                          <RiArrowRightUpLine className="text-muted-foreground group-hover/link:text-primary absolute mt-1.25 inline-block size-[1em] no-underline transition duration-[inherit] ease-[inherit] group-hover/link:translate-x-px group-hover/link:-translate-y-px" />
-                        </span>
-                      </Link>
-                    </TableCell>
-
-                    {/* Impact column */}
-                    <TableCell>
-                      <Tooltip>
-                        <TooltipTrigger asChild className="cursor-pointer">
-                          <Badge variant={getImpactBadgeVariant(row.impact)}>
-                            {capitalizeFirstLetter(row.impact)}
-                          </Badge>
-                        </TooltipTrigger>
-
-                        <TooltipContent className="max-w-3xs px-2 py-1">
-                          <TextShimmer>{`${APP_NAME} AI`}</TextShimmer>{" "}
-                          {getImpactTooltipText(row.impact)}
-                        </TooltipContent>
-                      </Tooltip>
-                    </TableCell>
-
-                    {/* Subject column */}
-                    <TableCell>{row.subject}</TableCell>
-
-                    {/* Sent/Created column */}
-                    <TableCell>
-                      <Tooltip>
-                        <TooltipTrigger className="decoration-muted-foreground cursor-pointer underline underline-offset-5 transition-[text-decoration-color] duration-150 ease-in-out hover:decoration-current">
-                          {/* A nice-to-read date & time */}
-                          {capitalizeFirstLetter(
-                            formatDistance(row.createdAt, new Date(), {
-                              addSuffix: true,
-                            }).replace("about ", ""),
-                          )}
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          {/* The exact date & time */}
-                          {capitalizeFirstLetter(
-                            formatRelative(row.createdAt, new Date()),
-                          )}
-                          .
-                        </TooltipContent>
-                      </Tooltip>
-                    </TableCell>
+                table.getRowModel().rows.map((tableRow) => (
+                  <TableRow key={tableRow.id} className="hover:bg-transparent">
+                    {tableRow.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
                   </TableRow>
                 ))}
             </TableBody>
