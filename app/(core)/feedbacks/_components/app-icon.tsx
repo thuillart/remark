@@ -12,7 +12,7 @@ export function AppIcon({
     <div className={cn("size-8 shrink-0", size === "lg" && "size-20")}>
       <div
         className={cn(
-          "size-full rounded-lg p-1.25 ring ring-zinc-500/10 ring-inset dark:ring-zinc-400/20",
+          "bg-background size-full rounded-lg p-1.25 ring ring-zinc-500/10 ring-inset dark:ring-zinc-400/20",
           size === "lg" && "rounded-2xl p-2 ring-2",
         )}
       >

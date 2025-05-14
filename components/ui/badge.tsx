@@ -5,7 +5,7 @@ import type React from "react";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex w-fit shrink-0 items-center justify-center  gap-1 whitespace-nowrap rounded-md font-medium text-xs transition-[color,box-shadow] focus-visible:ring-3 focus-visible:ring-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none [&>svg]:size-3",
+  "inline-flex w-fit shrink-0 items-center justify-center ring ring-inset gap-1 whitespace-nowrap rounded-md font-medium text-xs transition-[color,box-shadow] focus-visible:ring-3 focus-visible:ring-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none [&>svg]:size-3",
   {
     variants: {
       variant: {
@@ -18,7 +18,7 @@ const badgeVariants = cva(
         warning:
           "bg-amber-50 text-amber-700 ring-amber-700/20 dark:bg-amber-400/10 dark:text-amber-400 dark:ring-amber-400/30",
         outline:
-          "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground ring ring-inset ring-border",
+          "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground ring-border",
         blue: "bg-blue-50 text-blue-700 ring-blue-700/10 dark:bg-blue-400/10 dark:text-blue-400 dark:ring-blue-400/30",
         yellow:
           "bg-yellow-50 text-yellow-700 ring-yellow-600/20 dark:bg-yellow-400/10 dark:text-yellow-400 dark:ring-yellow-400/20",

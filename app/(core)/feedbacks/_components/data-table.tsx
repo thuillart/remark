@@ -169,7 +169,7 @@ export const columns: ColumnDefWithWidth<Feedback>[] = [
   {
     header: "From",
     accessorKey: "from",
-    meta: { width: "w-75.5" },
+    meta: { width: "min-w-75.5" },
     cell: ({ row }) => {
       return (
         <Link
@@ -188,7 +188,7 @@ export const columns: ColumnDefWithWidth<Feedback>[] = [
   {
     header: "Impact",
     accessorKey: "impact",
-    meta: { width: "w-32" },
+    meta: { width: "min-w-32" },
     filterFn: "impact",
     cell: ({ row }) => {
       return (
@@ -210,7 +210,7 @@ export const columns: ColumnDefWithWidth<Feedback>[] = [
   {
     header: "Tags",
     accessorKey: "tags",
-    meta: { width: "w-55" },
+    meta: { width: "min-w-55" },
     cell: ({ row }) => {
       let tags: string[] = [];
 
@@ -262,12 +262,12 @@ export const columns: ColumnDefWithWidth<Feedback>[] = [
   {
     header: "Subject",
     accessorKey: "subject",
-    meta: { width: "w-76" },
+    meta: { width: "min-w-76" },
   },
   {
     header: "Sent",
     accessorKey: "createdAt",
-    meta: { width: "w-42.5" },
+    meta: { width: "min-w-42.5" },
     filterFn: "timeRange",
     cell: ({ row }) => {
       return (
@@ -770,184 +770,193 @@ export function DataTable({ data }: { data: Feedback[] }) {
 
   return (
     <div className="container">
-      <div className="space-y-4">
+      <div className="flex flex-col gap-4">
         <SearchAndFilters />
 
         {/* Table */}
-        <div className="bg-background mb-4 overflow-hidden rounded-md border">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id} className="hover:bg-transparent">
-                  {headerGroup.headers.map((header) => {
-                    const metadata = header.column.columnDef
-                      .meta as ColumnDefMetadata;
 
-                    return (
-                      <TableHead
-                        key={header.id}
-                        className={cn("text-muted-foreground", metadata?.width)}
-                      >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext(),
-                            )}
-                      </TableHead>
-                    );
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {paginatedData.length === 0 && (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="text-muted-foreground h-24 text-center"
+        <div className="w-full overflow-hidden">
+          <div className="bg-background mb-4 rounded-md border">
+            <Table className="shrink-0">
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow
+                    key={headerGroup.id}
+                    className="hover:bg-transparent"
                   >
-                    {searchValue ? (
-                      <>
-                        No results found for: &quot;
-                        <span className="text-foreground">{searchValue}</span>
-                        &quot;.
-                      </>
-                    ) : (
-                      "No results found."
-                    )}
-                  </TableCell>
-                </TableRow>
-              )}
+                    {headerGroup.headers.map((header) => {
+                      const metadata = header.column.columnDef
+                        .meta as ColumnDefMetadata;
 
-              {paginatedData.length > 0 &&
-                table.getRowModel().rows.map((tableRow) => (
-                  <TableRow key={tableRow.id} className="hover:bg-transparent">
-                    {tableRow.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
+                      return (
+                        <TableHead
+                          key={header.id}
+                          className={cn(
+                            "text-muted-foreground",
+                            metadata?.width,
+                          )}
+                        >
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
+                        </TableHead>
+                      );
+                    })}
                   </TableRow>
                 ))}
-            </TableBody>
-          </Table>
-        </div>
-
-        {/* Pagination */}
-        <div className="flex items-center justify-between gap-3 max-sm:flex-col">
-          {/* Page number information */}
-          <p
-            className="text-muted-foreground flex-1 text-sm whitespace-nowrap"
-            aria-live="polite"
-          >
-            Page <span className="text-foreground">{currentPage}</span> of{" "}
-            <span className="text-foreground">{pagesCount}</span>
-          </p>
-
-          {/* Pagination buttons */}
-          <div className="grow">
-            <Pagination>
-              <PaginationContent>
-                {/* Previous page button */}
-                <PaginationItem>
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    className="disabled:pointer-events-none disabled:opacity-50"
-                    onClick={() => {
-                      if (canPreviousPage) {
-                        table.previousPage();
-                      }
-                    }}
-                    disabled={!canPreviousPage}
-                    aria-label="Go to previous page"
-                  >
-                    <RiArrowLeftLine size={16} aria-hidden="true" />
-                  </Button>
-                </PaginationItem>
-
-                {/* Left ellipsis (...) */}
-                {showLeftEllipsis && (
-                  <PaginationItem>
-                    <PaginationEllipsis />
-                  </PaginationItem>
+              </TableHeader>
+              <TableBody>
+                {paginatedData.length === 0 && (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="text-muted-foreground h-24 text-center"
+                    >
+                      {searchValue ? (
+                        <>
+                          No results found for: &quot;
+                          <span className="text-foreground">{searchValue}</span>
+                          &quot;.
+                        </>
+                      ) : (
+                        "No results found."
+                      )}
+                    </TableCell>
+                  </TableRow>
                 )}
 
-                {/* Page number buttons */}
-                {pages.map((page) => {
-                  const isActive = page === currentPage;
-                  return (
-                    <PaginationItem key={page}>
-                      <Button
-                        size="icon"
-                        variant={`${isActive ? "outline" : "ghost"}`}
-                        onClick={() => {
-                          table.setPageIndex(page - 1);
-                        }}
-                        aria-current={isActive ? "page" : undefined}
-                      >
-                        {page}
-                      </Button>
-                    </PaginationItem>
-                  );
-                })}
-
-                {/* Right ellipsis (...) */}
-                {showRightEllipsis && (
-                  <PaginationItem>
-                    <PaginationEllipsis />
-                  </PaginationItem>
-                )}
-
-                {/* Next page button */}
-                <PaginationItem>
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    onClick={() => {
-                      if (canNextPage) {
-                        table.nextPage();
-                      }
-                    }}
-                    disabled={!canNextPage}
-                    className="disabled:pointer-events-none disabled:opacity-50"
-                    aria-label="Go to next page"
-                  >
-                    <RiArrowRightLine size={16} aria-hidden="true" />
-                  </Button>
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
+                {paginatedData.length > 0 &&
+                  table.getRowModel().rows.map((tableRow) => (
+                    <TableRow key={tableRow.id}>
+                      {tableRow.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
           </div>
 
-          {/* Results per page */}
-          <div className="flex flex-1 justify-end">
-            <Select
-              value={String(tableMeta.pageSize)}
-              onValueChange={(value) => {
-                table.setPageSize(Number(value));
-              }}
-              aria-label="Results per page"
+          {/* Pagination */}
+          <div className="flex items-center justify-between gap-3 max-sm:flex-col">
+            {/* Page number information */}
+            <p
+              className="text-muted-foreground flex-1 text-sm whitespace-nowrap"
+              aria-live="polite"
             >
-              <SelectTrigger
-                id="results-per-page"
-                className="w-fit whitespace-nowrap"
-              >
-                <SelectValue placeholder="Select number of results" />
-              </SelectTrigger>
+              Page <span className="text-foreground">{currentPage}</span> of{" "}
+              <span className="text-foreground">{pagesCount}</span>
+            </p>
 
-              <SelectContent>
-                {[5, 10, 25, 50].map((pageSize) => (
-                  <SelectItem key={pageSize} value={String(pageSize)}>
-                    {pageSize} / page
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {/* Pagination buttons */}
+            <div className="grow">
+              <Pagination>
+                <PaginationContent>
+                  {/* Previous page button */}
+                  <PaginationItem>
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      className="disabled:pointer-events-none disabled:opacity-50"
+                      onClick={() => {
+                        if (canPreviousPage) {
+                          table.previousPage();
+                        }
+                      }}
+                      disabled={!canPreviousPage}
+                      aria-label="Go to previous page"
+                    >
+                      <RiArrowLeftLine size={16} aria-hidden="true" />
+                    </Button>
+                  </PaginationItem>
+
+                  {/* Left ellipsis (...) */}
+                  {showLeftEllipsis && (
+                    <PaginationItem>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  )}
+
+                  {/* Page number buttons */}
+                  {pages.map((page) => {
+                    const isActive = page === currentPage;
+                    return (
+                      <PaginationItem key={page}>
+                        <Button
+                          size="icon"
+                          variant={`${isActive ? "outline" : "ghost"}`}
+                          onClick={() => {
+                            table.setPageIndex(page - 1);
+                          }}
+                          aria-current={isActive ? "page" : undefined}
+                        >
+                          {page}
+                        </Button>
+                      </PaginationItem>
+                    );
+                  })}
+
+                  {/* Right ellipsis (...) */}
+                  {showRightEllipsis && (
+                    <PaginationItem>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  )}
+
+                  {/* Next page button */}
+                  <PaginationItem>
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      onClick={() => {
+                        if (canNextPage) {
+                          table.nextPage();
+                        }
+                      }}
+                      disabled={!canNextPage}
+                      className="disabled:pointer-events-none disabled:opacity-50"
+                      aria-label="Go to next page"
+                    >
+                      <RiArrowRightLine size={16} aria-hidden="true" />
+                    </Button>
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+
+            {/* Results per page */}
+            <div className="flex flex-1 justify-end">
+              <Select
+                value={String(tableMeta.pageSize)}
+                onValueChange={(value) => {
+                  table.setPageSize(Number(value));
+                }}
+                aria-label="Results per page"
+              >
+                <SelectTrigger
+                  id="results-per-page"
+                  className="w-fit whitespace-nowrap"
+                >
+                  <SelectValue placeholder="Select number of results" />
+                </SelectTrigger>
+
+                <SelectContent>
+                  {[5, 10, 25, 50].map((pageSize) => (
+                    <SelectItem key={pageSize} value={String(pageSize)}>
+                      {pageSize} / page
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
       </div>
