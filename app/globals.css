@@ -80,6 +80,6 @@
 
 @layer utilities {
   .container {
-    @apply mx-auto w-full max-w-[calc(var(--container-5xl)+3rem)] px-5 md:px-12;
+    @apply mx-auto max-w-[calc(var(--container-5xl)+3rem)] px-5 md:px-12;
   }
 }
