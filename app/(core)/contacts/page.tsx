@@ -25,6 +25,29 @@ export default function ContactsPage() {
             </div>
             <span className="text-2xl tracking-tight">0</span>
           </div>
+
+          <div className="flex flex-col gap-2">
+            <div className="text-muted-foreground text-xs uppercase">
+              Paying users
+            </div>
+            <span className="text-2xl tracking-tight">0</span>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <div className="text-muted-foreground text-xs uppercase">
+              Free users
+            </div>
+            <span className="text-2xl tracking-tight">0</span>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <div className="text-muted-foreground text-xs uppercase">
+              Engagement
+            </div>
+            <div className="h-8">
+              {/* Implement a chart like showing over last week the number of contacts that have been sending feedbacks trend */}
+            </div>
+          </div>
         </div>
       </div>
     </div>
