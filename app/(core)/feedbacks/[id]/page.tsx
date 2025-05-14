@@ -1,8 +1,7 @@
 import { RiChat1Line, RiChatAiLine } from "@remixicon/react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AppIcon } from "@/feedbacks/components/app-icon";
-// import { mockFeedbacks } from "@/feedbacks/lib/mock-data";
+import { PageIcon } from "@/core/components/page-icon";
 import { getFeedbackById } from "@/lib/db/queries";
 import { capitalizeFirstLetter } from "@/lib/utils";
 
@@ -66,7 +65,7 @@ export default async function FeedbackPage({
     <div className="container">
       <div className="space-y-8 py-8">
         <div className="flex flex-col items-center gap-6 md:flex-row">
-          <AppIcon size="lg" Icon={RiChat1Line} />
+          <PageIcon size="lg" Icon={RiChat1Line} />
 
           <div className="w-full overflow-hidden text-center md:text-left">
             <span className="text-muted-foreground text-sm font-semibold">

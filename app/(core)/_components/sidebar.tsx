@@ -9,7 +9,6 @@ import {
 } from "@remixicon/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
 
 import { LogoLink } from "@/components/logo";
 import { Button } from "@/components/ui/button";
@@ -34,8 +33,8 @@ function NavItem({
       asChild
       variant="ghost"
       className={cn(
-        "group hover:bg-accent w-full justify-start gap-2 font-normal",
-        isActive && "bg-accent text-accent-foreground",
+        "group hover:bg-sidebar-accent w-full justify-start gap-2 font-normal",
+        isActive && "bg-sidebar-accent text-sidebar-accent-foreground",
       )}
     >
       <Link href={href}>
@@ -77,7 +76,7 @@ export const navItems: Item[] = [
 
 export function Sidebar() {
   return (
-    <aside className="border-border bg-background hidden h-screen w-3xs shrink-0 flex-col justify-between border-r p-4 md:flex">
+    <aside className="border-border bg-sidebar hidden h-screen w-3xs shrink-0 flex-col justify-between border-r p-4 md:flex">
       <div className="flex flex-col gap-8">
         <div className="ml-2.5 flex h-8 items-center">
           <LogoLink />

@@ -79,7 +79,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { EmptyState } from "@/core/components/empty-state";
-import { AppIcon } from "@/feedbacks/components/app-icon";
+import { PageIcon } from "@/core/components/page-icon";
 import { Feedback } from "@/feedbacks/lib/schema";
 import { APP_NAME } from "@/lib/constants";
 import { FeedbackImpact } from "@/lib/schema";
@@ -191,7 +191,7 @@ export const columns: ColumnDef<Feedback>[] = [
           href={`/feedbacks/${row.original.id}`}
           className="group/link flex items-center gap-3"
         >
-          <AppIcon size="md" Icon={RiChat1Line} />
+          <PageIcon size="md" Icon={RiChat1Line} />
           <span className="decoration-muted-foreground pr-4.5 whitespace-nowrap underline underline-offset-5 transition-[color,text-decoration-color] duration-150 ease-in-out group-hover/link:decoration-current">
             {row.original.from}
             <RiArrowRightUpLine className="text-muted-foreground group-hover/link:text-primary absolute mt-1.25 inline-block size-[1em] no-underline transition duration-[inherit] ease-[inherit] group-hover/link:translate-x-px group-hover/link:-translate-y-px" />
