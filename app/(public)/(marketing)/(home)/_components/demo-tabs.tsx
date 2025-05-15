@@ -3,7 +3,9 @@
 import { type Transition, type Variants, motion } from "motion/react";
 import React from "react";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -12,9 +14,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { mockFeedbacks } from "@/feedbacks/lib/mock-data";
-import { cn } from "@/lib/utils";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { capitalizeFirstLetter, cn } from "@/lib/utils";
 import { RiAtLine, RiFilterLine, RiTimeLine } from "@remixicon/react";
+import { formatDistanceToNow } from "date-fns";
 
 type Tab = {
   id: number;
@@ -54,25 +64,21 @@ const paragraphVariants: Variants = {
   two: { opacity: 1, y: 0 },
 };
 
-const tbodyVariants: Variants = {
-  animate: { transition: { staggerChildren: 0.07 } },
+const rowVariants = {
+  hidden: { opacity: 0, y: 8 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: i * 0.06,
+      duration: 0.32,
+      ease: [0.33, 1, 0.68, 1],
+    },
+  }),
 };
 
 export function DemoTabs() {
   const [tab, setTab] = React.useState<Tab["id"]>(1);
-
-  // Get the feedbacks for the current tab, sorted as needed
-  function getSortedFeedbacks() {
-    if (tab === 1) return mockFeedbacks.slice(0, 5); // show 5 for demo
-    return mockFeedbacks.slice(0, 5).sort((a, b) => {
-      const impactOrder = { critical: 0, major: 1, minor: 2 };
-      if (impactOrder[a.impact] !== impactOrder[b.impact])
-        return impactOrder[a.impact] - impactOrder[b.impact];
-      return b.createdAt.getTime() - a.createdAt.getTime();
-    });
-  }
-
-  const feedbacks = getSortedFeedbacks();
 
   function handleClick(id: Tab["id"]) {
     if (id === tab) return;
@@ -83,10 +89,10 @@ export function DemoTabs() {
     <>
       <div className="relative mb-12 h-56 w-full pt-6 pb-0 md:h-112">
         <div className="bg-background after:from-background relative size-full overflow-hidden rounded-2xl border p-4 after:pointer-events-none after:absolute after:inset-0 after:top-auto after:h-2/3 after:bg-gradient-to-t after:to-transparent md:p-6 md:pb-0">
-          <div className="relative size-full rounded-2xl rounded-t-lg rounded-b-none border border-b-0 px-24 pt-20 pb-0 shadow-sm">
+          <div className="relative hidden size-full rounded-2xl rounded-t-lg rounded-b-none border border-b-0 px-12 pt-16 pb-0 shadow-xs md:block">
             <SearchAndFilters />
             <div className="bg-background mb-4 size-full rounded-t-md border border-b-0">
-              <Table />
+              <DataTable selectedTabId={tab} />
             </div>
           </div>
         </div>
@@ -189,30 +195,161 @@ function SearchAndFilters() {
   );
 }
 
-function Table() {
+function daysAgo(days: number): Date {
+  const date = new Date();
+  date.setDate(date.getDate() - days);
+  return date;
+}
+
+function hoursAgo(hours: number): Date {
+  const date = new Date();
+  date.setHours(date.getHours() - hours);
+  return date;
+}
+
+const feedbacks = [
+  {
+    from: "alan@turing.com",
+    impact: "Critical",
+    subject: "Can't upgrade plan since last update",
+    sent: hoursAgo(1),
+  },
+  {
+    from: "marie@curry.com",
+    impact: "Minor",
+    subject: "Typo in home page footer",
+    sent: hoursAgo(4),
+  },
+  {
+    from: "nikola@tesla.com",
+    impact: "Major",
+    subject: "Next.js documentation is unclear",
+    sent: daysAgo(1),
+  },
+  {
+    from: "isaac@newton.com",
+    impact: "Minor",
+    subject: "Kudos for the new UI revamp",
+    sent: daysAgo(2),
+  },
+  {
+    from: "louis@pasteur.com",
+    impact: "Critical",
+    subject: "Can't checkout since last update",
+    sent: daysAgo(3),
+  },
+];
+
+const votes = [
+  {
+    request: "Add dark mode support",
+    votes: 187,
+    createdAt: daysAgo(1),
+  },
+  {
+    request: "Share feedback with a friend",
+    votes: 142,
+    createdAt: daysAgo(2),
+  },
+  {
+    request: "Export data to CSV",
+    votes: 119,
+    createdAt: daysAgo(3),
+  },
+  {
+    request: "Get notified when a new feature is released",
+    votes: 97,
+    createdAt: daysAgo(4),
+  },
+  {
+    request: "Google Sheets integration",
+    votes: 76,
+    createdAt: daysAgo(5),
+  },
+];
+
+function DataTable({ selectedTabId }: { selectedTabId: Tab["id"] }) {
+  const rows = selectedTabId === 1 ? feedbacks : votes;
   return (
-    <table className="w-full text-sm" role="table">
-      <thead>
-        <tr className="border-b">
-          {["From", "Impact", "Subject", "Sent"].map((header) => (
-            <th
-              key={header}
-              className="text-muted-foreground h-11 px-3 text-left align-middle font-medium"
-              role="columnheader"
+    <>
+      <Table>
+        <TableHeader>
+          <TableRow className="data-[state=selected]:bg-muted border-b transition-colors hover:bg-transparent">
+            <TableHead className="h-12 w-10">
+              <Checkbox className="pointer-events-none" />
+            </TableHead>
+            {selectedTabId === 1 && (
+              <>
+                <TableHead className="h-12">From</TableHead>
+                <TableHead className="h-12">Impact</TableHead>
+                <TableHead className="h-12">Subject</TableHead>
+                <TableHead className="h-12">Sent</TableHead>
+              </>
+            )}
+            {selectedTabId === 2 && (
+              <>
+                <TableHead className="h-12">Request</TableHead>
+                <TableHead className="h-12 text-center">Votes</TableHead>
+                <TableHead className="h-12">Created</TableHead>
+              </>
+            )}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {rows.map((row, i) => (
+            <motion.tr
+              key={selectedTabId === 1 ? row.from : row.request}
+              variants={rowVariants}
+              initial="hidden"
+              animate="visible"
+              custom={i}
+              className={
+                "hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors"
+              }
             >
-              {header}
-            </th>
+              <TableCell>
+                <Checkbox className="pointer-events-none" />
+              </TableCell>
+              {selectedTabId === 1 ? (
+                <>
+                  <TableCell>{row.from}</TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={
+                        row.impact.toLowerCase() === "critical"
+                          ? "destructive"
+                          : row.impact.toLowerCase() === "major"
+                            ? "warning"
+                            : "outline"
+                      }
+                    >
+                      {row.impact}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{row.subject}</TableCell>
+                  <TableCell>
+                    {capitalizeFirstLetter(
+                      formatDistanceToNow(row.sent, { addSuffix: true }),
+                    )}
+                  </TableCell>
+                </>
+              ) : (
+                <>
+                  <TableCell>{row.request}</TableCell>
+                  <TableCell className="text-center">{row.votes}</TableCell>
+                  <TableCell>
+                    {capitalizeFirstLetter(
+                      formatDistanceToNow(row.createdAt, {
+                        addSuffix: true,
+                      }),
+                    )}
+                  </TableCell>
+                </>
+              )}
+            </motion.tr>
           ))}
-        </tr>
-      </thead>
-      <motion.tbody
-        className="[&_tr:last-child]:border-0"
-        variants={tbodyVariants}
-        initial={false}
-        animate="animate"
-        exit="exit"
-        role="rowgroup"
-      ></motion.tbody>
-    </table>
+        </TableBody>
+      </Table>
+    </>
   );
 }
