@@ -42,6 +42,7 @@ export function EngagementChart({ data }: EngagementChartProps) {
           stroke="var(--color-chart-1)"
           dataKey="value"
           fillOpacity={0.4}
+          isAnimationActive={false}
         />
       </AreaChart>
     </ChartContainer>

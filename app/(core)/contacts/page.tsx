@@ -13,7 +13,9 @@ import { and, eq, gte } from "drizzle-orm";
 import { headers } from "next/headers";
 import { Suspense } from "react";
 
+import { DataTable } from "@/contacts/components/data-table";
 import { EngagementChart } from "@/contacts/components/engagement-chart";
+import { TableSkeleton } from "@/contacts/components/table-skeleton";
 import { PageIcon } from "@/core/components/page-icon";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db/drizzle";
@@ -33,7 +35,7 @@ export default function ContactsPage() {
           </div>
         </div>
 
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<TableSkeleton />}>
           <Insights />
         </Suspense>
       </div>
@@ -96,36 +98,40 @@ async function Insights() {
   });
 
   return (
-    <div className="grid w-full grid-cols-2 justify-between gap-y-4 pt-12 pb-4 md:grid-cols-4">
-      <div className="flex flex-col gap-2">
-        <div className="text-muted-foreground text-xs uppercase">
-          All contacts
+    <>
+      <div className="mb-8 grid w-full grid-cols-2 justify-between gap-y-4 pt-12 pb-4 md:grid-cols-4">
+        <div className="flex flex-col gap-2">
+          <div className="text-muted-foreground text-xs uppercase">
+            All contacts
+          </div>
+          <span className="text-2xl tracking-tight">{contacts.length}</span>
         </div>
-        <span className="text-2xl tracking-tight">{contacts.length}</span>
+
+        <div className="flex flex-col gap-2">
+          <div className="text-muted-foreground text-xs uppercase">
+            Paying users
+          </div>
+          <span className="text-2xl tracking-tight">{paying}</span>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <div className="text-muted-foreground text-xs uppercase">
+            Free users
+          </div>
+          <span className="text-2xl tracking-tight">{free}</span>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <div className="text-muted-foreground text-xs uppercase">
+            Engagement
+          </div>
+          <div className="h-8">
+            <EngagementChart data={chartData} />
+          </div>
+        </div>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <div className="text-muted-foreground text-xs uppercase">
-          Paying users
-        </div>
-        <span className="text-2xl tracking-tight">{paying}</span>
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <div className="text-muted-foreground text-xs uppercase">
-          Free users
-        </div>
-        <span className="text-2xl tracking-tight">{free}</span>
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <div className="text-muted-foreground text-xs uppercase">
-          Engagement
-        </div>
-        <div className="h-8">
-          <EngagementChart data={chartData} />
-        </div>
-      </div>
-    </div>
+      <DataTable data={contacts} />
+    </>
   );
 }

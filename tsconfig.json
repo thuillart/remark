@@ -35,7 +35,8 @@
       "@/home/components/*": ["app/(public)/(marketing)/(home)/_components/*"],
       "@/feedbacks/components/*": ["app/(core)/feedbacks/_components/*"],
       "@/feedbacks/lib/*": ["app/(core)/feedbacks/_lib/*"],
-      "@/contacts/components/*": ["app/(core)/contacts/_components/*"]
+      "@/contacts/components/*": ["app/(core)/contacts/_components/*"],
+      "@/contacts/lib/*": ["app/(core)/contacts/_lib/*"]
     }
   },
   "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],
