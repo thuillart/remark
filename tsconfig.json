@@ -34,7 +34,8 @@
       "@/legals/components/*": ["app/(public)/(legals)/_components/*"],
       "@/home/components/*": ["app/(public)/(marketing)/(home)/_components/*"],
       "@/feedbacks/components/*": ["app/(core)/feedbacks/_components/*"],
-      "@/feedbacks/lib/*": ["app/(core)/feedbacks/_lib/*"]
+      "@/feedbacks/lib/*": ["app/(core)/feedbacks/_lib/*"],
+      "@/contacts/components/*": ["app/(core)/contacts/_components/*"]
     }
   },
   "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],

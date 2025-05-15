@@ -2,6 +2,7 @@ import "server-only";
 
 import { RiGroup3Line } from "@remixicon/react";
 
+import { EngagementChart } from "@/contacts/components/engagement-chart";
 import { PageIcon } from "@/core/components/page-icon";
 
 export default function ContactsPage() {
@@ -45,7 +46,7 @@ export default function ContactsPage() {
               Engagement
             </div>
             <div className="h-8">
-              {/* Implement a chart like showing over last week the number of contacts that have been sending feedbacks trend */}
+              <EngagementChart />
             </div>
           </div>
         </div>

@@ -827,6 +827,15 @@ export function DataTable({ data }: { data: Feedback[] }) {
       return false;
     }
 
+    // Filter by tags
+    if (selectedTags.length > 0) {
+      const itemTags =
+        typeof item.tags === "string" ? parsePgArray(item.tags) : item.tags;
+      if (!selectedTags.every((tag) => itemTags.includes(tag))) {
+        return false;
+      }
+    }
+
     return true;
   });
 
@@ -846,6 +855,7 @@ export function DataTable({ data }: { data: Feedback[] }) {
     selectedImpact,
     selectedTimeRange,
     searchValue,
+    selectedTags,
     filteredData.length,
     tableMeta,
     setActivePage,
