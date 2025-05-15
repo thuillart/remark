@@ -7,7 +7,6 @@ import {
 import Link from "next/link";
 
 import { LogoLink } from "@/components/logo";
-import { FooterArtwork } from "@/public/components/footer-artwork";
 import {
   DISCORD_URL,
   GITHUB_URL,
@@ -15,12 +14,12 @@ import {
   X_URL,
   YOUTUBE_URL,
 } from "@/lib/constants";
+import { FooterArtwork } from "@/public/components/footer-artwork";
 
 export function Footer() {
   return (
     <footer className="relative mt-12 pt-24 pb-12">
       <FooterArtwork />
-
       <div className="container">
         <div className="flex flex-wrap justify-between gap-x-24 gap-y-12">
           <LogoLink />
