@@ -18,7 +18,10 @@ export function FeaturesButton() {
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      <Link href="https://bundlephobia.com/" target="_blank">
+      <Link
+        href="https://bundlephobia.com/package/@remark-sh/sdk"
+        target="_blank"
+      >
         Check it out
         <CircleArrow
           variant="outline"

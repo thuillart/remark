@@ -8,7 +8,7 @@ export function Demo() {
           True superpowers.
         </h2>
         <p className="text-muted-foreground mb-12 text-center text-xl font-medium tracking-tight">
-          Know what your users want most right now.
+          Know what features your users want most now.
         </p>
         <DemoTabs />
       </div>
