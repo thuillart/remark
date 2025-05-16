@@ -6,23 +6,40 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { PricingCard } from "@/home/components/pricing-card";
 import { getSlugFromProductId } from "@/lib/configs/products";
 import { SubscriptionSlug } from "@/lib/schema";
-import { getBaseUrl } from "@/lib/utils";
+import { getBaseUrl, tryCatch } from "@/lib/utils";
+
+export const dynamic = "force-dynamic";
 
 // Cache the fetch request for auth state
 const getCachedSubscriptionState = cache(async () => {
-  const response = await fetch(`${getBaseUrl()}/api/auth/state`, {
-    headers: await headers(),
-  });
+  const { data: response, error } = await tryCatch(
+    fetch(`${getBaseUrl()}/api/auth/state`, {
+      headers: await headers(),
+      cache: "no-store",
+    }),
+  );
+
+  if (error || !response) {
+    console.error("Error fetching auth state:", error);
+    return null;
+  }
 
   console.log("Auth State Response:", {
-    status: response.status,
-    statusText: response.statusText,
-    headers: Object.fromEntries(response.headers.entries()),
     ok: response.ok,
+    status: response.status,
+    headers: Object.fromEntries(response.headers.entries()),
+    statusText: response.statusText,
   });
 
   if (!response.ok) return null;
-  const data = await response.json();
+
+  const { data, error: jsonError } = await tryCatch(response.json());
+
+  if (jsonError) {
+    console.error("Error parsing auth state:", jsonError);
+    return null;
+  }
+
   console.log("Auth State Data:", JSON.stringify(data, null, 2));
   return data;
 });
