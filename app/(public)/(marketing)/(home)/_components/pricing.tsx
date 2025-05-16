@@ -13,8 +13,17 @@ const getCachedSubscriptionState = cache(async () => {
     headers: await headers(),
   });
 
+  console.log("Auth State Response:", {
+    status: response.status,
+    statusText: response.statusText,
+    headers: Object.fromEntries(response.headers.entries()),
+    ok: response.ok,
+  });
+
   if (!response.ok) return null;
-  return response.json();
+  const data = await response.json();
+  console.log("Auth State Data:", JSON.stringify(data, null, 2));
+  return data;
 });
 
 type Plan = {
