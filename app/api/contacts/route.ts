@@ -11,9 +11,8 @@ import { contact } from "@/lib/db/schema";
 import { contactMetadataSchema } from "@/lib/schema";
 import { withAuth } from "@/lib/with-auth";
 
-type Context = {
-  apiKey: Awaited<ReturnType<typeof auth.api.verifyApiKey>>["key"];
-};
+// This matches the type expected in withAuth
+type ApiKey = Awaited<ReturnType<typeof auth.api.verifyApiKey>>["key"];
 
 const bodySchema = z.object({
   /**
@@ -33,10 +32,16 @@ const bodySchema = z.object({
   metadata: contactMetadataSchema,
 });
 
-async function secretPOST(request: NextRequest, context: Context) {
-  const {
-    apiKey: { userId },
-  } = context;
+// Make context optional as defined in the withAuth middleware
+async function secretPOST(request: NextRequest, context?: { apiKey: ApiKey }) {
+  // Safely access userId (withAuth guarantees apiKey will be there)
+  const userId = context?.apiKey?.userId;
+  if (!userId) {
+    return new Response(JSON.stringify({ error: "Invalid API key" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
   const body = await request.json();
   const { name, email, metadata } = bodySchema.parse(body);
@@ -112,10 +117,19 @@ const deleteBodySchema = z.object({
   email: z.string().email(),
 });
 
-async function secretDELETE(request: NextRequest, context: Context) {
-  const {
-    apiKey: { userId },
-  } = context;
+// Make context optional here too
+async function secretDELETE(
+  request: NextRequest,
+  context?: { apiKey: ApiKey },
+) {
+  // Safely access userId
+  const userId = context?.apiKey?.userId;
+  if (!userId) {
+    return new Response(JSON.stringify({ error: "Invalid API key" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
   const body = await request.json();
   const { email } = deleteBodySchema.parse(body);

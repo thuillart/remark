@@ -27,6 +27,7 @@
       "@/usage/components/*": ["app/(core)/settings/usage/_components/*"],
       "@/profile/components/*": ["app/(core)/profile/_components/*"],
       "@/billing/components/*": ["app/(core)/settings/billing/_components/*"],
+      "@/billing/lib/*": ["app/(core)/settings/billing/_lib/*"],
       "@/settings/components/*": ["app/(core)/settings/_components/*"],
       "@/api-keys/components/*": ["app/(core)/api-keys/_components/*"],
       "@/public/components/*": ["app/(public)/_components/*"],

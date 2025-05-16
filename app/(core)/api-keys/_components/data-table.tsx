@@ -1,12 +1,12 @@
 "use client";
 
+import { RiKeyLine } from "@remixicon/react";
 import {
   type ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { RiKeyLine } from "@remixicon/react";
 
 import { useApiKeyStore } from "@/api-keys/lib/store";
 import type { ApiKey } from "@/api-keys/lib/types";
@@ -29,9 +29,10 @@ export function DataTable({
 }) {
   const { setOpen } = useApiKeyStore();
 
-  const table = useReactTable<ApiKey>({
+  const table = useReactTable({
     data,
     columns,
+    filterFns: undefined,
     getCoreRowModel: getCoreRowModel(),
   });
 

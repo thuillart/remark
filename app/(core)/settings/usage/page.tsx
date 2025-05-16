@@ -1,12 +1,12 @@
 import "server-only";
 
-import type { CustomerState } from "@polar-sh/sdk/dist/commonjs/models/components/customerstate";
 import { count, eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { Suspense } from "react";
 
 import { auth } from "@/lib/auth";
 import { API_KEY_CONFIG } from "@/lib/configs/api-key";
+import { CONTACT_CONFIG } from "@/lib/configs/contact";
 import { getSlugFromProductId } from "@/lib/configs/products";
 import { APP_NAME } from "@/lib/constants";
 import { db } from "@/lib/db/drizzle";
@@ -15,7 +15,6 @@ import type { SubscriptionSlug } from "@/lib/schema";
 import { getBaseUrl, tryCatch } from "@/lib/utils";
 import { UpgradeButton } from "@/usage/components/upgrade-button";
 import { UsageSkeleton } from "@/usage/components/usage-skeleton";
-import { CONTACT_CONFIG } from "@/lib/configs/contact";
 
 interface ApiKey {
   requestCount?: number;
@@ -35,7 +34,7 @@ async function UsageCards() {
     headers: await headers(),
   });
 
-  const state = (await response.json()) as CustomerState;
+  const state = await response.json();
 
   const slug = state.activeSubscriptions?.[0]?.productId
     ? getSlugFromProductId(state.activeSubscriptions[0].productId)

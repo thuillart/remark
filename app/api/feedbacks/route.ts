@@ -2,19 +2,16 @@ import { randomUUID } from "crypto";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
-import { auth } from "@/lib/auth";
 import { enrichFeedback } from "@/lib/db/actions";
 import { db } from "@/lib/db/drizzle";
 import { feedback } from "@/lib/db/schema";
-import { feedbackMetadataSchema, type SubscriptionSlug } from "@/lib/schema";
+import { feedbackMetadataSchema } from "@/lib/schema";
 import { tryCatch } from "@/lib/utils";
 import { withAuthAndRateLimiting } from "@/lib/with-auth-and-rate-limiting";
 
-type Context = {
-  slug?: SubscriptionSlug;
-  apiKey: Awaited<ReturnType<typeof auth.api.verifyApiKey>>["key"];
-  polarCustomerId?: string;
-};
+// Accept any context to match middleware pattern
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Context = any;
 
 const bodySchema = z.object({
   /**
@@ -32,9 +29,14 @@ const bodySchema = z.object({
 });
 
 async function secretPOST(request: NextRequest, context: Context) {
-  const {
-    apiKey: { userId },
-  } = context;
+  const userId = context?.apiKey?.userId;
+
+  if (!userId) {
+    return new Response(JSON.stringify({ error: "Invalid API key" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
   const body = await request.json();
   const { from, text, metadata } = bodySchema.parse(body);

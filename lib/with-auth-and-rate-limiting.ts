@@ -12,14 +12,10 @@ import {
 } from "@/lib/utils";
 
 type ApiKey = Awaited<ReturnType<typeof auth.api.listApiKeys>>[number];
-type Handler = (
-  request: NextRequest,
-  context?: {
-    slug?: SubscriptionSlug;
-    apiKey: unknown;
-    polarCustomerId?: string;
-  },
-) => Promise<Response>;
+
+// Make Handler type accept any type of context, exactly like Lee's example
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Handler = (request: NextRequest, context?: any) => Promise<Response>;
 
 type SubscriptionLimits = {
   DAILY?: number;

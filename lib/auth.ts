@@ -1,6 +1,4 @@
 import { polar } from "@polar-sh/better-auth";
-import type { CustomerState } from "@polar-sh/sdk/dist/commonjs/models/components/customerstate";
-import type { SubscriptionUpdateProduct } from "@polar-sh/sdk/dist/commonjs/models/components/subscriptionupdateproduct";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
@@ -77,7 +75,7 @@ export const auth = betterAuth({
           headers: await headers(),
         });
 
-        const state = (await response.json()) as CustomerState;
+        const state = await response.json();
 
         // Find all active subscriptions
         const subscriptions = state.activeSubscriptions.filter(
@@ -145,7 +143,7 @@ export const auth = betterAuth({
       },
       webhooks: {
         secret: process.env.POLAR_WEBHOOK_SECRET,
-        onSubscriptionUpdated: async (payload: SubscriptionUpdateProduct) => {
+        onSubscriptionUpdated: async (payload) => {
           const slug = getSlugFromProductId(payload.productId);
           const { updateApiKeysLimits } = await import("@/lib/db/actions");
           await updateApiKeysLimits({ newSlug: slug });

@@ -1,13 +1,11 @@
-import type { CustomerState } from "@polar-sh/sdk/dist/commonjs/models/components/customerstate";
 import { headers } from "next/headers";
-import { cache } from "react";
-import React, { Suspense } from "react";
+import React, { cache, Suspense } from "react";
 
+import { Skeleton } from "@/components/ui/skeleton";
 import { PricingCard } from "@/home/components/pricing-card";
 import { getSlugFromProductId } from "@/lib/configs/products";
-import { getBaseUrl } from "@/lib/utils";
 import { SubscriptionSlug } from "@/lib/schema";
-import { Skeleton } from "@/components/ui/skeleton";
+import { getBaseUrl } from "@/lib/utils";
 
 // Cache the fetch request for auth state
 const getCachedSubscriptionState = cache(async () => {
@@ -16,7 +14,7 @@ const getCachedSubscriptionState = cache(async () => {
   });
 
   if (!response.ok) return null;
-  return response.json() as Promise<CustomerState>;
+  return response.json();
 });
 
 type Plan = {

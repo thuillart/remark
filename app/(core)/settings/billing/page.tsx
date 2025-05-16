@@ -1,6 +1,5 @@
 import "server-only";
 
-import type { CustomerState } from "@polar-sh/sdk/dist/commonjs/models/components/customerstate";
 import { RiAlertLine, RiDiamondLine } from "@remixicon/react";
 import { headers } from "next/headers";
 import { Suspense } from "react";
@@ -8,6 +7,7 @@ import { Suspense } from "react";
 import { CurrentPlanCard } from "@/billing/components/current-plan-card";
 import { ResolveSubscriptionButton } from "@/billing/components/resolve-subscription-button";
 import { UpdatePlanDialog } from "@/billing/components/update-plan-dialog";
+
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -30,7 +30,7 @@ async function BillingCard() {
     headers: await headers(),
   });
 
-  const state = (await response.json()) as CustomerState;
+  const state = await response.json();
 
   const subscription = state.activeSubscriptions.find(
     (subscription) => subscription.status === "active",
@@ -72,7 +72,7 @@ async function BillingCard() {
       <CurrentPlanCard
         slug={getSlugFromProductId(subscription.productId)}
         periodEnd={subscription.endsAt}
-        cancelAtPeriodEnd={subscription.cancelAtPeriodEnd ?? false}
+        cancelAtPeriodEnd={subscription.cancelAtPeriodEnd}
       />
     </>
   );

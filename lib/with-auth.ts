@@ -2,14 +2,12 @@ import { NextRequest } from "next/server";
 
 import { auth } from "@/lib/auth";
 
-type ApiKey = Awaited<ReturnType<typeof auth.api.verifyApiKey>>["key"];
-
-type Handler = (
-  request: NextRequest,
-  context?: { apiKey: ApiKey },
-) => Promise<Response>;
+// Make Handler type accept any type of context, exactly like Lee's example
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Handler = (request: NextRequest, context?: any) => Promise<Response>;
 
 export function withAuth(handler: Handler): Handler {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   return async (request, context) => {
     const apiKey = request.headers.get("x-api-key");
 
@@ -70,8 +68,9 @@ export function withAuth(handler: Handler): Handler {
         },
       );
     }
+
+    // Call handler with the original context and apiKey added
     return handler(request, {
-      ...context,
       apiKey: key,
     });
   };

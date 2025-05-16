@@ -15,9 +15,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { APP_NAME } from "@/lib/constants";
-
-import { capitalizeFirstLetter } from "@/lib/utils";
 import { SubscriptionSlug } from "@/lib/schema";
+import { capitalizeFirstLetter } from "@/lib/utils";
 
 export function CurrentPlanCard({
   slug,

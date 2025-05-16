@@ -1,12 +1,10 @@
-import type { CustomerState } from "@polar-sh/sdk/dist/commonjs/models/components/customerstate";
-import type { CustomerStateSubscription } from "@polar-sh/sdk/src/models/components/customerstatesubscription";
 import { createSafeActionClient } from "next-safe-action";
 import { headers } from "next/headers";
 
 import { auth } from "@/lib/auth";
 import { getSlugFromProductId } from "@/lib/configs/products";
-import { getBaseUrl } from "@/lib/utils";
 import type { SubscriptionSlug } from "@/lib/schema";
+import { getBaseUrl } from "@/lib/utils";
 
 export const actionClient = createSafeActionClient();
 
@@ -36,10 +34,9 @@ export const subscriptionActionClient = authActionClient.use(
       throw new Error(`Failed to fetch auth state: ${response.statusText}`);
     }
 
-    const state = (await response.json()) as CustomerState;
+    const state = await response.json();
 
-    const activeSubscriptions =
-      state.activeSubscriptions as CustomerStateSubscription[];
+    const activeSubscriptions = state.activeSubscriptions;
 
     const slug: SubscriptionSlug = activeSubscriptions.length
       ? getSlugFromProductId(activeSubscriptions[0].productId)

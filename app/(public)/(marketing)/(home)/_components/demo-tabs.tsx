@@ -164,7 +164,10 @@ function SearchAndFilters() {
       <div className="grid w-full grid-cols-2 gap-2">
         <div className="group relative">
           <Select defaultValue="1">
-            <SelectTrigger className="pointer-events-none relative ps-9">
+            <SelectTrigger
+              className="pointer-events-none relative ps-9"
+              aria-label="Select time"
+            >
               <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 group-has-[select[disabled]]:opacity-50">
                 <RiTimeLine size={16} aria-hidden="true" />
               </div>
@@ -276,7 +279,10 @@ function DataTable({ selectedTabId }: { selectedTabId: Tab["id"] }) {
         <TableHeader>
           <TableRow className="data-[state=selected]:bg-muted border-b transition-colors hover:bg-transparent">
             <TableHead className="h-12 w-10">
-              <Checkbox className="pointer-events-none" />
+              <Checkbox
+                aria-label="Select all"
+                className="pointer-events-none"
+              />
             </TableHead>
             {selectedTabId === 1 && (
               <>
@@ -308,7 +314,10 @@ function DataTable({ selectedTabId }: { selectedTabId: Tab["id"] }) {
               }
             >
               <TableCell>
-                <Checkbox className="pointer-events-none" />
+                <Checkbox
+                  className="pointer-events-none"
+                  aria-label="Select row"
+                />
               </TableCell>
               {selectedTabId === 1 ? (
                 <>

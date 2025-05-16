@@ -85,7 +85,7 @@ export function UpdatePlanDialog({
           <RadioGroup
             className="gap-0 -space-y-px rounded-lg shadow-xs shadow-black/5"
             defaultValue={currentPlan}
-            onValueChange={(v) => setSelectedPlan(v as SubscriptionTier)}
+            onValueChange={(v) => setSelectedPlan(v as SubscriptionSlug)}
           >
             {plans.map((plan) => (
               <div

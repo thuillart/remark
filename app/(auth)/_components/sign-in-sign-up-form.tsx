@@ -210,9 +210,7 @@ export function SignInSignUpForm({ mode }: { mode: Mode }) {
       <p className="text-muted-foreground text-center text-xs">
         By signing up you agree to our{" "}
         <Button asChild variant="link" className="text-xs">
-          <Link href="/terms" target="_blank">
-            terms
-          </Link>
+          <Link href="/terms">terms</Link>
         </Button>
         .
       </p>
