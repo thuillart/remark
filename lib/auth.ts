@@ -19,6 +19,9 @@ import { feedback } from "@/lib/db/schema";
 import { getBaseUrl } from "@/lib/utils";
 
 export const auth = betterAuth({
+  trustedOrigins: ["http://localhost:3000", "https://remark.sh"],
+  baseURL: getBaseUrl(),
+
   database: drizzleAdapter(db, {
     provider: "pg",
     schema,
