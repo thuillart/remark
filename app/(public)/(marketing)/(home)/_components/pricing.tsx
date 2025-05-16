@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
-import React, { cache, Suspense } from "react";
+import React, { cache } from "react";
 
-import { Skeleton } from "@/components/ui/skeleton";
+// import { Skeleton } from "@/components/ui/skeleton";
 import { PricingCard } from "@/home/components/pricing-card";
 import { getSlugFromProductId } from "@/lib/configs/products";
 import { SubscriptionSlug } from "@/lib/schema";
@@ -75,7 +75,7 @@ export async function Pricing() {
           </p>
         </div>
         <div className="mt-18 grid gap-4 md:grid-cols-3">
-          <Suspense
+          {/* <Suspense
             fallback={
               <>
                 <Skeleton className="h-97.5 rounded-2xl border" />
@@ -85,13 +85,14 @@ export async function Pricing() {
             }
           >
             <PricingCards />
-          </Suspense>
+          </Suspense> */}
         </div>
       </div>
     </section>
   );
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function PricingCards() {
   const state = await getCachedSubscriptionState();
 
