@@ -1,47 +1,28 @@
-import { headers } from "next/headers";
 import React, { cache, Suspense } from "react";
 
-// import { Skeleton } from "@/components/ui/skeleton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PricingCard } from "@/home/components/pricing-card";
+import { authClient } from "@/lib/auth-client";
 import { getSlugFromProductId } from "@/lib/configs/products";
 import { SubscriptionSlug } from "@/lib/schema";
-import { getBaseUrl, tryCatch } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
 // Cache the fetch request for auth state
 const getCachedSubscriptionState = cache(async () => {
-  const { data: response, error } = await tryCatch(
-    fetch(`${getBaseUrl()}/api/auth/state`, {
-      headers: await headers(),
-      cache: "no-store",
-    }),
-  );
+  const { data: customerState, error } = await authClient.customer.state();
 
-  if (error || !response) {
-    console.error("Error fetching auth state:", error);
+  if (error) {
+    // Means the user isn't signed-in
     return null;
   }
 
-  console.log("Auth State Response:", {
-    ok: response.ok,
-    status: response.status,
-    headers: Object.fromEntries(response.headers.entries()),
-    statusText: response.statusText,
-  });
-
-  if (!response.ok) return null;
-
-  const { data, error: jsonError } = await tryCatch(response.json());
-
-  if (jsonError) {
-    console.error("Error parsing auth state:", jsonError);
+  if (!customerState) {
+    // Should never happen, but just in case
     return null;
   }
 
-  console.log("Auth State Data:", JSON.stringify(data, null, 2));
-  return data;
+  return customerState;
 });
 
 type Plan = {

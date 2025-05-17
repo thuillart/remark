@@ -1,4 +1,10 @@
-import { polar } from "@polar-sh/better-auth";
+import {
+  checkout,
+  polar,
+  portal,
+  usage,
+  webhooks,
+} from "@polar-sh/better-auth";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
@@ -136,24 +142,30 @@ export const auth = betterAuth({
 
     polar({
       client: polarClient,
-      checkout: {
-        enabled: true,
-        products: Object.values(PRODUCT_CONFIGS).map(({ slug, productId }) => ({
-          slug,
-          productId,
-        })),
-        successUrl: "/settings/billing?checkout_id={CHECKOUT_ID}",
-      },
-      webhooks: {
-        secret: process.env.POLAR_WEBHOOK_SECRET,
-        onSubscriptionUpdated: async (payload) => {
-          const slug = getSlugFromProductId(payload.productId);
-          const { updateApiKeysLimits } = await import("@/lib/db/actions");
-          await updateApiKeysLimits({ newSlug: slug });
-        },
-      },
-      enableCustomerPortal: true,
       createCustomerOnSignUp: true,
+      use: [
+        checkout({
+          products: Object.values(PRODUCT_CONFIGS).map(
+            ({ slug, productId }) => ({
+              slug,
+              productId,
+            }),
+          ),
+          successUrl: "/settings/billing?checkout_id={CHECKOUT_ID}",
+          authenticatedUsersOnly: true,
+        }),
+        portal(),
+        usage(),
+        webhooks({
+          secret: process.env.POLAR_WEBHOOK_SECRET,
+          onSubscriptionUpdated: async (payload) => {
+            const slug = getSlugFromProductId(payload.productId);
+            const { updateApiKeysLimits } = await import("@/lib/db/actions");
+            await updateApiKeysLimits({ newSlug: slug });
+          },
+        }),
+      ],
+      enableCustomerPortal: true,
     }),
     nextCookies(),
   ],

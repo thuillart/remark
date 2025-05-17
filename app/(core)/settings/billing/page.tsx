@@ -1,19 +1,17 @@
 import "server-only";
 
 import { RiAlertLine, RiDiamondLine } from "@remixicon/react";
-import { headers } from "next/headers";
 import { Suspense } from "react";
 
 import { CurrentPlanCard } from "@/billing/components/current-plan-card";
 import { ResolveSubscriptionButton } from "@/billing/components/resolve-subscription-button";
 import { UpdatePlanDialog } from "@/billing/components/update-plan-dialog";
-
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/core/components/empty-state";
+import { authClient } from "@/lib/auth-client";
 import { getSlugFromProductId } from "@/lib/configs/products";
-import { getBaseUrl } from "@/lib/utils";
 
 export default async function BillingPage() {
   return (
@@ -26,14 +24,10 @@ export default async function BillingPage() {
 }
 
 async function BillingCard() {
-  const response = await fetch(`${getBaseUrl()}/api/auth/state`, {
-    headers: await headers(),
-  });
+  const { data: customerState } = await authClient.customer.state();
 
-  const state = await response.json();
-
-  const subscription = state.activeSubscriptions.find(
-    (subscription) => subscription.status === "active",
+  const subscription = customerState.activeSubscriptions.find(
+    (subscription) => subscription.status === "",
   );
 
   if (!subscription) {

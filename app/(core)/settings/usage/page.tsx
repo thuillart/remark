@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { Suspense } from "react";
 
 import { auth } from "@/lib/auth";
+import { authClient } from "@/lib/auth-client";
 import { API_KEY_CONFIG } from "@/lib/configs/api-key";
 import { CONTACT_CONFIG } from "@/lib/configs/contact";
 import { getSlugFromProductId } from "@/lib/configs/products";
@@ -12,7 +13,7 @@ import { APP_NAME } from "@/lib/constants";
 import { db } from "@/lib/db/drizzle";
 import { contact } from "@/lib/db/schema";
 import type { SubscriptionSlug } from "@/lib/schema";
-import { getBaseUrl, tryCatch } from "@/lib/utils";
+import { tryCatch } from "@/lib/utils";
 import { UpgradeButton } from "@/usage/components/upgrade-button";
 import { UsageSkeleton } from "@/usage/components/usage-skeleton";
 
@@ -30,14 +31,10 @@ export default function UsagePage() {
 }
 
 async function UsageCards() {
-  const response = await fetch(`${getBaseUrl()}/api/auth/state`, {
-    headers: await headers(),
-  });
+  const { data: customerState } = await authClient.customer.state();
 
-  const state = await response.json();
-
-  const slug = state.activeSubscriptions?.[0]?.productId
-    ? getSlugFromProductId(state.activeSubscriptions[0].productId)
+  const slug = customerState.activeSubscriptions?.[0]?.productId
+    ? getSlugFromProductId(customerState.activeSubscriptions[0].productId)
     : "free";
 
   const apiKeyConfig = API_KEY_CONFIG[slug];

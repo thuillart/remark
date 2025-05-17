@@ -1,7 +1,6 @@
 "use client";
 
 import { CheckIcon, RefreshCcwIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
 import React from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { authClient } from "@/lib/auth-client";
 import type { SubscriptionSlug } from "@/lib/schema";
 
 type Plan = {
@@ -50,16 +50,12 @@ export function UpdatePlanDialog({
   children: React.ReactNode;
   currentPlan: SubscriptionSlug;
 }) {
-  const router = useRouter();
-
   const [isLoading, setIsLoading] = React.useState(false);
   const [selectedPlan, setSelectedPlan] = React.useState(currentPlan);
 
   async function onUpgrade(slug: SubscriptionSlug) {
     setIsLoading(true);
-
-    // Redirect to Polar checkout
-    router.push(`/api/auth/checkout/${slug}`);
+    await authClient.checkout({ slug });
   }
 
   return (

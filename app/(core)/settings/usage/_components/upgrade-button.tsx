@@ -1,14 +1,13 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import React from "react";
 
 import { UpdatePlanDialog } from "@/billing/components/update-plan-dialog";
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth-client";
 import type { SubscriptionSlug } from "@/lib/schema";
 
 export function UpgradeButton({ slug }: { slug: SubscriptionSlug }) {
-  const router = useRouter();
   const [isLoading, setIsLoading] = React.useState(false);
 
   if (slug === "free") {
@@ -21,7 +20,7 @@ export function UpgradeButton({ slug }: { slug: SubscriptionSlug }) {
 
   async function handleClick() {
     setIsLoading(true);
-    router.push("/api/auth/portal");
+    await authClient.customer.portal();
   }
 
   return (
