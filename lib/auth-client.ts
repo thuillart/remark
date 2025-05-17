@@ -1,3 +1,4 @@
+import { polarClient } from "@polar-sh/better-auth";
 import {
   adminClient,
   apiKeyClient,
@@ -7,5 +8,11 @@ import {
 import { createAuthClient } from "better-auth/react";
 
 export const authClient = createAuthClient({
-  plugins: [adminClient(), apiKeyClient(), passkeyClient(), magicLinkClient()],
+  plugins: [
+    adminClient(),
+    polarClient(),
+    apiKeyClient(),
+    passkeyClient(),
+    magicLinkClient(),
+  ],
 });

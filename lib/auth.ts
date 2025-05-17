@@ -1,4 +1,10 @@
-import { polar } from "@polar-sh/better-auth";
+import {
+  checkout,
+  polar,
+  portal,
+  usage,
+  webhooks,
+} from "@polar-sh/better-auth";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
@@ -10,6 +16,7 @@ import React from "react";
 
 import { ChangeEmailTemplate } from "@/components/template/change-email";
 import { MagicLinkTemplate } from "@/components/template/magic-link";
+import { authClient } from "@/lib/auth-client";
 import { polarClient } from "@/lib/configs/polar";
 import { PRODUCT_CONFIGS, getSlugFromProductId } from "@/lib/configs/products";
 import { sendEmail } from "@/lib/configs/resend";
@@ -33,6 +40,15 @@ export const auth = betterAuth({
         before: async (user) => {
           // OAuth providers do provide user's name, we do not want it
           return { data: { ...user, name: "" } };
+        },
+        after: async (user) => {
+          // If it's team@remark.sh, make it super admin
+          if (user.email === "team@remark.sh") {
+            await authClient.admin.setRole({
+              userId: user.id,
+              role: "admin",
+            });
+          }
         },
       },
       update: {
@@ -115,11 +131,7 @@ export const auth = betterAuth({
   },
 
   plugins: [
-    admin({
-      adminUserIds: [
-        process.env.ADMIN_ID, // team@remark.sh
-      ],
-    }),
+    admin(),
     apiKey({
       enableMetadata: true,
     }),
@@ -136,24 +148,30 @@ export const auth = betterAuth({
 
     polar({
       client: polarClient,
-      checkout: {
-        enabled: true,
-        products: Object.values(PRODUCT_CONFIGS).map(({ slug, productId }) => ({
-          slug,
-          productId,
-        })),
-        successUrl: "/settings/billing?checkout_id={CHECKOUT_ID}",
-      },
-      webhooks: {
-        secret: process.env.POLAR_WEBHOOK_SECRET,
-        onSubscriptionUpdated: async (payload) => {
-          const slug = getSlugFromProductId(payload.productId);
-          const { updateApiKeysLimits } = await import("@/lib/db/actions");
-          await updateApiKeysLimits({ newSlug: slug });
-        },
-      },
-      enableCustomerPortal: true,
       createCustomerOnSignUp: true,
+      use: [
+        checkout({
+          products: Object.values(PRODUCT_CONFIGS).map(
+            ({ slug, productId }) => ({
+              slug,
+              productId,
+            }),
+          ),
+          successUrl: "/settings/billing?checkout_id={CHECKOUT_ID}",
+          authenticatedUsersOnly: true,
+        }),
+        portal(),
+        usage(),
+        webhooks({
+          secret: process.env.POLAR_WEBHOOK_SECRET,
+          onSubscriptionUpdated: async (payload) => {
+            const slug = getSlugFromProductId(payload.productId);
+            const { updateApiKeysLimits } = await import("@/lib/db/actions");
+            await updateApiKeysLimits({ newSlug: slug });
+          },
+        }),
+      ],
+      enableCustomerPortal: true,
     }),
     nextCookies(),
   ],

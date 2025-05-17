@@ -1,7 +1,6 @@
 "use client";
 
 import { differenceInDays } from "date-fns";
-import { useRouter } from "next/navigation";
 import React from "react";
 
 import { GlowEffect } from "@/components/glow-effect";
@@ -14,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { authClient } from "@/lib/auth-client";
 import { APP_NAME } from "@/lib/constants";
 import { SubscriptionSlug } from "@/lib/schema";
 import { capitalizeFirstLetter } from "@/lib/utils";
@@ -27,13 +27,11 @@ export function CurrentPlanCard({
   periodEnd?: Date | null;
   cancelAtPeriodEnd?: boolean;
 }) {
-  const router = useRouter();
-
   const [isLoading, setIsLoading] = React.useState(false);
 
   async function onPortal() {
     setIsLoading(true);
-    router.push("/api/auth/portal");
+    await authClient.customer.portal();
   }
 
   return (
