@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Borel, IBM_Plex_Mono, Inter } from "next/font/google";
@@ -38,6 +39,7 @@ export default function RootLayout({
           <NuqsAdapter>
             {children}
             <SpeedInsights />
+            <Analytics />
           </NuqsAdapter>
           <Toaster className="![--width:420px]" />
         </ThemeProvider>
