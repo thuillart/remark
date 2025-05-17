@@ -26,7 +26,7 @@ export default async function BillingPage() {
 async function BillingCard() {
   const { data: customerState } = await authClient.customer.state();
 
-  const subscription = customerState.activeSubscriptions.find(
+  const subscription = customerState?.activeSubscriptions?.find(
     (subscription) => subscription.status === "",
   );
 
