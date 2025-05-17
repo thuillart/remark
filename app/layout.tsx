@@ -1,3 +1,4 @@
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Borel, IBM_Plex_Mono, Inter } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
@@ -34,7 +35,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={cn(inter.variable, borel.variable, plexMono.variable)}>
         <ThemeProvider>
-          <NuqsAdapter>{children}</NuqsAdapter>
+          <NuqsAdapter>
+            {children}
+            <SpeedInsights />
+          </NuqsAdapter>
           <Toaster className="![--width:420px]" />
         </ThemeProvider>
       </body>
