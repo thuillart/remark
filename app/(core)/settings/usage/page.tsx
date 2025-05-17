@@ -33,7 +33,7 @@ export default function UsagePage() {
 async function UsageCards() {
   const { data: customerState } = await authClient.customer.state();
 
-  const slug = customerState.activeSubscriptions?.[0]?.productId
+  const slug = customerState?.activeSubscriptions?.[0]?.productId
     ? getSlugFromProductId(customerState.activeSubscriptions[0].productId)
     : "free";
 
@@ -44,7 +44,11 @@ async function UsageCards() {
     headers: await headers(),
   });
 
-  const userId = session.user.id;
+  const userId = session?.user?.id;
+
+  if (!userId) {
+    return null;
+  }
 
   const [{ data: apiKeys }, contactsCount] = await Promise.all([
     tryCatch(
@@ -58,11 +62,11 @@ async function UsageCards() {
       .where(eq(contact.referenceId, userId)),
   ]);
 
-  const totalRequestsCount = apiKeys.reduce((accumulator, apiKey) => {
+  const totalRequestsCount = (apiKeys ?? []).reduce((accumulator, apiKey) => {
     return accumulator + (apiKey.requestCount ?? 0);
   }, 0);
 
-  const requestsMadeToday = countRequestsToday(apiKeys);
+  const requestsMadeToday = countRequestsToday(apiKeys ?? []);
 
   const transactionalLimits = [
     {
