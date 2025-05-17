@@ -25,6 +25,7 @@ import {
   SubscriptionSlugSchema,
 } from "@/lib/schema";
 import { tryCatch } from "@/lib/utils";
+import { authClient } from "../auth-client";
 
 export const createFeedback = authActionClient
   .schema(
@@ -45,6 +46,26 @@ export const createFeedback = authActionClient
       return { failure: "Something went wrong" };
     }
 
+    // We get the actual userId of team@remark.sh
+    const { data } = await authClient.admin.listUsers({
+      query: {
+        searchField: "email",
+        searchOperator: "contains",
+        searchValue: "team@remark.sh",
+        limit: 1,
+        offset: 0,
+        sortBy: "createdAt",
+        sortDirection: "desc",
+        filterField: "role",
+        filterOperator: "eq",
+        filterValue: "admin",
+      },
+    });
+
+    if (!data.users.length) {
+      return { failure: "Something went wrong" };
+    }
+
     const { error } = await tryCatch(
       db.insert(feedback).values({
         id: randomUUID(),
@@ -55,7 +76,7 @@ export const createFeedback = authActionClient
         subject: result.data.enrichment.subject,
         summary: result.data.enrichment.summary,
         metadata,
-        referenceId: process.env.ADMIN_ID,
+        referenceId: data.users[0].id,
       }),
     );
 
