@@ -25,14 +25,16 @@ import * as schema from "@/lib/db/schema";
 import { feedback } from "@/lib/db/schema";
 import { getBaseUrl } from "@/lib/utils";
 
-export const auth = betterAuth({
-  trustedOrigins: ["http://localhost:3000", "https://remark.sh"],
-  baseURL: getBaseUrl(),
+console.log("[better-auth] baseURL:", getBaseUrl());
 
+export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
     schema,
   }),
+
+  trustedOrigins: ["http://localhost:3000", "https://remark.sh"],
+  baseURL: getBaseUrl(),
 
   databaseHooks: {
     user: {
