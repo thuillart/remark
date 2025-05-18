@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { getSlugFromProductId } from "@/lib/configs/products";
 import type { SubscriptionSlug } from "@/lib/schema";
-import { authClient } from "./auth-client";
+import { polarClient } from "./configs/polar";
 
 export const actionClient = createSafeActionClient();
 
@@ -26,29 +26,22 @@ export const authActionClient = actionClient.use(async ({ next }) => {
 
 export const subscriptionActionClient = authActionClient.use(
   async ({ next, ctx: { user } }) => {
-    const { data: customerState, error } = await authClient.customer.state();
+    const customerState = await polarClient.customers.getStateExternal({
+      externalId: user.id,
+    });
 
-    console.log(customerState);
-
-    if (error || !customerState) {
-      console.log("middleware couldn't get customer state (polar)");
-      throw new Error(`Failed to get subscription state: ${error.message}`);
-    }
-
-    const activeSubscriptions = customerState.activeSubscriptions;
-
+    // If no customerState, default to free subscription
+    const activeSubscriptions = customerState?.activeSubscriptions;
     const slug: SubscriptionSlug = activeSubscriptions.length
       ? getSlugFromProductId(activeSubscriptions[0].productId)
       : "free";
-
-    console.log("our slug", slug);
 
     return next({
       ctx: {
         ...user,
         subscription: {
           slug,
-          polarCustomerId: customerState.id,
+          polarCustomerId: customerState?.id,
         },
       },
     });
