@@ -7,6 +7,7 @@ import React from "react";
 
 import { CircleArrow } from "@/components/circle-arrow";
 import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth-client";
 import { SubscriptionSlug } from "@/lib/schema";
 import { cn } from "@/lib/utils";
 
@@ -33,19 +34,20 @@ export function PricingCard({
 
   const router = useRouter();
 
-  function handleClick() {
+  async function handleClick() {
     setIsLoading(true);
 
     if (currentSlug === "free") {
       // Not subscribed yet, allow checkout for paid plans only
       if (id !== "free") {
-        router.push(`/api/auth/checkout/${id}`);
+        await authClient.checkout({ slug: id });
+        return;
       } else {
         // Free plan, nothing to do or show a message
         setIsLoading(false);
       }
       // Already subscribed, always go to portal for any plan action
-      router.push("/api/auth/portal");
+      await authClient.customer.portal();
       return;
     }
 
