@@ -25,8 +25,6 @@ import * as schema from "@/lib/db/schema";
 import { feedback } from "@/lib/db/schema";
 import { getBaseUrl } from "@/lib/utils";
 
-console.log("[better-auth] baseURL:", getBaseUrl());
-
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
