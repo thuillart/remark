@@ -28,7 +28,10 @@ export const subscriptionActionClient = authActionClient.use(
   async ({ next, ctx: { user } }) => {
     const { data: customerState, error } = await authClient.customer.state();
 
+    console.log(customerState);
+
     if (error || !customerState) {
+      console.log("middleware couldn't get customer state (polar)");
       throw new Error(`Failed to get subscription state: ${error.message}`);
     }
 
@@ -37,6 +40,8 @@ export const subscriptionActionClient = authActionClient.use(
     const slug: SubscriptionSlug = activeSubscriptions.length
       ? getSlugFromProductId(activeSubscriptions[0].productId)
       : "free";
+
+    console.log("our slug", slug);
 
     return next({
       ctx: {
