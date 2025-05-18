@@ -7,8 +7,8 @@ import React from "react";
 
 import { CircleArrow } from "@/components/circle-arrow";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { SubscriptionSlug } from "@/lib/schema";
+import { cn } from "@/lib/utils";
 
 export function PricingCard({
   id,
@@ -44,11 +44,13 @@ export function PricingCard({
         // Free plan, nothing to do or show a message
         setIsLoading(false);
       }
+      // Already subscribed, always go to portal for any plan action
+      router.push("/api/auth/portal");
       return;
     }
 
-    // Already subscribed, always go to portal for any plan action
-    router.push("/api/auth/portal");
+    // No currentSlug, means user isn't signed up/in yet
+    router.push("/sign-up");
   }
 
   return (

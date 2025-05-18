@@ -1,7 +1,9 @@
+import { headers } from "next/headers";
 import React, { cache, Suspense } from "react";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { PricingCard } from "@/home/components/pricing-card";
+import { auth } from "@/lib/auth";
 import { authClient } from "@/lib/auth-client";
 import { getSlugFromProductId } from "@/lib/configs/products";
 import { SubscriptionSlug } from "@/lib/schema";
@@ -10,18 +12,7 @@ export const dynamic = "force-dynamic";
 
 // Cache the fetch request for auth state
 const getCachedSubscriptionState = cache(async () => {
-  const { data: customerState, error } = await authClient.customer.state();
-
-  if (error) {
-    // Means the user isn't signed-in
-    return null;
-  }
-
-  if (!customerState) {
-    // Should never happen, but just in case
-    return null;
-  }
-
+  const { data: customerState } = await authClient.customer.state();
   return customerState;
 });
 
@@ -101,19 +92,20 @@ export async function Pricing() {
 }
 
 async function PricingCards() {
-  const state = await getCachedSubscriptionState();
+  // 1. We get user's session
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-  if (!state) {
+  if (!session?.user) {
     // Not signed in, show all plans
-    return (
-      <>
-        {plans.map(({ id, ...plan }) => (
-          <PricingCard id={id} key={id} {...plan} />
-        ))}
-      </>
-    );
+    return plans.map(({ id, ...plan }) => (
+      <PricingCard id={id} key={id} {...plan} />
+    ));
   }
 
+  // 2. User is signed in, we check if they have any ongoing subscription
+  const state = await getCachedSubscriptionState();
   const productId = state?.activeSubscriptions[0]?.productId;
   const slug = productId ? getSlugFromProductId(productId) : "free";
 
