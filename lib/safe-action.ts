@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { getSlugFromProductId } from "@/lib/configs/products";
 import type { SubscriptionSlug } from "@/lib/schema";
-import { getBaseUrl } from "@/lib/utils";
+import { authClient } from "./auth-client";
 
 export const actionClient = createSafeActionClient();
 
@@ -26,17 +26,13 @@ export const authActionClient = actionClient.use(async ({ next }) => {
 
 export const subscriptionActionClient = authActionClient.use(
   async ({ next, ctx: { user } }) => {
-    const response = await fetch(`${getBaseUrl()}/api/auth/state`, {
-      headers: await headers(),
-    });
+    const { data: customerState, error } = await authClient.customer.state();
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch auth state: ${response.statusText}`);
+    if (error || !customerState) {
+      throw new Error(`Failed to get subscription state: ${error.message}`);
     }
 
-    const state = await response.json();
-
-    const activeSubscriptions = state.activeSubscriptions;
+    const activeSubscriptions = customerState.activeSubscriptions;
 
     const slug: SubscriptionSlug = activeSubscriptions.length
       ? getSlugFromProductId(activeSubscriptions[0].productId)
@@ -47,7 +43,7 @@ export const subscriptionActionClient = authActionClient.use(
         ...user,
         subscription: {
           slug,
-          polarCustomerId: state.id,
+          polarCustomerId: customerState.id,
         },
       },
     });
