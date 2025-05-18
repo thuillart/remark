@@ -19,15 +19,15 @@ export async function toast(toast: Omit<ToastProps, "id">) {
 }
 
 export function getBaseUrl() {
-  if (typeof window !== "undefined") {
-    return "";
+  if (process.env.VERCEL_ENV === "production") {
+    // Always use our custom domain in production
+    return "https://remark.sh";
   }
   if (process.env.VERCEL_URL) {
+    // Use automatically generated deployment URL for preview
     return `https://${process.env.VERCEL_URL}`;
   }
-  if (process.env.NEXT_PUBLIC_APP_URL) {
-    return process.env.NEXT_PUBLIC_APP_URL;
-  }
+  // Fallback for local development
   return `http://localhost:${process.env.PORT ?? 3000}`;
 }
 
