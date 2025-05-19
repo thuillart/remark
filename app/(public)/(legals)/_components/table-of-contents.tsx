@@ -43,23 +43,25 @@ export function TableOfContents({ headings }: TableOfContentsProps) {
 
   return (
     <aside className="hidden pt-20 pb-4 md:col-start-4 md:block">
-      <ul className="space-y-3 py-2">
-        {headings.map((heading) => (
-          <li key={`${heading.id}-${heading.index}`} className="text-sm">
-            <Link
-              href={`#${heading.id}`}
-              className={cn(
-                "hover:text-primary transition-colors",
-                activeId === heading.id
-                  ? "text-foreground"
-                  : "text-muted-foreground",
-              )}
-            >
-              {heading.text}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <div className="sticky top-32">
+        <ul className="space-y-3 py-2">
+          {headings.map((heading) => (
+            <li key={`${heading.id}-${heading.index}`} className="text-sm">
+              <Link
+                href={`#${heading.id}`}
+                className={cn(
+                  "hover:text-primary transition-colors",
+                  activeId === heading.id
+                    ? "text-foreground"
+                    : "text-muted-foreground",
+                )}
+              >
+                {heading.text}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
     </aside>
   );
 }
