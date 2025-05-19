@@ -1,10 +1,23 @@
-export function PageTitle({ title }: { title: string }) {
+import { format } from "date-fns";
+
+export function PageTitle({
+  title,
+  updatedAt,
+}: {
+  title: string;
+  updatedAt: Date;
+}) {
   return (
     <>
-      <section className="pt-20 pb-4 md:pt-38 md:pb-18">
-        <h1 className="text-4xl/12 font-semibold tracking-tighter md:text-5xl">
-          {title}
-        </h1>
+      <section className="pt-9 pb-10 md:pt-20 md:pb-12">
+        <div className="flex flex-col gap-5">
+          <h1 className="text-4xl/12 font-semibold tracking-tighter md:text-5xl">
+            {title}
+          </h1>
+          <p className="text-muted-foreground">
+            Last updated on {format(updatedAt, "MMMM d, yyyy")}.
+          </p>
+        </div>
       </section>
       <hr className="mb-12 md:mb-18" />
     </>

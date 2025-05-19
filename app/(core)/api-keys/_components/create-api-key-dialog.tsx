@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { useApiKeyStore } from "@/api-keys/lib/store";
-import { createApiKey } from "@/lib/db/actions";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -27,6 +26,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { createApiKey } from "@/lib/db/actions";
 import { toast } from "@/lib/utils";
 
 const formSchema = z.object({
