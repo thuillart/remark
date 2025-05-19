@@ -9,7 +9,7 @@ export function PageTitle({
 }) {
   return (
     <>
-      <section className="pt-9 pb-2 md:pt-20 md:pb-12">
+      <section className="pt-9 pb-10 md:pt-20 md:pb-12">
         <div className="flex flex-col gap-5">
           <h1 className="text-4xl/12 font-semibold tracking-tighter md:text-5xl">
             {title}
