@@ -5,20 +5,20 @@ import { RiSparkling2Line } from "@remixicon/react";
 import { BadgeAlertIcon, HeartIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { createFeedback } from "@/lib/db/actions";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { FormControl, FormField, FormItem } from "@/components/ui/form";
-import { Form } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Textarea } from "@/components/ui/textarea";
+import { createFeedback } from "@/lib/db/actions";
 import { cn, toast } from "@/lib/utils";
 
 const formSchema = z.object({
@@ -29,6 +29,7 @@ type FormValues = z.infer<typeof formSchema>;
 
 export function FeedbackPopover() {
   const [isOpen, setIsOpen] = React.useState(false);
+  const pathname = usePathname();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -38,6 +39,9 @@ export function FeedbackPopover() {
   async function onSubmit(values: FormValues) {
     const result = await createFeedback({
       text: values.text,
+      metadata: {
+        path: pathname,
+      },
     });
 
     if (result?.data?.failure) {

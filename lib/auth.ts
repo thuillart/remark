@@ -38,8 +38,14 @@ export const auth = betterAuth({
     user: {
       create: {
         before: async (user) => {
-          // OAuth providers do provide user's name, we do not want it
-          return { data: { ...user, name: "" } };
+          // OAuth providers do provide user's name/image, we do not want it
+          return {
+            data: {
+              ...user,
+              image: "",
+              name: "",
+            },
+          };
         },
         after: async (user) => {
           // If it's team@remark.sh, make it super admin

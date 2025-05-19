@@ -7,7 +7,7 @@ export default function LegalNoticeLayout({
 }) {
   return (
     <>
-      <PageTitle title="Legal Notice" />
+      <PageTitle title="Notice" updatedAt={new Date("2024-05-18")} />
       {children}
     </>
   );

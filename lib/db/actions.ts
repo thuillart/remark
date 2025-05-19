@@ -25,7 +25,6 @@ import {
   SubscriptionSlugSchema,
 } from "@/lib/schema";
 import { tryCatch } from "@/lib/utils";
-import { authClient } from "../auth-client";
 
 export const createFeedback = authActionClient
   .schema(
@@ -43,28 +42,25 @@ export const createFeedback = authActionClient
     });
 
     if (!result.data) {
-      return { failure: "Something went wrong" };
+      return { failure: "We couldn't enrich your feedback" };
     }
 
     // We get the actual userId of team@remark.sh
-    const { data } = await authClient.admin.listUsers({
+    const usersList = await auth.api.listUsers({
       query: {
         searchField: "email",
         searchOperator: "contains",
         searchValue: "team@remark.sh",
         limit: 1,
         offset: 0,
-        sortBy: "createdAt",
-        sortDirection: "desc",
-        filterField: "role",
-        filterOperator: "eq",
-        filterValue: "admin",
       },
     });
 
-    if (!data.users.length) {
-      return { failure: "Something went wrong" };
+    if (!usersList.users.length) {
+      return { failure: "We couldn't insert your feedback" };
     }
+
+    console.log("usersList", usersList);
 
     const { error } = await tryCatch(
       db.insert(feedback).values({
@@ -76,11 +72,12 @@ export const createFeedback = authActionClient
         subject: result.data.enrichment.subject,
         summary: result.data.enrichment.summary,
         metadata,
-        referenceId: data.users[0].id,
+        referenceId: usersList.users[0].id,
       }),
     );
 
     if (error) {
+      console.error(error, "Error inserting feedback");
       return { failure: error.message };
     }
 
@@ -111,8 +108,6 @@ export const enrichFeedback = actionClient
         metadata,
       }),
     });
-
-    console.log(output);
 
     // 3. Extract information from the output
     const parsedOutput = z.string().parse(output);
