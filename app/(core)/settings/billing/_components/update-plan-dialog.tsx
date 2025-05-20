@@ -17,6 +17,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { authClient } from "@/lib/auth-client";
+import { APP_NAME } from "@/lib/constants";
 import type { SubscriptionSlug } from "@/lib/schema";
 
 type Plan = {
@@ -116,63 +117,108 @@ export function UpdatePlanDialog({
 
           <div className="space-y-3">
             <p>
-              <strong className="text-sm font-medium">Features include:</strong>
+              <strong className="text-sm font-medium">
+                {selectedPlan === "free"
+                  ? "Features include:"
+                  : selectedPlan === "plus"
+                    ? `All ${APP_NAME} Free features, and:`
+                    : `All ${APP_NAME} Plus features, and:`}
+              </strong>
             </p>
             <ul className="text-muted-foreground space-y-2 text-sm">
-              <li className="flex gap-2">
-                <CheckIcon
-                  size={16}
-                  strokeWidth={2}
-                  className="text-primary mt-0.5 shrink-0"
-                  aria-hidden="true"
-                />
-                Create unlimited projects.
-              </li>
-              <li className="flex gap-2">
-                <CheckIcon
-                  size={16}
-                  strokeWidth={2}
-                  className="text-primary mt-0.5 shrink-0"
-                  aria-hidden="true"
-                />
-                Remove watermarks.
-              </li>
-              <li className="flex gap-2">
-                <CheckIcon
-                  size={16}
-                  strokeWidth={2}
-                  className="text-primary mt-0.5 shrink-0"
-                  aria-hidden="true"
-                />
-                Add unlimited users and free viewers.
-              </li>
-              <li className="flex gap-2">
-                <CheckIcon
-                  size={16}
-                  strokeWidth={2}
-                  className="text-primary mt-0.5 shrink-0"
-                  aria-hidden="true"
-                />
-                Upload unlimited files.
-              </li>
-              <li className="flex gap-2">
-                <CheckIcon
-                  size={16}
-                  strokeWidth={2}
-                  className="text-primary mt-0.5 shrink-0"
-                  aria-hidden="true"
-                />
-                7-day money back guarantee.
-              </li>
-              <li className="flex gap-2">
-                <CheckIcon
-                  size={16}
-                  strokeWidth={2}
-                  className="text-primary mt-0.5 shrink-0"
-                  aria-hidden="true"
-                />
-                Advanced permissions.
-              </li>
+              {selectedPlan === "free" && (
+                <>
+                  <li className="flex gap-2">
+                    <CheckIcon
+                      size={16}
+                      strokeWidth={2}
+                      className="text-primary mt-0.5 shrink-0"
+                      aria-hidden="true"
+                    />
+                    250 feedbacks monthly
+                  </li>
+                  <li className="flex gap-2">
+                    <CheckIcon
+                      size={16}
+                      strokeWidth={2}
+                      className="text-primary mt-0.5 shrink-0"
+                      aria-hidden="true"
+                    />
+                    Daily limit of 25 feedbacks
+                  </li>
+                  <li className="flex gap-2">
+                    <CheckIcon
+                      size={16}
+                      strokeWidth={2}
+                      className="text-primary mt-0.5 shrink-0"
+                      aria-hidden="true"
+                    />
+                    1,000 contacts limit
+                  </li>
+                </>
+              )}
+              {selectedPlan === "plus" && (
+                <>
+                  <li className="flex gap-2">
+                    <CheckIcon
+                      size={16}
+                      strokeWidth={2}
+                      className="text-primary mt-0.5 shrink-0"
+                      aria-hidden="true"
+                    />
+                    2,500 feedbacks per month
+                  </li>
+                  <li className="flex gap-2">
+                    <CheckIcon
+                      size={16}
+                      strokeWidth={2}
+                      className="text-primary mt-0.5 shrink-0"
+                      aria-hidden="true"
+                    />
+                    No daily limits
+                  </li>
+                  <li className="flex gap-2">
+                    <CheckIcon
+                      size={16}
+                      strokeWidth={2}
+                      className="text-primary mt-0.5 shrink-0"
+                      aria-hidden="true"
+                    />
+                    5,000 contacts
+                  </li>
+                </>
+              )}
+              {selectedPlan === "pro" && (
+                <>
+                  <li className="flex gap-2">
+                    <CheckIcon
+                      size={16}
+                      strokeWidth={2}
+                      className="text-primary mt-0.5 shrink-0"
+                      aria-hidden="true"
+                    />
+                    10,000 feedbacks per month
+                  </li>
+                  <li className="flex gap-2">
+                    <CheckIcon
+                      size={16}
+                      strokeWidth={2}
+                      className="text-primary mt-0.5 shrink-0"
+                      aria-hidden="true"
+                    />
+                    Overage billed at $0.01/feedback
+                  </li>
+                  <li className="flex gap-2">
+                    <CheckIcon
+                      size={16}
+                      strokeWidth={2}
+                      className="text-primary mt-0.5 shrink-0"
+                      aria-hidden="true"
+                    />
+                    Unlimited contacts
+                  </li>
+                </>
+              )}
             </ul>
           </div>
 
