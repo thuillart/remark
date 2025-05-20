@@ -1,5 +1,5 @@
+import { RiQuillPenAiLine } from "@remixicon/react";
 import Link from "next/link";
-import React from "react";
 
 import { APP_NAME } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -12,17 +12,31 @@ function Logo({
   className?: string;
 }) {
   return (
-    <span className={cn("h-3 font-borel text-xl antialiased", className)}>
-      {variant === "icon" ? APP_NAME.toLowerCase()[0] : APP_NAME.toLowerCase()}
-    </span>
+    <div className="inline-flex h-6 items-center gap-1.5 select-none">
+      <RiQuillPenAiLine
+        className="shrink-0"
+        aria-label="A quill pen with a sparkling star that evokes AI"
+      />
+      <span
+        className={cn(
+          "font-borel h-3.75 text-xl font-medium antialiased select-none",
+          className,
+        )}
+      >
+        {variant === "icon" ? (
+          <RiQuillPenAiLine
+            className="shrink-0"
+            aria-label="A quill pen with a sparkling star that evokes AI"
+          />
+        ) : (
+          <>{APP_NAME.toLowerCase()}</>
+        )}
+      </span>
+    </div>
   );
 }
 
-function LogoLink({
-  className,
-}: {
-  className?: string;
-}) {
+function LogoLink({ className }: { className?: string }) {
   return (
     <Link
       href="/"
