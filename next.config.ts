@@ -3,6 +3,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   pageExtensions: ["ts", "tsx", "mdx"],
+  devIndicators: {
+    position: "bottom-right",
+  },
 };
 
 const withMDX = createMDX();

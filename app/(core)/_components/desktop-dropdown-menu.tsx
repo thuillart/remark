@@ -37,13 +37,15 @@ export function DesktopDropdownMenu() {
         <Button size="sm" variant="ghost" className="w-full justify-between">
           <div className="flex items-center gap-3 overflow-hidden">
             <Avatar className="size-6 overflow-visible border">
-              {isPending ? (
-                <Skeleton className="size-full rounded-full" />
-              ) : (
-                <AvatarFallback className="bg-background text-xs uppercase">
-                  {session?.user?.email?.charAt(0)}
-                </AvatarFallback>
-              )}
+              <AvatarFallback className="bg-background">
+                {isPending ? (
+                  <Skeleton className="size-full rounded-full" />
+                ) : (
+                  <span className="text-xs uppercase">
+                    {session?.user?.email?.charAt(0)}
+                  </span>
+                )}
+              </AvatarFallback>
             </Avatar>
 
             <span className="truncate">
