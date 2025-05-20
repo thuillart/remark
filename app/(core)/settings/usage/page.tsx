@@ -5,9 +5,9 @@ import { headers } from "next/headers";
 import { Suspense } from "react";
 
 import { auth } from "@/lib/auth";
-import { authClient } from "@/lib/auth-client";
 import { API_KEY_CONFIG } from "@/lib/configs/api-key";
 import { CONTACT_CONFIG } from "@/lib/configs/contact";
+import { polarClient } from "@/lib/configs/polar";
 import { getSlugFromProductId } from "@/lib/configs/products";
 import { APP_NAME } from "@/lib/constants";
 import { db } from "@/lib/db/drizzle";
@@ -31,7 +31,15 @@ export default function UsagePage() {
 }
 
 async function UsageCards() {
-  const { data: customerState } = await authClient.customer.state();
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  const user = session?.user;
+
+  const customerState = await polarClient.customers.getStateExternal({
+    externalId: user.id,
+  });
 
   const slug = customerState?.activeSubscriptions?.[0]?.productId
     ? getSlugFromProductId(customerState.activeSubscriptions[0].productId)
@@ -40,13 +48,7 @@ async function UsageCards() {
   const apiKeyConfig = API_KEY_CONFIG[slug];
   const contactConfig = CONTACT_CONFIG[slug];
 
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  const userId = session?.user?.id;
-
-  if (!userId) {
+  if (!user.id) {
     return null;
   }
 
@@ -59,7 +61,7 @@ async function UsageCards() {
     db
       .select({ count: count() })
       .from(contact)
-      .where(eq(contact.referenceId, userId)),
+      .where(eq(contact.referenceId, user.id)),
   ]);
 
   const totalRequestsCount = (apiKeys ?? []).reduce((accumulator, apiKey) => {
@@ -68,28 +70,39 @@ async function UsageCards() {
 
   const requestsMadeToday = countRequestsToday(apiKeys ?? []);
 
+  const OVERAGE_UNIT_PRICE = 0.01;
+  const overageUnits =
+    slug === "pro" ? Math.max(0, totalRequestsCount - 10000) : 0;
+  const overageCost = overageUnits * OVERAGE_UNIT_PRICE;
+
   const transactionalLimits = [
     {
       title: "Monthly limit",
-      total: apiKeyConfig.refillAmount ?? 0,
+      total: slug === "pro" ? 10000 : (apiKeyConfig.refillAmount ?? 0),
+      displayTotal: slug === "pro" ? "10,000 included" : undefined,
       used: totalRequestsCount,
     },
     {
       title: "Daily limit",
-      total: apiKeyConfig.rateLimitMax ?? 0,
+      total: !apiKeyConfig.rateLimitMax ? null : apiKeyConfig.rateLimitMax,
       used: requestsMadeToday,
     },
+    ...(slug === "pro"
+      ? [
+          {
+            title: "Overage (billed at $0.01 per unit)",
+            total: "",
+            used: `${overageUnits} ($${overageCost.toFixed(2)})`,
+          },
+        ]
+      : []),
   ];
 
   const internalLimits = [
     {
       title: "Contacts limit",
-      total: contactConfig.limit ?? 0,
+      total: contactConfig.limit,
       used: contactsCount[0].count,
-    },
-    {
-      title: "Segments limit",
-      total: null,
     },
   ];
 
@@ -119,19 +132,33 @@ function UsageCard({
 }: {
   slug: SubscriptionSlug;
   title: string;
-  limits: { title: string; total: number | string; used?: number }[];
+  limits: {
+    title: string;
+    total: number | string | null;
+    displayTotal?: string;
+    used?: number | string;
+  }[];
   description: string;
 }) {
-  const getUsageColor = (used: number, total: number | string) => {
+  const getUsageColor = (
+    used: number | string,
+    total: number | string | null,
+  ) => {
+    if (total === null) return "text-muted";
     if (typeof total === "string") return "text-green-700 dark:text-green-400";
+    if (typeof used !== "number") return "text-green-700 dark:text-green-400";
     const percentage = (used / total) * 100;
     if (percentage >= 80) return "text-red-700 dark:text-red-400";
     if (percentage >= 50) return "text-yellow-700 dark:text-yellow-400";
     return "text-green-700 dark:text-green-400";
   };
 
-  const getStrokeDashoffset = (used: number, total: number | string) => {
-    if (typeof total === "string" || total === 0 || total === null) return 0;
+  const getStrokeDashoffset = (
+    used: number | string,
+    total: number | string | null,
+  ) => {
+    if (total === null || typeof total === "string" || total === 0) return 0;
+    if (typeof used !== "number") return 0;
     const circumference = 2 * Math.PI * 8; // 2πr where r=8
     const percentage = (used ?? 0) / total;
     return circumference * (1 - percentage);
@@ -152,7 +179,17 @@ function UsageCard({
           <table className="m-0 mb-2 w-max min-w-full border-separate border-spacing-0 border-none p-0 py-4 text-left md:w-full">
             <tbody>
               {limits.map((limit) => (
-                <tr key={limit.title}>
+                <tr
+                  key={limit.title}
+                  className={
+                    limit.title.includes("Overage") &&
+                    typeof limit.used === "string"
+                      ? parseFloat(limit.used) > 0
+                        ? "bg-red-50 dark:bg-red-950/20"
+                        : ""
+                      : ""
+                  }
+                >
                   <td className="h-10 w-[32px] overflow-hidden border-b px-0 text-center text-sm text-ellipsis whitespace-nowrap">
                     <svg
                       width="22"
@@ -176,25 +213,40 @@ function UsageCard({
                         fill="transparent"
                         stroke="currentColor"
                         strokeWidth={3}
-                        className={getUsageColor(limit.used ?? 0, limit.total)}
+                        className={
+                          limit.title.includes("Overage")
+                            ? "text-muted"
+                            : getUsageColor(limit.used ?? 0, limit.total)
+                        }
                         strokeLinecap="round"
                         strokeDasharray="50.26548245743669"
-                        strokeDashoffset={getStrokeDashoffset(
-                          limit.used ?? 0,
-                          limit.total,
-                        )}
+                        strokeDashoffset={
+                          limit.title.includes("Overage")
+                            ? 0
+                            : getStrokeDashoffset(limit.used ?? 0, limit.total)
+                        }
                       />
                     </svg>
                   </td>
                   <td className="h-10 w-3/5 overflow-hidden border-b px-0 py-3.5 text-sm text-ellipsis whitespace-nowrap">
-                    {limit.title}
+                    {limit.title.replace(/ \(billed.*\)/, "")}
+                    {limit.title.includes("Overage") && (
+                      <span className="text-muted-foreground ml-2 text-xs">
+                        (billed at $0.01 per unit)
+                      </span>
+                    )}
                   </td>
                   <td className="h-10 overflow-hidden border-b px-0 text-right text-sm text-ellipsis whitespace-nowrap">
-                    {limit.total === null ? (
+                    {limit.title.includes("Overage") ? (
+                      limit.used
+                    ) : limit.total === null ? (
                       "Unlimited"
                     ) : (
                       <>
-                        {limit.used} / {limit.total}
+                        {limit.used} /{" "}
+                        {"displayTotal" in limit && limit.displayTotal
+                          ? limit.displayTotal
+                          : limit.total}
                       </>
                     )}
                   </td>
