@@ -46,21 +46,13 @@ export const createFeedback = authActionClient
     }
 
     // We get the actual userId of team@remark.sh
-    const usersList = await auth.api.listUsers({
-      query: {
-        searchField: "email",
-        searchOperator: "contains",
-        searchValue: "team@remark.sh",
-        limit: 1,
-        offset: 0,
-      },
+    const teamUser = await db.query.user.findFirst({
+      where: (user) => eq(user.email, "team@remark.sh"),
     });
 
-    if (!usersList.users.length) {
+    if (!teamUser) {
       return { failure: "We couldn't insert your feedback" };
     }
-
-    console.log("usersList", usersList);
 
     const { error } = await tryCatch(
       db.insert(feedback).values({
@@ -72,7 +64,7 @@ export const createFeedback = authActionClient
         subject: result.data.enrichment.subject,
         summary: result.data.enrichment.summary,
         metadata,
-        referenceId: usersList.users[0].id,
+        referenceId: teamUser.id,
       }),
     );
 
