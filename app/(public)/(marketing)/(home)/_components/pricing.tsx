@@ -124,7 +124,7 @@ export async function Pricing() {
           </Suspense>
         </div>
         <div className="mt-12 flex justify-center">
-          <div className="relative flex gap-2 rounded-2xl border px-6 py-4 font-medium">
+          <div className="relative flex flex-col gap-2 rounded-2xl border px-6 py-4 font-medium md:flex-row">
             Want enterprise features?
             <ContactUsButton />
           </div>
