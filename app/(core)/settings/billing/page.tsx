@@ -1,5 +1,3 @@
-import "server-only";
-
 import { RiAlertLine, RiDiamondLine } from "@remixicon/react";
 import { Suspense } from "react";
 
@@ -10,10 +8,12 @@ import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/core/components/empty-state";
-import { authClient } from "@/lib/auth-client";
+import { auth } from "@/lib/auth";
+import { polarClient } from "@/lib/configs/polar";
 import { getSlugFromProductId } from "@/lib/configs/products";
+import { headers } from "next/headers";
 
-export default async function BillingPage() {
+export default function BillingPage() {
   return (
     <div className="container">
       <Suspense fallback={<Skeleton className="h-38 rounded-xl border" />}>
@@ -24,10 +24,18 @@ export default async function BillingPage() {
 }
 
 async function BillingCard() {
-  const { data: customerState } = await authClient.customer.state();
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  const user = session.user;
+
+  const customerState = await polarClient.customers.getStateExternal({
+    externalId: user.id,
+  });
 
   const subscription = customerState?.activeSubscriptions?.find(
-    (subscription) => subscription.status === "",
+    (subscription) => subscription.status === "active",
   );
 
   if (!subscription) {

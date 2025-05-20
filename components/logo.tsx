@@ -1,4 +1,3 @@
-import { RiQuillPenAiLine } from "@remixicon/react";
 import Link from "next/link";
 
 import { APP_NAME } from "@/lib/constants";
@@ -13,10 +12,6 @@ function Logo({
 }) {
   return (
     <div className="inline-flex h-6 items-center gap-1.5 select-none">
-      <RiQuillPenAiLine
-        className="shrink-0"
-        aria-label="A quill pen with a sparkling star that evokes AI"
-      />
       <span
         className={cn(
           "font-borel h-3.75 text-xl font-medium antialiased select-none",
@@ -24,10 +19,7 @@ function Logo({
         )}
       >
         {variant === "icon" ? (
-          <RiQuillPenAiLine
-            className="shrink-0"
-            aria-label="A quill pen with a sparkling star that evokes AI"
-          />
+          <>{APP_NAME.toLowerCase()[0]}</>
         ) : (
           <>{APP_NAME.toLowerCase()}</>
         )}
