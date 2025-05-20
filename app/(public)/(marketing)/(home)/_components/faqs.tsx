@@ -1,5 +1,5 @@
+import { ContactUsButton } from "@/home/components/contact-us-button";
 import { FAQsCollapsible } from "@/home/components/faqs-collapsible";
-import { FAQsContactUs } from "@/home/components/faqs-contact-us";
 
 export function FAQs() {
   return (
@@ -9,7 +9,7 @@ export function FAQs() {
           <h2 className="text-4xl/14 font-semibold tracking-tight">FAQs.</h2>
           <div className="space-y-8">
             <FAQsCollapsible items={questionsAndAnswers} />
-            <FAQsContactUs />
+            <ContactUsButton />
           </div>
         </div>
       </div>

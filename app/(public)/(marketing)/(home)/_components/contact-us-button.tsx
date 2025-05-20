@@ -7,7 +7,7 @@ import { CircleArrow } from "@/components/circle-arrow";
 import { Button } from "@/components/ui/button";
 import { SUPPORT_EMAIL } from "@/lib/constants";
 
-export function FAQsContactUs() {
+export function ContactUsButton() {
   const [isHovering, setIsHovering] = React.useState(false);
 
   return (
