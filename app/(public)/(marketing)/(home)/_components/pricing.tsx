@@ -1,7 +1,6 @@
 import { headers } from "next/headers";
 import React, { cache, Suspense } from "react";
 
-import { GlowEffect } from "@/components/glow-effect";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ContactUsButton } from "@/home/components/contact-us-button";
 import { PricingCard } from "@/home/components/pricing-card";
@@ -126,7 +125,6 @@ export async function Pricing() {
         </div>
         <div className="mt-12 flex justify-center">
           <div className="relative flex gap-2 rounded-2xl border px-6 py-4 font-medium">
-            <GlowEffect borderWidth={2} />
             Want enterprise features?
             <ContactUsButton />
           </div>
