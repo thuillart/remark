@@ -5,9 +5,9 @@ import { headers } from "next/headers";
 import { Suspense } from "react";
 
 import { auth } from "@/lib/auth";
-import { authClient } from "@/lib/auth-client";
 import { API_KEY_CONFIG } from "@/lib/configs/api-key";
 import { CONTACT_CONFIG } from "@/lib/configs/contact";
+import { polarClient } from "@/lib/configs/polar";
 import { getSlugFromProductId } from "@/lib/configs/products";
 import { APP_NAME } from "@/lib/constants";
 import { db } from "@/lib/db/drizzle";
@@ -31,7 +31,15 @@ export default function UsagePage() {
 }
 
 async function UsageCards() {
-  const { data: customerState } = await authClient.customer.state();
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  const user = session?.user;
+
+  const customerState = await polarClient.customers.getStateExternal({
+    externalId: user.id,
+  });
 
   const slug = customerState?.activeSubscriptions?.[0]?.productId
     ? getSlugFromProductId(customerState.activeSubscriptions[0].productId)
@@ -40,13 +48,7 @@ async function UsageCards() {
   const apiKeyConfig = API_KEY_CONFIG[slug];
   const contactConfig = CONTACT_CONFIG[slug];
 
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
-
-  const userId = session?.user?.id;
-
-  if (!userId) {
+  if (!user.id) {
     return null;
   }
 
@@ -59,7 +61,7 @@ async function UsageCards() {
     db
       .select({ count: count() })
       .from(contact)
-      .where(eq(contact.referenceId, userId)),
+      .where(eq(contact.referenceId, user.id)),
   ]);
 
   const totalRequestsCount = (apiKeys ?? []).reduce((accumulator, apiKey) => {
