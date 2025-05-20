@@ -1,10 +1,14 @@
 import { headers } from "next/headers";
 import React, { cache, Suspense } from "react";
 
+import { GlowEffect } from "@/components/glow-effect";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ContactUsButton } from "@/home/components/contact-us-button";
 import { PricingCard } from "@/home/components/pricing-card";
 import { auth } from "@/lib/auth";
 import { authClient } from "@/lib/auth-client";
+import { API_KEY_CONFIG } from "@/lib/configs/api-key";
+import { CONTACT_CONFIG } from "@/lib/configs/contact";
 import { getSlugFromProductId } from "@/lib/configs/products";
 import { SubscriptionSlug } from "@/lib/schema";
 
@@ -30,10 +34,22 @@ const plans: Plan[] = [
     name: "Free",
     price: 0,
     features: [
-      { id: "free-1", content: "No credit card required" },
-      { id: "free-2", content: "Up to 250 feedbacks a month" },
-      { id: "free-3", content: "Daily & monthly feedbacks limits" },
-      { id: "free-4", content: "Core features, including:" },
+      {
+        id: "free-1",
+        content: "No credit card required",
+      },
+      {
+        id: "free-2",
+        content: "250 feedbacks per month",
+      },
+      {
+        id: "free-3",
+        content: "25 feedbacks per day",
+      },
+      {
+        id: "free-4",
+        content: `${CONTACT_CONFIG.free.limit.toLocaleString()} contacts limit`,
+      },
     ],
     description: "For getting started.",
   },
@@ -42,10 +58,22 @@ const plans: Plan[] = [
     name: "Plus",
     price: 20,
     features: [
-      { id: "plus-1", content: "10-20x more feedbacks a month" },
-      { id: "plus-2", content: "No daily feedbacks limits" },
-      { id: "plus-3", content: "Votes & ranking" },
-      { id: "plus-4", content: "AI-powered features, including:" },
+      {
+        id: "plus-1",
+        content: `${API_KEY_CONFIG.plus.remaining.toLocaleString()} feedbacks per month`,
+      },
+      {
+        id: "plus-2",
+        content: "No daily limit",
+      },
+      {
+        id: "plus-3",
+        content: `${CONTACT_CONFIG.plus.limit.toLocaleString()} contacts limit`,
+      },
+      {
+        id: "plus-4",
+        content: "Votes & ranking",
+      },
     ],
     description: "For more feedbacks.",
   },
@@ -54,8 +82,18 @@ const plans: Plan[] = [
     name: "Pro",
     price: 200,
     features: [
-      { id: "pro-1", content: "30-50x more feedbacks a month" },
-      { id: "pro-2", content: "No daily feedbacks limits" },
+      {
+        id: "pro-1",
+        content: `10,000 feedbacks per month`,
+      },
+      {
+        id: "pro-2",
+        content: "Overage at $0.008/feedback",
+      },
+      {
+        id: "pro-3",
+        content: `Unlimited contacts`,
+      },
     ],
     description: "For power users.",
   },
@@ -85,6 +123,13 @@ export async function Pricing() {
           >
             <PricingCards />
           </Suspense>
+        </div>
+        <div className="mt-12 flex justify-center">
+          <div className="relative flex gap-2 rounded-2xl border px-6 py-4 font-medium">
+            <GlowEffect borderWidth={2} />
+            Want enterprise features?
+            <ContactUsButton />
+          </div>
         </div>
       </div>
     </section>
