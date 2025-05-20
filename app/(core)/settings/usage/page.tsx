@@ -73,12 +73,12 @@ async function UsageCards() {
   const transactionalLimits = [
     {
       title: "Monthly limit",
-      total: apiKeyConfig.refillAmount ?? 0,
+      total: slug === "pro" ? null : (apiKeyConfig.refillAmount ?? 0),
       used: totalRequestsCount,
     },
     {
       title: "Daily limit",
-      total: apiKeyConfig.rateLimitMax ?? 0,
+      total: !apiKeyConfig.rateLimitMax ? null : apiKeyConfig.rateLimitMax,
       used: requestsMadeToday,
     },
   ];
