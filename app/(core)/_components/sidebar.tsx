@@ -2,6 +2,7 @@
 
 import {
   type RemixiconComponentType,
+  RiChatPollLine,
   RiContactsBook2Line,
   RiEqualizer3Line,
   RiInbox2Line,
@@ -56,6 +57,11 @@ export const navItems: Item[] = [
     href: "/",
     Icon: RiInbox2Line,
     label: "Feedbacks",
+  },
+  {
+    href: "/votes",
+    Icon: RiChatPollLine,
+    label: "Votes",
   },
   {
     href: "/contacts",
