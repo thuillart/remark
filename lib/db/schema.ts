@@ -111,39 +111,36 @@ export const passkey = pgTable("passkey", {
 });
 
 export const feedback = pgTable("feedback", {
-  /**
-   * randomUUID()
-   */
   id: text("id").primaryKey(),
   /**
    * Sender email address.
    */
   from: text("from").notNull(),
   /**
-   * Our user id.
-   * @internal
+   * The recipient user id.
    */
   referenceId: text("reference_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
   /**
-   * Raw feedback text.
+   * The feedback as-is.
    */
   text: text("text").notNull(),
   /**
-   * How much impact the feedback has on the user.
+   * The impact it has on the user's experience.
    */
   impact: text("impact").$type<FeedbackImpact>(),
   /**
-   * 1-6 words summary of the feedback.
+   * Convey the topic of the feedback.
+   * @purpose This is used to create embeddings for AI to vectorize and seek for similar feedbacks (to convert them into votes).
    */
-  subject: text("subject"),
+  topic: text("topic"),
   /**
-   * AI rewritten version of the raw feedback text.
+   * A easy-to-read and clear summary of raw feedback.
    */
   summary: text("summary"),
   /**
-   * Array of tags for categorization.
+   * The categories into which it falls.
    */
   tags: text("tags").$type<FeedbackTag[]>(),
   /**
@@ -164,4 +161,11 @@ export const contact = pgTable("contact", {
   metadata: jsonb("metadata").$type<ContactMetadata>(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const vote = pgTable("vote", {
+  id: text("id").primaryKey(),
+  referenceId: text("reference_id")
+    .notNull()
+    .references(() => user.id),
 });
