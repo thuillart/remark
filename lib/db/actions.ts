@@ -1,7 +1,7 @@
 "use server";
 
 import { openai } from "@ai-sdk/openai";
-import { generateText } from "ai";
+import { embed, generateText } from "ai";
 import { randomUUID } from "crypto";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -13,7 +13,7 @@ import { API_KEY_CONFIG } from "@/lib/configs/api-key";
 import { getFeedbackPrompt } from "@/lib/configs/feedback";
 import { APP_NAME } from "@/lib/constants";
 import { db } from "@/lib/db/drizzle";
-import { contact, feedback } from "@/lib/db/schema";
+import { contact, feedback, vote } from "@/lib/db/schema";
 import {
   actionClient,
   authActionClient,
@@ -85,12 +85,10 @@ export const enrichFeedback = actionClient
     }),
   )
   .action(async ({ parsedInput: { from, text, metadata } }) => {
-    // 1. Lookup for a contact with the same email
     const existingContact = await db.query.contact.findFirst({
       where: eq(contact.email, from),
     });
 
-    // 2. Generate classification
     const { text: output } = await generateText({
       model: openai("gpt-4.1-nano"),
       prompt: getFeedbackPrompt({
@@ -101,11 +99,19 @@ export const enrichFeedback = actionClient
       }),
     });
 
-    // 3. Extract information from the output
     const parsedOutput = z.string().parse(output);
     const enrichment = feedbackEnrichmentSchema.parse(JSON.parse(parsedOutput));
 
-    return { enrichment };
+    const { embedding } = await embed({
+      model: openai.embedding("text-embedding-3-small"),
+      value: enrichment.subject,
+    });
+
+    if (!embedding) {
+      return { failure: "Failed to generate embedding" };
+    }
+
+    return { enrichment, embedding: JSON.stringify(embedding) };
   });
 
 export const createApiKey = subscriptionActionClient
@@ -243,6 +249,69 @@ export const updateApiKeysLimits = actionClient
           rateLimitTimeWindow: slugConfig.rateLimitTimeWindow,
         },
       });
+    }
+
+    return { success: true };
+  });
+
+export const mergeSubjects = actionClient
+  .schema(
+    z.object({
+      subjects: z.array(z.string()),
+    }),
+  )
+  .action(async ({ parsedInput: { subjects } }) => {
+    const { text: mergedSubject } = await generateText({
+      model: openai("gpt-4.1-nano"),
+      prompt: `Given these similar feedback subjects, create a single, concise subject (1-6 words) that captures their common meaning:
+
+${subjects.join("\n")}
+
+The subject should be clear, concise, and maintain the original intent.`,
+    });
+
+    return { data: { subject: mergedSubject } };
+  });
+
+export const createVote = actionClient
+  .schema(
+    z.object({
+      subjects: z.array(z.string()),
+      groupsIds: z.array(z.string()),
+      referenceId: z.string(),
+    }),
+  )
+  .action(async ({ parsedInput: { subjects, groupsIds, referenceId } }) => {
+    // Generate a merged subject using AI
+    const { text: subject } = await generateText({
+      model: openai("gpt-4.1-nano"),
+      prompt: `Given these similar feedback subjects from multiple users, create a single, concise subject (1-6 words) that captures their common request or suggestion.
+
+Examples:
+- "The app is too bright" + "Can we have a dark theme?" + "I need dark mode" → "Dark mode"
+- "The app crashes when I click save" + "Save button doesn't work" + "Getting errors on save" → "Fix save button"
+- "Add more colors" + "Need more theme options" + "Custom colors please" → "More color options"
+
+Feedback subjects:
+${subjects.join("\n")}
+
+Create a clear, concise subject that represents what these users are asking for. Use simple, direct language.`,
+    });
+
+    const count = groupsIds.length;
+
+    const { error } = await tryCatch(
+      db.insert(vote).values({
+        id: crypto.randomUUID(),
+        count,
+        subject,
+        referenceId,
+        feedbackIds: groupsIds, // Store the feedback IDs
+      }),
+    );
+
+    if (error) {
+      return { failure: error.message };
     }
 
     return { success: true };

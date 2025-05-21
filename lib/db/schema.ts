@@ -187,7 +187,12 @@ export const vote = pgTable("vote", {
   /**
    * The status of the vote.
    */
-  status: text("status").$type<VoteStatus>().notNull(),
+  status: text("status").$type<VoteStatus>().notNull().default("open"),
+  /**
+   * Array of feedback IDs that contributed to this vote.
+   * Used to track which feedbacks were grouped together and to avoid reprocessing.
+   */
+  feedbackIds: text("feedback_ids").array().notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
