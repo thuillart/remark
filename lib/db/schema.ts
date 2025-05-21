@@ -12,6 +12,7 @@ import {
   FeedbackImpact,
   FeedbackMetadata,
   FeedbackTag,
+  VoteStatus,
 } from "@/lib/schema";
 
 export const user = pgTable("user", {
@@ -131,10 +132,13 @@ export const feedback = pgTable("feedback", {
    */
   impact: text("impact").$type<FeedbackImpact>(),
   /**
-   * Convey the topic of the feedback.
-   * @purpose This is used to create embeddings for AI to vectorize and seek for similar feedbacks (to convert them into votes).
+   * The 1-6 words subject of the feedback.
    */
-  topic: text("topic"),
+  subject: text("subject"),
+  /**
+   * The embedding vector for the subject to find similar feedback
+   */
+  embedding: text("embedding"),
   /**
    * A easy-to-read and clear summary of raw feedback.
    */
@@ -165,7 +169,25 @@ export const contact = pgTable("contact", {
 
 export const vote = pgTable("vote", {
   id: text("id").primaryKey(),
+  /**
+   * The subject of the vote (e.g., "Add dark mode", "Improve search")
+   */
+  subject: text("subject").notNull(),
+  /**
+   * The total number of votes/feedback grouped under this subject.
+   * A vote is only created when at least 2 similar feedback entries are found.
+   */
+  count: integer("count").notNull(),
+  /**
+   * Our internal user, to which the vote belongs to.
+   */
   referenceId: text("reference_id")
     .notNull()
     .references(() => user.id),
+  /**
+   * The status of the vote.
+   */
+  status: text("status").$type<VoteStatus>().notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

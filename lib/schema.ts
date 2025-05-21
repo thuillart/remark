@@ -96,3 +96,6 @@ export const feedbackInputSchema = z.object({
   metadata: feedbackMetadataSchema,
 });
 export type FeedbackInput = z.infer<typeof feedbackInputSchema>;
+
+export const voteStatusSchema = z.enum(["open", "in_progress", "completed"]);
+export type VoteStatus = z.infer<typeof voteStatusSchema>;
