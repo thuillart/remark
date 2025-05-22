@@ -3,7 +3,7 @@
   "crons": [
     {
       "path": "/api/group-similar-feedback",
-      "schedule": "0 */12 * * *"
+      "schedule": "0 5 * * *"
     }
   ]
 }
