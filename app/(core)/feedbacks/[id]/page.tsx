@@ -4,15 +4,22 @@ import { parsePgArray } from "drizzle-orm/pg-core";
 import { headers } from "next/headers";
 import React from "react";
 
+import { TextShimmer } from "@/components/text-shimmer";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { PageIcon } from "@/core/components/page-icon";
-import { getImpactBadgeVariant, getTag } from "@/feedbacks/lib/utils";
+import { getImpact, getTag } from "@/feedbacks/lib/utils";
 import { auth } from "@/lib/auth";
+import { APP_NAME } from "@/lib/constants";
 import { db } from "@/lib/db/drizzle";
 import { contact, feedback as feedbackTable } from "@/lib/db/schema";
 import { FeedbackTag } from "@/lib/schema";
-import { capitalizeFirstLetter } from "@/lib/utils";
 
 export default async function FeedbackPage({
   params,
@@ -35,12 +42,87 @@ export default async function FeedbackPage({
       ),
     );
 
+  if (!existingFeedback) {
+    return (
+      <div className="container">
+        <div className="flex items-center justify-center py-8">
+          <p className="text-muted-foreground">Feedback not found</p>
+        </div>
+      </div>
+    );
+  }
+
   const [existingContact] = await db
     .select({ name: contact.name })
     .from(contact)
     .where(eq(contact.email, existingFeedback.from));
 
-  console.log(JSON.stringify(existingFeedback.tags, null, 2));
+  const feedbackTags = existingFeedback.tags
+    ? (typeof existingFeedback.tags === "string"
+        ? parsePgArray(existingFeedback.tags)
+        : existingFeedback.tags
+      ).filter(Boolean)
+    : [];
+
+  const headerItems = [
+    {
+      label: "From",
+      value: existingContact.name || existingFeedback.from,
+    },
+    {
+      label: "Subject",
+      value: existingFeedback.subject,
+    },
+    {
+      label: "Impact",
+      value: (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge
+                size="sm"
+                variant={getImpact(existingFeedback.impact).variant}
+              >
+                {getImpact(existingFeedback.impact).label}
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent>
+              <TextShimmer>{`${APP_NAME} AI`}</TextShimmer>{" "}
+              {getImpact(existingFeedback.impact).description}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ),
+    },
+    {
+      label: "Tags",
+      value: (
+        <div className="flex flex-wrap gap-2">
+          {feedbackTags.map((tagValue: FeedbackTag) => {
+            const tag = getTag(tagValue);
+            if (!tag) return null;
+            return (
+              <TooltipProvider key={tagValue}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge
+                      size="sm"
+                      variant={tag.variant}
+                      className="cursor-default"
+                    >
+                      {React.createElement(tag.Icon)}
+                      {tag.label}
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent>{tag.tooltip}</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            );
+          })}
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div className="container">
@@ -58,52 +140,8 @@ export default async function FeedbackPage({
           </div>
         </div>
 
-        {/* Header */}
         <div className="grid grid-cols-2 md:grid-cols-4">
-          {[
-            {
-              label: "From",
-              value: existingContact.name || existingFeedback.from,
-            },
-            {
-              label: "Subject",
-              value: existingFeedback.subject,
-            },
-            {
-              label: "Impact",
-              value: (
-                <Badge
-                  size="sm"
-                  variant={getImpactBadgeVariant(existingFeedback.impact)}
-                >
-                  {capitalizeFirstLetter(existingFeedback.impact || "")}
-                </Badge>
-              ),
-            },
-            {
-              label: "Tags",
-              value: (
-                <div className="flex flex-wrap gap-2">
-                  {existingFeedback.tags
-                    ? (typeof existingFeedback.tags === "string"
-                        ? parsePgArray(existingFeedback.tags)
-                        : existingFeedback.tags
-                      ).map((tag) => {
-                        if (!tag) return null;
-                        const tagMeta = getTag(tag as FeedbackTag);
-                        if (!tagMeta) return null;
-                        return (
-                          <Badge key={tag} size="sm" variant={tagMeta.variant}>
-                            {React.createElement(tagMeta.Icon, { size: 16 })}
-                            {tagMeta.label}
-                          </Badge>
-                        );
-                      })
-                    : null}
-                </div>
-              ),
-            },
-          ].map((item) => (
+          {headerItems.map((item) => (
             <div
               key={item.label}
               className="flex w-full flex-col gap-2 md:basis-1/3"
@@ -152,11 +190,7 @@ export default async function FeedbackPage({
             value="tab-2"
             className="-mt-px rounded-lg rounded-tl-none border p-4 pt-5"
           >
-            {typeof existingFeedback.text === "string" ? (
-              <p>{existingFeedback.text}</p>
-            ) : (
-              <p>{existingFeedback.text || ""}</p>
-            )}
+            <p>{existingFeedback.text || ""}</p>
           </TabsContent>
         </Tabs>
       </div>

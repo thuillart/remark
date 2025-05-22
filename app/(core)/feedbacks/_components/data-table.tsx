@@ -68,7 +68,7 @@ import {
 import { EmptyState } from "@/core/components/empty-state";
 import { PageIcon } from "@/core/components/page-icon";
 import { Feedback } from "@/feedbacks/lib/schema";
-import { getImpactBadgeVariant, getTag } from "@/feedbacks/lib/utils";
+import { getImpact, getTag } from "@/feedbacks/lib/utils";
 import { APP_NAME } from "@/lib/constants";
 import { FeedbackImpact, FeedbackTag } from "@/lib/schema";
 import { capitalizeFirstLetter, cn } from "@/lib/utils";
@@ -109,14 +109,13 @@ export const columns: ColumnDef<Feedback>[] = [
       return (
         <Tooltip>
           <TooltipTrigger asChild className="cursor-pointer">
-            <Badge variant={getImpactBadgeVariant(row.original.impact)}>
-              {capitalizeFirstLetter(row.original.impact)}
+            <Badge variant={getImpact(row.original.impact).variant}>
+              {getImpact(row.original.impact).label}
             </Badge>
           </TooltipTrigger>
-
           <TooltipContent className="max-w-3xs px-2 py-1">
             <TextShimmer>{`${APP_NAME} AI`}</TextShimmer>{" "}
-            {getImpactTooltipText(row.original.impact)}
+            {getImpact(row.original.impact).description}
           </TooltipContent>
         </Tooltip>
       );
@@ -209,16 +208,6 @@ export const columns: ColumnDef<Feedback>[] = [
     },
   },
 ];
-
-function getImpactTooltipText(impact: FeedbackImpact) {
-  if (impact === "critical") {
-    return "thinks this could lead to severe user frustration if not fixed.";
-  }
-  if (impact === "major") {
-    return "believes this might result in a leaving and disappointed user.";
-  }
-  return "feels this doesn't impact the user experience significantly.";
-}
 
 type TimeRange =
   | "24-hours"
