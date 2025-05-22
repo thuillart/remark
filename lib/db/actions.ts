@@ -107,9 +107,8 @@ export const enrichFeedback = actionClient
           2,
         )}
 
-        Output a JSON object matching this structure:
+        Output a raw JSON object matching this structure:
 
-        \`\`\`json
         {
           "tags": [],
           "impact": "",
@@ -117,7 +116,6 @@ export const enrichFeedback = actionClient
           "summary": [],
           "metadata": { "os": "", "device": "", "browser": "" }
         }
-        \`\`\`
 
         Instructions: 
 
@@ -135,7 +133,10 @@ export const enrichFeedback = actionClient
       `,
     });
 
-    const parsedOutput = z.string().parse(output);
+    // Strip markdown code block formatting if present
+    const cleanOutput = output.replace(/```json\n?|\n?```/g, "").trim();
+    const parsedOutput = z.string().parse(cleanOutput);
+
     const enrichment = feedbackEnrichmentSchema.parse(JSON.parse(parsedOutput));
 
     const { embedding } = await embed({
@@ -144,7 +145,6 @@ export const enrichFeedback = actionClient
     });
 
     if (!embedding) {
-      console.error("failed to generate embedding");
       return { failure: "Failed to generate embedding" };
     }
 
