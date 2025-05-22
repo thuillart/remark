@@ -1,8 +1,8 @@
 "use server";
 
-import { openai } from "@ai-sdk/openai";
-import { generateText } from "ai";
+import { embed, generateText } from "ai";
 import { randomUUID } from "crypto";
+import dedent from "dedent";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
@@ -10,10 +10,9 @@ import { z } from "zod";
 
 import { auth } from "@/lib/auth";
 import { API_KEY_CONFIG } from "@/lib/configs/api-key";
-import { getFeedbackPrompt } from "@/lib/configs/feedback";
 import { APP_NAME } from "@/lib/constants";
 import { db } from "@/lib/db/drizzle";
-import { contact, feedback } from "@/lib/db/schema";
+import { contact, feedback, vote } from "@/lib/db/schema";
 import {
   actionClient,
   authActionClient,
@@ -25,6 +24,7 @@ import {
   SubscriptionSlugSchema,
 } from "@/lib/schema";
 import { tryCatch } from "@/lib/utils";
+import { google } from "@ai-sdk/google";
 
 export const createFeedback = authActionClient
   .schema(
@@ -64,12 +64,12 @@ export const createFeedback = authActionClient
         subject: result.data.enrichment.subject,
         summary: result.data.enrichment.summary,
         metadata,
+        embedding: result.data.embedding,
         referenceId: teamUser.id,
       }),
     );
 
     if (error) {
-      console.error(error, "Error inserting feedback");
       return { failure: error.message };
     }
 
@@ -85,27 +85,70 @@ export const enrichFeedback = actionClient
     }),
   )
   .action(async ({ parsedInput: { from, text, metadata } }) => {
-    // 1. Lookup for a contact with the same email
     const existingContact = await db.query.contact.findFirst({
       where: eq(contact.email, from),
     });
 
-    // 2. Generate classification
     const { text: output } = await generateText({
-      model: openai("gpt-4.1-nano"),
-      prompt: getFeedbackPrompt({
-        from,
-        text,
-        name: existingContact?.name,
-        metadata,
-      }),
+      model: google("gemini-2.5-flash-preview-04-17"),
+      prompt: dedent`
+        You are a ticket-classification engine.
+
+        Input: 
+
+        ${JSON.stringify(
+          {
+            from,
+            text,
+            name: existingContact?.name,
+            metadata,
+          },
+          null,
+          2,
+        )}
+
+        Output a raw JSON object matching this structure:
+
+        {
+          "tags": [],
+          "impact": "",
+          "subject": "",
+          "summary": [],
+          "metadata": { "os": "", "device": "", "browser": "" }
+        }
+
+        Instructions: 
+
+        1. Tags: At least one from: bug, feature_request, ui, ux, speed, security, pricing, billing, dx, i18n, compliance, a11y, kudos.
+        2. Impact: Classify as: positive (favorable), minor (low-impact), major (medium-impact), critical (high-impact or blocking).
+        3. Subject: Write the core idea in 1-6 words natural phrase.
+        4. Summary: 
+            1. Split into an array of issues. 
+            2. Use the user's first name if provided; otherwise, use "The user".
+            3. Imitate human-like patterns by using a casual and natural language. 
+        5. Metadata: If it matches a value from the following lists, use it; otherwise, omit the field:
+            1. os: Windows, macOS, iOS, Android, Linux
+            2. device: mobile, tablet, desktop, console, smarttv, wearable, embedded
+            3. browser: Chrome, Firefox, Safari, Edge, Opera, Brave, Arc, Zen, Samsung Internet
+      `,
     });
 
-    // 3. Extract information from the output
-    const parsedOutput = z.string().parse(output);
+    // Strip markdown code block formatting if present
+    const cleanOutput = output.replace(/```json\n?|\n?```/g, "").trim();
+    const parsedOutput = z.string().parse(cleanOutput);
+
     const enrichment = feedbackEnrichmentSchema.parse(JSON.parse(parsedOutput));
 
-    return { enrichment };
+    const { embedding } = await embed({
+      model: google.textEmbeddingModel("text-embedding-004"),
+      value: enrichment.subject,
+    });
+
+    if (!embedding) {
+      return { failure: "Failed to generate embedding" };
+    }
+
+    return { enrichment, embedding: JSON.stringify(embedding) };
   });
 
 export const createApiKey = subscriptionActionClient
@@ -243,6 +286,52 @@ export const updateApiKeysLimits = actionClient
           rateLimitTimeWindow: slugConfig.rateLimitTimeWindow,
         },
       });
+    }
+
+    return { success: true };
+  });
+
+export const createVote = actionClient
+  .schema(
+    z.object({
+      subjects: z.array(z.string()),
+      groupsIds: z.array(z.string()),
+      referenceId: z.string(),
+    }),
+  )
+  .action(async ({ parsedInput: { subjects, groupsIds, referenceId } }) => {
+    // Generate a merged subject using AI
+    const { text: subject } = await generateText({
+      model: google("gemini-2.5-flash-preview-04-17"),
+      prompt: dedent`
+        Given these similar feedback subjects from multiple users, create a single, concise subject (1-6 words) that captures their common request or suggestion.
+
+        Examples:
+        - "The app is too bright" + "Can we have a dark theme?" + "I need dark mode" → "Dark mode"
+        - "The app crashes when I click save" + "Save button doesn't work" + "Getting errors on save" → "Fix save button"
+        - "Add more colors" + "Need more theme options" + "Custom colors please" → "More color options"
+
+        Feedback subjects:
+        ${subjects.join("\n")}
+
+        Create a clear, concise subject that represents what these users are asking for. Use simple, direct language.
+      `,
+    });
+
+    const count = groupsIds.length;
+
+    const { error } = await tryCatch(
+      db.insert(vote).values({
+        id: crypto.randomUUID(),
+        count,
+        subject,
+        referenceId,
+        feedbackIds: groupsIds, // Store the feedback IDs
+      }),
+    );
+
+    if (error) {
+      return { failure: error.message };
     }
 
     return { success: true };

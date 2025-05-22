@@ -32,6 +32,7 @@ export const subscriptionActionClient = authActionClient.use(
 
     // If no customerState, default to free subscription
     const activeSubscriptions = customerState?.activeSubscriptions;
+
     const slug: SubscriptionSlug = activeSubscriptions.length
       ? getSlugFromProductId(activeSubscriptions[0].productId)
       : "free";

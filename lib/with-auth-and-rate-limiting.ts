@@ -43,6 +43,8 @@ export const SUBSCRIPTION_LIMITS: Record<
 
 export function withAuthAndRateLimiting(handler: Handler): Handler {
   return async (request, context) => {
+    console.log("about to authenticate");
+
     // Authentication step
     const apiKey = request.headers.get("x-api-key");
 

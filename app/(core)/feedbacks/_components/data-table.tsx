@@ -1,27 +1,14 @@
 "use client";
 
 import {
-  RemixiconComponentType,
   RiArrowLeftLine,
   RiArrowRightLine,
   RiArrowRightUpLine,
-  RiBookLine,
-  RiBugLine,
   RiCalendarLine,
   RiChat1Line,
+  RiChatAiFill,
   RiCloseLine,
-  RiCodeLine,
   RiFilter3Line,
-  RiLightbulbLine,
-  RiMoneyDollarBoxLine,
-  RiPaletteLine,
-  RiSettingsLine,
-  RiShieldLine,
-  RiSpeedLine,
-  RiTerminalLine,
-  RiThumbUpLine,
-  RiTranslate2,
-  RiUserVoiceLine,
 } from "@remixicon/react";
 import {
   ColumnDef,
@@ -40,7 +27,7 @@ import { useQueryState } from "nuqs";
 import React from "react";
 
 import { TextShimmer } from "@/components/text-shimmer";
-import { Badge, BadgeProps } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -81,8 +68,9 @@ import {
 import { EmptyState } from "@/core/components/empty-state";
 import { PageIcon } from "@/core/components/page-icon";
 import { Feedback } from "@/feedbacks/lib/schema";
+import { getImpactBadgeVariant, getTag } from "@/feedbacks/lib/utils";
 import { APP_NAME } from "@/lib/constants";
-import { FeedbackImpact } from "@/lib/schema";
+import { FeedbackImpact, FeedbackTag } from "@/lib/schema";
 import { capitalizeFirstLetter, cn } from "@/lib/utils";
 
 declare module "@tanstack/table-core" {
@@ -90,93 +78,6 @@ declare module "@tanstack/table-core" {
     timeRange: FilterFn<Feedback>;
     impact: FilterFn<Feedback>;
     tags: FilterFn<Feedback>;
-  }
-}
-
-function getTag(tag: string): {
-  Icon: RemixiconComponentType;
-  label: string;
-  variant: BadgeProps["variant"];
-} {
-  switch (tag) {
-    case "bug":
-      return {
-        Icon: RiBugLine,
-        label: "Bug",
-        variant: "destructive",
-      };
-    case "feature_request":
-      return {
-        Icon: RiLightbulbLine,
-        label: "Request",
-        variant: "yellow",
-      };
-    case "enhancement":
-      return {
-        Icon: RiSettingsLine,
-        label: "Enhancement",
-        variant: "teal",
-      };
-    case "ui":
-      return {
-        Icon: RiPaletteLine,
-        label: "UI",
-        variant: "pink",
-      };
-    case "ux":
-      return {
-        Icon: RiUserVoiceLine,
-        label: "UX",
-        variant: "orange",
-      };
-    case "performance":
-      return {
-        Icon: RiSpeedLine,
-        label: "Performance",
-        variant: "yellow",
-      };
-    case "security":
-      return {
-        Icon: RiShieldLine,
-        label: "Security",
-        variant: "destructive",
-      };
-    case "billing":
-      return {
-        Icon: RiMoneyDollarBoxLine,
-        label: "Billing",
-        variant: "green",
-      };
-    case "api":
-      return {
-        Icon: RiCodeLine,
-        label: "API",
-        variant: "blue",
-      };
-    case "dx":
-      return {
-        Icon: RiTerminalLine,
-        label: "DX",
-        variant: "indigo",
-      };
-    case "lang":
-      return {
-        Icon: RiTranslate2,
-        label: "Language",
-        variant: "yellow",
-      };
-    case "legal":
-      return {
-        Icon: RiBookLine,
-        label: "Legal",
-        variant: "purple",
-      };
-    case "appraisal":
-      return {
-        Icon: RiThumbUpLine,
-        label: "Appraisal",
-        variant: "teal",
-      };
   }
 }
 
@@ -191,7 +92,7 @@ export const columns: ColumnDef<Feedback>[] = [
           href={`/feedbacks/${row.original.id}`}
           className="group/link flex items-center gap-3"
         >
-          <PageIcon size="md" Icon={RiChat1Line} />
+          <PageIcon size="md" Icon={RiChatAiFill} />
           <span className="decoration-muted-foreground pr-4.5 whitespace-nowrap underline underline-offset-5 transition-[color,text-decoration-color] duration-150 ease-in-out group-hover/link:decoration-current">
             {row.original.from}
             <RiArrowRightUpLine className="text-muted-foreground group-hover/link:text-primary absolute mt-1.25 inline-block size-[1em] no-underline transition duration-[inherit] ease-[inherit] group-hover/link:translate-x-px group-hover/link:-translate-y-px" />
@@ -224,7 +125,6 @@ export const columns: ColumnDef<Feedback>[] = [
   {
     header: "Tags",
     accessorKey: "tags",
-
     cell: ({ row }) => {
       let tags: string[] = [];
 
@@ -240,9 +140,14 @@ export const columns: ColumnDef<Feedback>[] = [
       return (
         <div className="flex flex-nowrap gap-2">
           {firstTag && (
-            <Badge variant={getTag(firstTag).variant} className="relative">
-              {React.createElement(getTag(firstTag).Icon, { size: 16 })}
-              {getTag(firstTag).label}
+            <Badge
+              variant={getTag(firstTag as FeedbackTag).variant}
+              className="relative"
+            >
+              {React.createElement(getTag(firstTag as FeedbackTag).Icon, {
+                size: 16,
+              })}
+              {getTag(firstTag as FeedbackTag).label}
             </Badge>
           )}
           {hasMore && (
@@ -256,7 +161,7 @@ export const columns: ColumnDef<Feedback>[] = [
                 <TooltipContent className="p-1">
                   <div className="flex flex-wrap gap-1">
                     {otherTags.map((tag) => {
-                      const tagMeta = getTag(tag);
+                      const tagMeta = getTag(tag as FeedbackTag);
                       return (
                         <Badge key={tag} variant={tagMeta.variant}>
                           {React.createElement(tagMeta.Icon, { size: 16 })}
@@ -304,16 +209,6 @@ export const columns: ColumnDef<Feedback>[] = [
     },
   },
 ];
-
-function getImpactBadgeVariant(impact: FeedbackImpact): BadgeProps["variant"] {
-  if (impact === "critical") {
-    return "destructive";
-  }
-  if (impact === "major") {
-    return "warning";
-  }
-  return "secondary";
-}
 
 function getImpactTooltipText(impact: FeedbackImpact) {
   if (impact === "critical") {
@@ -540,7 +435,7 @@ function SearchAndFilters({ data }: { data: Feedback[] }) {
               </div>
               <div className="space-y-3">
                 {uniqueTags.map((tag, i) => {
-                  const tagMeta = getTag(tag);
+                  const tagMeta = getTag(tag as FeedbackTag);
                   return (
                     <div key={tag} className="flex items-center gap-2">
                       <Checkbox

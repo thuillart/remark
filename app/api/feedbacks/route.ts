@@ -29,6 +29,7 @@ const bodySchema = z.object({
 });
 
 async function secretPOST(request: NextRequest, context: Context) {
+  console.log("we've been hit and successfully passed the middleware");
   const userId = context?.apiKey?.userId;
 
   if (!userId) {
@@ -71,6 +72,7 @@ async function secretPOST(request: NextRequest, context: Context) {
       subject: result.data.enrichment.subject,
       summary: result.data.enrichment.summary,
       metadata,
+      embedding: result.data.embedding,
       referenceId: userId,
     }),
   );

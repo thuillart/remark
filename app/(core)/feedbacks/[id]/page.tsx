@@ -1,47 +1,18 @@
-import { RiChat1Line, RiChatAiLine } from "@remixicon/react";
+import { RiChat1Line, RiChatAiLine, RiInbox2Fill } from "@remixicon/react";
+import { and, eq } from "drizzle-orm";
+import { parsePgArray } from "drizzle-orm/pg-core";
+import { headers } from "next/headers";
+import React from "react";
 
+import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageIcon } from "@/core/components/page-icon";
-import { getFeedbackById } from "@/lib/db/queries";
+import { getImpactBadgeVariant, getTag } from "@/feedbacks/lib/utils";
+import { auth } from "@/lib/auth";
+import { db } from "@/lib/db/drizzle";
+import { contact, feedback as feedbackTable } from "@/lib/db/schema";
+import { FeedbackTag } from "@/lib/schema";
 import { capitalizeFirstLetter } from "@/lib/utils";
-
-function formatFeedbackText(text: string) {
-  if (!text) return "";
-
-  // Helper to wrap /dashboard in <code> only in text
-  function formatPaths(line: string) {
-    return line.replace(
-      /(\/[a-zA-Z0-9-]+)/g,
-      (match) =>
-        `<code class=\"font-mono pl-1.5 pr-2 py-1 bg-muted rounded-md text-sm/6 font-medium text-foreground\">${match}</code> `,
-    );
-  }
-
-  // Try to split into intro and numbered list items
-  const numberedItemRegex = /(\d+\.\s[^\d]+)/g;
-  const items = [...text.matchAll(numberedItemRegex)].map((match) =>
-    match[0].trim(),
-  );
-  let intro = text;
-  if (items.length) {
-    const firstItemIndex = text.indexOf(items[0]);
-    intro = text.slice(0, firstItemIndex).trim();
-  }
-
-  let html = "";
-  if (intro) {
-    html += `<p class=\"not-last:mb-5 text-base/relaxed text-foreground\">${formatPaths(intro)}</p>`;
-  }
-  if (items.length) {
-    html += `<ul class=\"[&_li]:marker:text-muted-foreground not-last:my-5 list-decimal pl-6 [&_li]:pl-1.5 [&_li]:text-base/relaxed\">`;
-    for (const item of items) {
-      const itemText = item.replace(/^\d+\.\s*/, "");
-      html += `<li class=\"my-2 text-foreground\">${formatPaths(itemText)}</li>`;
-    }
-    html += `</ul>`;
-  }
-  return html;
-}
 
 export default async function FeedbackPage({
   params,
@@ -50,46 +21,87 @@ export default async function FeedbackPage({
 }) {
   const { id } = await params;
 
-  // // For testing purporses, we match the id with the feedback using the mock data
-  // const feedback = mockFeedbacks.find((feedback) => feedback.id === id);
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
 
-  const result = await getFeedbackById({ id });
+  const [existingFeedback] = await db
+    .select()
+    .from(feedbackTable)
+    .where(
+      and(
+        eq(feedbackTable.id, id),
+        eq(feedbackTable.referenceId, session.user.id),
+      ),
+    );
 
-  if (result?.data.failure) {
-    return <div>Error: {result.data.failure}</div>;
-  }
+  const [existingContact] = await db
+    .select({ name: contact.name })
+    .from(contact)
+    .where(eq(contact.email, existingFeedback.from));
 
-  const feedback = result?.data?.feedback;
+  console.log(JSON.stringify(existingFeedback.tags, null, 2));
 
   return (
     <div className="container">
       <div className="space-y-8 py-8">
         <div className="flex flex-col items-center gap-6 md:flex-row">
-          <PageIcon size="lg" Icon={RiChat1Line} />
+          <PageIcon size="lg" Icon={RiInbox2Fill} />
 
           <div className="w-full overflow-hidden text-center md:text-left">
             <span className="text-muted-foreground text-sm font-semibold">
               Email
             </span>
             <h1 className="w-full truncate text-xl font-bold tracking-tight">
-              {feedback?.from}
+              {existingFeedback.from}
             </h1>
           </div>
         </div>
 
-        <div className="flex flex-wrap">
+        {/* Header */}
+        <div className="grid grid-cols-2 md:grid-cols-4">
           {[
             {
               label: "From",
-              value: feedback?.from,
+              value: existingContact.name || existingFeedback.from,
             },
             {
               label: "Subject",
-              value: feedback?.subject,
+              value: existingFeedback.subject,
             },
             {
               label: "Impact",
-              value: capitalizeFirstLetter(feedback?.impact || ""),
+              value: (
+                <Badge
+                  size="sm"
+                  variant={getImpactBadgeVariant(existingFeedback.impact)}
+                >
+                  {capitalizeFirstLetter(existingFeedback.impact || "")}
+                </Badge>
+              ),
+            },
+            {
+              label: "Tags",
+              value: (
+                <div className="flex flex-wrap gap-2">
+                  {existingFeedback.tags
+                    ? (typeof existingFeedback.tags === "string"
+                        ? parsePgArray(existingFeedback.tags)
+                        : existingFeedback.tags
+                      ).map((tag) => {
+                        if (!tag) return null;
+                        const tagMeta = getTag(tag as FeedbackTag);
+                        if (!tagMeta) return null;
+                        return (
+                          <Badge key={tag} size="sm" variant={tagMeta.variant}>
+                            {React.createElement(tagMeta.Icon, { size: 16 })}
+                            {tagMeta.label}
+                          </Badge>
+                        );
+                      })
+                    : null}
+                </div>
+              ),
             },
           ].map((item) => (
             <div
@@ -99,9 +111,7 @@ export default async function FeedbackPage({
               <label className="text-muted-foreground text-xs uppercase">
                 {item.label}
               </label>
-              <div className="flex gap-2">
-                <span className="text-sm">{item.value}</span>
-              </div>
+              <div className="flex gap-2 text-sm">{item.value}</div>
             </div>
           ))}
         </div>
@@ -128,21 +138,25 @@ export default async function FeedbackPage({
             value="tab-1"
             className="-mt-px rounded-lg rounded-tl-none border p-4 pt-5"
           >
-            <div
-              dangerouslySetInnerHTML={{
-                __html: formatFeedbackText(feedback?.summary || ""),
-              }}
-            />
+            {existingFeedback.summary?.length === 1 ? (
+              <p>{existingFeedback.summary[0]}</p>
+            ) : (
+              <ul className="list-disc pl-4">
+                {existingFeedback.summary?.map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
+              </ul>
+            )}
           </TabsContent>
           <TabsContent
             value="tab-2"
             className="-mt-px rounded-lg rounded-tl-none border p-4 pt-5"
           >
-            <div
-              dangerouslySetInnerHTML={{
-                __html: formatFeedbackText(feedback?.text || ""),
-              }}
-            />
+            {typeof existingFeedback.text === "string" ? (
+              <p>{existingFeedback.text}</p>
+            ) : (
+              <p>{existingFeedback.text || ""}</p>
+            )}
           </TabsContent>
         </Tabs>
       </div>

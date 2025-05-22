@@ -12,6 +12,7 @@ import {
   FeedbackImpact,
   FeedbackMetadata,
   FeedbackTag,
+  VoteStatus,
 } from "@/lib/schema";
 
 export const user = pgTable("user", {
@@ -111,39 +112,39 @@ export const passkey = pgTable("passkey", {
 });
 
 export const feedback = pgTable("feedback", {
-  /**
-   * randomUUID()
-   */
   id: text("id").primaryKey(),
   /**
    * Sender email address.
    */
   from: text("from").notNull(),
   /**
-   * Our user id.
-   * @internal
+   * The recipient user id.
    */
   referenceId: text("reference_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
   /**
-   * Raw feedback text.
+   * The feedback as-is.
    */
   text: text("text").notNull(),
   /**
-   * How much impact the feedback has on the user.
+   * The impact it has on the user's experience.
    */
   impact: text("impact").$type<FeedbackImpact>(),
   /**
-   * 1-6 words summary of the feedback.
+   * The 1-6 words subject of the feedback.
    */
   subject: text("subject"),
   /**
-   * AI rewritten version of the raw feedback text.
+   * The embedding vector for the subject to find similar feedback
    */
-  summary: text("summary"),
+  embedding: text("embedding").notNull(),
   /**
-   * Array of tags for categorization.
+   * A easy-to-read and clear summary of raw feedback.
+   */
+  summary: text("summary").array(),
+  /**
+   * The categories into which it falls.
    */
   tags: text("tags").$type<FeedbackTag[]>(),
   /**
@@ -162,6 +163,36 @@ export const contact = pgTable("contact", {
     .references(() => user.id),
   name: text("name"),
   metadata: jsonb("metadata").$type<ContactMetadata>(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const vote = pgTable("vote", {
+  id: text("id").primaryKey(),
+  /**
+   * The subject of the vote (e.g., "Add dark mode", "Improve search")
+   */
+  subject: text("subject").notNull(),
+  /**
+   * The total number of votes/feedback grouped under this subject.
+   * A vote is only created when at least 2 similar feedback entries are found.
+   */
+  count: integer("count").notNull(),
+  /**
+   * Our internal user, to which the vote belongs to.
+   */
+  referenceId: text("reference_id")
+    .notNull()
+    .references(() => user.id),
+  /**
+   * The status of the vote.
+   */
+  status: text("status").$type<VoteStatus>().notNull().default("open"),
+  /**
+   * Array of feedback IDs that contributed to this vote.
+   * Used to track which feedbacks were grouped together and to avoid reprocessing.
+   */
+  feedbackIds: text("feedback_ids").array().notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
