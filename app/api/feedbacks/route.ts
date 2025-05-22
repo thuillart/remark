@@ -72,6 +72,7 @@ async function secretPOST(request: NextRequest, context: Context) {
       subject: result.data.enrichment.subject,
       summary: result.data.enrichment.summary,
       metadata,
+      embedding: result.data.embedding,
       referenceId: userId,
     }),
   );

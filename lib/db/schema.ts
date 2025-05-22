@@ -138,7 +138,7 @@ export const feedback = pgTable("feedback", {
   /**
    * The embedding vector for the subject to find similar feedback
    */
-  embedding: text("embedding"),
+  embedding: text("embedding").notNull(),
   /**
    * A easy-to-read and clear summary of raw feedback.
    */

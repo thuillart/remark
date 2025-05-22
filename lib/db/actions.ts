@@ -64,6 +64,7 @@ export const createFeedback = authActionClient
         subject: result.data.enrichment.subject,
         summary: result.data.enrichment.summary,
         metadata,
+        embedding: result.data.embedding,
         referenceId: teamUser.id,
       }),
     );
@@ -107,6 +108,7 @@ export const enrichFeedback = actionClient
     });
 
     if (!embedding) {
+      console.error("failed to generate embedding");
       return { failure: "Failed to generate embedding" };
     }
 
