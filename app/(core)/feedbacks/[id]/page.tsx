@@ -79,10 +79,7 @@ export default async function FeedbackPage({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Badge
-                size="sm"
-                variant={getImpact(existingFeedback.impact).variant}
-              >
+              <Badge variant={getImpact(existingFeedback.impact).variant}>
                 {getImpact(existingFeedback.impact).label}
               </Badge>
             </TooltipTrigger>
@@ -105,11 +102,7 @@ export default async function FeedbackPage({
               <TooltipProvider key={tagValue}>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Badge
-                      size="sm"
-                      variant={tag.variant}
-                      className="cursor-default"
-                    >
+                    <Badge variant={tag.variant}>
                       {React.createElement(tag.Icon)}
                       {tag.label}
                     </Badge>
@@ -149,7 +142,7 @@ export default async function FeedbackPage({
               <label className="text-muted-foreground text-xs uppercase">
                 {item.label}
               </label>
-              <div className="flex gap-2 text-sm">{item.value}</div>
+              <div className="flex text-sm/6">{item.value}</div>
             </div>
           ))}
         </div>
