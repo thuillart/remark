@@ -88,7 +88,7 @@ export const feedbackEnrichmentSchema = z.object({
   tags: z.array(feedbackTagSchema),
   impact: feedbackImpactSchema,
   subject: z.string(),
-  summary: z.string(),
+  summary: z.array(z.string()),
 });
 export type FeedbackEnrichment = z.infer<typeof feedbackEnrichmentSchema>;
 

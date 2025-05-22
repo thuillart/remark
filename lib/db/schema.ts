@@ -142,7 +142,7 @@ export const feedback = pgTable("feedback", {
   /**
    * A easy-to-read and clear summary of raw feedback.
    */
-  summary: text("summary"),
+  summary: text("summary").array(),
   /**
    * The categories into which it falls.
    */

@@ -54,8 +54,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    // Matches everything except api, _next, and static files
-    "/((?!api|_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|docs/|terms|notice).*)"],
 };
