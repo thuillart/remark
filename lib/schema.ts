@@ -12,7 +12,10 @@ export type ContactMetadata = z.infer<typeof contactMetadataSchema>;
 
 export const feedbackMetadataSchema = z
   .object({
+    os: z.string().optional(),
     path: z.string().optional(), // e.g. "/search"
+    device: z.string().optional(),
+    browser: z.string().optional(),
   })
   .optional();
 export type FeedbackMetadata = z.infer<typeof feedbackMetadataSchema>;

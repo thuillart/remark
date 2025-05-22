@@ -69,7 +69,6 @@ export const createFeedback = authActionClient
     );
 
     if (error) {
-      console.error(error, "Error inserting feedback");
       return { failure: error.message };
     }
 
@@ -252,25 +251,6 @@ export const updateApiKeysLimits = actionClient
     }
 
     return { success: true };
-  });
-
-export const mergeSubjects = actionClient
-  .schema(
-    z.object({
-      subjects: z.array(z.string()),
-    }),
-  )
-  .action(async ({ parsedInput: { subjects } }) => {
-    const { text: mergedSubject } = await generateText({
-      model: openai("gpt-4.1-nano"),
-      prompt: `Given these similar feedback subjects, create a single, concise subject (1-6 words) that captures their common meaning:
-
-${subjects.join("\n")}
-
-The subject should be clear, concise, and maintain the original intent.`,
-    });
-
-    return { data: { subject: mergedSubject } };
   });
 
 export const createVote = actionClient
