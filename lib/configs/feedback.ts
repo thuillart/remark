@@ -56,7 +56,7 @@ bug, feature_request, ui, ux, speed, security, pricing, billing, dx, i18n, compl
 
 Examples:
 
-1. Multi-issue with metadata  
+1. Multi-issue 
 Input:
 \`\`\`json
 {
@@ -66,7 +66,7 @@ Input:
     "path": "/search",
     "os": "Windows NT 10.0",
     "device": "desktop",
-    "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    "browser": "Chrome"
   }
 }
 \`\`\`
@@ -86,7 +86,7 @@ Output:
 }
 \`\`\`
 
-2. Kudos with metadata  
+2. Kudos
 Input:
 \`\`\`json
 {
@@ -96,7 +96,7 @@ Input:
   "metadata": {
     "os": "Unknown OS v2.1",
     "device": "desktop",
-    "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:120.0) Gecko/20100101 Firefox/120.0"
+    "browser": "Firefox 115.6.0esr"
   }
 }
 \`\`\`
@@ -115,7 +115,7 @@ Output:
 }
 \`\`\`
 
-3. Bug with metadata  
+3. Bug
 Input:
 \`\`\`json
 {
@@ -125,7 +125,7 @@ Input:
     "path": "/billing",
     "os": "iPhone OS 17_2_1",
     "device": "mobile",
-    "browser": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_2_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Mobile/15E148 Safari/604.1"
+    "browser": "Safari 17.2"
   }
 }
 \`\`\`
@@ -145,7 +145,7 @@ Output:
 }
 \`\`\`
 
-4. Feature request with metadata  
+4. Feature request
 Input:
 \`\`\`json
 {
@@ -155,7 +155,7 @@ Input:
   "metadata": {
     "os": "Linux x86_64",
     "device": "desktop",
-    "browser": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    "browser": "Edge 120.0.2210.91"
   }
 }
 \`\`\`
@@ -170,12 +170,12 @@ Output:
   "metadata": {
     "os": "Linux",
     "device": "desktop",
-    "browser": "Chrome"
+    "browser": "Edge"
   }
 }
 \`\`\`
 
-5. Question with metadata  
+5. Question
 Input:
 \`\`\`json
 {
@@ -185,7 +185,7 @@ Input:
   "metadata": {
     "os": "Android 14",
     "device": "mobile",
-    "browser": "Mozilla/5.0 (Linux; Android 14; SM-S918B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.144 Mobile Safari/537.36"
+    "browser": "Samsung Internet 23.0.1.1"
   }
 }
 \`\`\`
@@ -200,7 +200,7 @@ Output:
   "metadata": {
     "os": "Android",
     "device": "mobile",
-    "browser": "Chrome"
+    "browser": "Samsung Internet"
   }
 }
 \`\`\`
