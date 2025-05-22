@@ -13,7 +13,7 @@ export const feedbackSchema = z.object({
   impact: feedbackImpactSchema,
   subject: z.string(),
   text: z.string(),
-  summary: z.string(),
+  summary: z.array(z.string()),
   metadata: feedbackMetadataSchema,
   createdAt: z.date(),
   updatedAt: z.date(),

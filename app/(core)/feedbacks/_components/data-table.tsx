@@ -1,25 +1,14 @@
 "use client";
 
 import {
-  RemixiconComponentType,
   RiArrowLeftLine,
   RiArrowRightLine,
   RiArrowRightUpLine,
-  RiBookLine,
-  RiBugLine,
   RiCalendarLine,
   RiChat1Line,
+  RiChatAiFill,
   RiCloseLine,
   RiFilter3Line,
-  RiLightbulbLine,
-  RiMoneyDollarBoxLine,
-  RiPaletteLine,
-  RiShieldLine,
-  RiSpeedLine,
-  RiTerminalLine,
-  RiThumbUpLine,
-  RiTranslate2,
-  RiUserVoiceLine,
 } from "@remixicon/react";
 import {
   ColumnDef,
@@ -38,7 +27,7 @@ import { useQueryState } from "nuqs";
 import React from "react";
 
 import { TextShimmer } from "@/components/text-shimmer";
-import { Badge, BadgeProps } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -79,6 +68,7 @@ import {
 import { EmptyState } from "@/core/components/empty-state";
 import { PageIcon } from "@/core/components/page-icon";
 import { Feedback } from "@/feedbacks/lib/schema";
+import { getImpactBadgeVariant, getTag } from "@/feedbacks/lib/utils";
 import { APP_NAME } from "@/lib/constants";
 import { FeedbackImpact, FeedbackTag } from "@/lib/schema";
 import { capitalizeFirstLetter, cn } from "@/lib/utils";
@@ -88,93 +78,6 @@ declare module "@tanstack/table-core" {
     timeRange: FilterFn<Feedback>;
     impact: FilterFn<Feedback>;
     tags: FilterFn<Feedback>;
-  }
-}
-
-function getTag(tag: FeedbackTag): {
-  Icon: RemixiconComponentType;
-  label: string;
-  variant: BadgeProps["variant"];
-} {
-  switch (tag) {
-    case "bug":
-      return {
-        Icon: RiBugLine,
-        label: "Bug",
-        variant: "destructive",
-      };
-    case "feature_request":
-      return {
-        Icon: RiLightbulbLine,
-        label: "Request",
-        variant: "yellow",
-      };
-    case "ui":
-      return {
-        Icon: RiPaletteLine,
-        label: "UI",
-        variant: "pink",
-      };
-    case "ux":
-      return {
-        Icon: RiUserVoiceLine,
-        label: "UX",
-        variant: "orange",
-      };
-    case "speed":
-      return {
-        Icon: RiSpeedLine,
-        label: "Speed",
-        variant: "yellow",
-      };
-    case "security":
-      return {
-        Icon: RiShieldLine,
-        label: "Security",
-        variant: "destructive",
-      };
-    case "pricing":
-      return {
-        Icon: RiMoneyDollarBoxLine,
-        label: "Pricing",
-        variant: "green",
-      };
-    case "billing":
-      return {
-        Icon: RiMoneyDollarBoxLine,
-        label: "Billing",
-        variant: "green",
-      };
-    case "dx":
-      return {
-        Icon: RiTerminalLine,
-        label: "DX",
-        variant: "indigo",
-      };
-    case "i18n":
-      return {
-        Icon: RiTranslate2,
-        label: "i18n",
-        variant: "yellow",
-      };
-    case "compliance":
-      return {
-        Icon: RiBookLine,
-        label: "Compliance",
-        variant: "purple",
-      };
-    case "a11y":
-      return {
-        Icon: RiUserVoiceLine,
-        label: "A11y",
-        variant: "blue",
-      };
-    case "kudos":
-      return {
-        Icon: RiThumbUpLine,
-        label: "Kudos",
-        variant: "teal",
-      };
   }
 }
 
@@ -189,7 +92,7 @@ export const columns: ColumnDef<Feedback>[] = [
           href={`/feedbacks/${row.original.id}`}
           className="group/link flex items-center gap-3"
         >
-          <PageIcon size="md" Icon={RiChat1Line} />
+          <PageIcon size="md" Icon={RiChatAiFill} />
           <span className="decoration-muted-foreground pr-4.5 whitespace-nowrap underline underline-offset-5 transition-[color,text-decoration-color] duration-150 ease-in-out group-hover/link:decoration-current">
             {row.original.from}
             <RiArrowRightUpLine className="text-muted-foreground group-hover/link:text-primary absolute mt-1.25 inline-block size-[1em] no-underline transition duration-[inherit] ease-[inherit] group-hover/link:translate-x-px group-hover/link:-translate-y-px" />
@@ -222,7 +125,6 @@ export const columns: ColumnDef<Feedback>[] = [
   {
     header: "Tags",
     accessorKey: "tags",
-
     cell: ({ row }) => {
       let tags: string[] = [];
 
@@ -307,16 +209,6 @@ export const columns: ColumnDef<Feedback>[] = [
     },
   },
 ];
-
-function getImpactBadgeVariant(impact: FeedbackImpact): BadgeProps["variant"] {
-  if (impact === "critical") {
-    return "destructive";
-  }
-  if (impact === "major") {
-    return "warning";
-  }
-  return "secondary";
-}
 
 function getImpactTooltipText(impact: FeedbackImpact) {
   if (impact === "critical") {
