@@ -26,15 +26,25 @@ export const authActionClient = actionClient.use(async ({ next }) => {
 
 export const subscriptionActionClient = authActionClient.use(
   async ({ next, ctx: { user } }) => {
+    console.log("🚀 user", user);
+    console.log("🚀 user.id", user.id);
+    console.log("🚀 user.email", user.email);
+    console.log("🚀 user.name", user.name);
+    console.log("about to get customer state");
     const customerState = await polarClient.customers.getStateExternal({
       externalId: user.id,
     });
 
     // If no customerState, default to free subscription
     const activeSubscriptions = customerState?.activeSubscriptions;
+
+    console.log("🚀 activeSubscriptions", activeSubscriptions);
+
     const slug: SubscriptionSlug = activeSubscriptions.length
       ? getSlugFromProductId(activeSubscriptions[0].productId)
       : "free";
+
+    console.log("🚀 activeSubscriptions", activeSubscriptions);
 
     return next({
       ctx: {

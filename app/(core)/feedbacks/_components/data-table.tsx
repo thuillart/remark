@@ -10,12 +10,10 @@ import {
   RiCalendarLine,
   RiChat1Line,
   RiCloseLine,
-  RiCodeLine,
   RiFilter3Line,
   RiLightbulbLine,
   RiMoneyDollarBoxLine,
   RiPaletteLine,
-  RiSettingsLine,
   RiShieldLine,
   RiSpeedLine,
   RiTerminalLine,
@@ -82,7 +80,7 @@ import { EmptyState } from "@/core/components/empty-state";
 import { PageIcon } from "@/core/components/page-icon";
 import { Feedback } from "@/feedbacks/lib/schema";
 import { APP_NAME } from "@/lib/constants";
-import { FeedbackImpact } from "@/lib/schema";
+import { FeedbackImpact, FeedbackTag } from "@/lib/schema";
 import { capitalizeFirstLetter, cn } from "@/lib/utils";
 
 declare module "@tanstack/table-core" {
@@ -93,7 +91,7 @@ declare module "@tanstack/table-core" {
   }
 }
 
-function getTag(tag: string): {
+function getTag(tag: FeedbackTag): {
   Icon: RemixiconComponentType;
   label: string;
   variant: BadgeProps["variant"];
@@ -111,12 +109,6 @@ function getTag(tag: string): {
         label: "Request",
         variant: "yellow",
       };
-    case "enhancement":
-      return {
-        Icon: RiSettingsLine,
-        label: "Enhancement",
-        variant: "teal",
-      };
     case "ui":
       return {
         Icon: RiPaletteLine,
@@ -129,10 +121,10 @@ function getTag(tag: string): {
         label: "UX",
         variant: "orange",
       };
-    case "performance":
+    case "speed":
       return {
         Icon: RiSpeedLine,
-        label: "Performance",
+        label: "Speed",
         variant: "yellow",
       };
     case "security":
@@ -141,17 +133,17 @@ function getTag(tag: string): {
         label: "Security",
         variant: "destructive",
       };
+    case "pricing":
+      return {
+        Icon: RiMoneyDollarBoxLine,
+        label: "Pricing",
+        variant: "green",
+      };
     case "billing":
       return {
         Icon: RiMoneyDollarBoxLine,
         label: "Billing",
         variant: "green",
-      };
-    case "api":
-      return {
-        Icon: RiCodeLine,
-        label: "API",
-        variant: "blue",
       };
     case "dx":
       return {
@@ -159,22 +151,28 @@ function getTag(tag: string): {
         label: "DX",
         variant: "indigo",
       };
-    case "lang":
+    case "i18n":
       return {
         Icon: RiTranslate2,
-        label: "Language",
+        label: "i18n",
         variant: "yellow",
       };
-    case "legal":
+    case "compliance":
       return {
         Icon: RiBookLine,
-        label: "Legal",
+        label: "Compliance",
         variant: "purple",
       };
-    case "appraisal":
+    case "a11y":
+      return {
+        Icon: RiUserVoiceLine,
+        label: "A11y",
+        variant: "blue",
+      };
+    case "kudos":
       return {
         Icon: RiThumbUpLine,
-        label: "Appraisal",
+        label: "Kudos",
         variant: "teal",
       };
   }
@@ -240,9 +238,14 @@ export const columns: ColumnDef<Feedback>[] = [
       return (
         <div className="flex flex-nowrap gap-2">
           {firstTag && (
-            <Badge variant={getTag(firstTag).variant} className="relative">
-              {React.createElement(getTag(firstTag).Icon, { size: 16 })}
-              {getTag(firstTag).label}
+            <Badge
+              variant={getTag(firstTag as FeedbackTag).variant}
+              className="relative"
+            >
+              {React.createElement(getTag(firstTag as FeedbackTag).Icon, {
+                size: 16,
+              })}
+              {getTag(firstTag as FeedbackTag).label}
             </Badge>
           )}
           {hasMore && (
@@ -256,7 +259,7 @@ export const columns: ColumnDef<Feedback>[] = [
                 <TooltipContent className="p-1">
                   <div className="flex flex-wrap gap-1">
                     {otherTags.map((tag) => {
-                      const tagMeta = getTag(tag);
+                      const tagMeta = getTag(tag as FeedbackTag);
                       return (
                         <Badge key={tag} variant={tagMeta.variant}>
                           {React.createElement(tagMeta.Icon, { size: 16 })}
@@ -540,7 +543,7 @@ function SearchAndFilters({ data }: { data: Feedback[] }) {
               </div>
               <div className="space-y-3">
                 {uniqueTags.map((tag, i) => {
-                  const tagMeta = getTag(tag);
+                  const tagMeta = getTag(tag as FeedbackTag);
                   return (
                     <div key={tag} className="flex items-center gap-2">
                       <Checkbox
