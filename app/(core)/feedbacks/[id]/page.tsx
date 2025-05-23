@@ -14,11 +14,15 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { PageIcon } from "@/core/components/page-icon";
+import { DotPattern } from "@/feedbacks/id/components/dot-pattern";
 import { getImpact, getTag } from "@/feedbacks/lib/utils";
 import { auth } from "@/lib/auth";
 import { APP_NAME } from "@/lib/constants";
 import { db } from "@/lib/db/drizzle";
-import { contact, feedback as feedbackTable } from "@/lib/db/schema";
+import {
+  contact as contactTable,
+  feedback as feedbackTable,
+} from "@/lib/db/schema";
 import { FeedbackTag } from "@/lib/schema";
 
 export default async function FeedbackPage({
@@ -32,7 +36,7 @@ export default async function FeedbackPage({
     headers: await headers(),
   });
 
-  const [existingFeedback] = await db
+  const [feedback] = await db
     .select()
     .from(feedbackTable)
     .where(
@@ -42,7 +46,7 @@ export default async function FeedbackPage({
       ),
     );
 
-  if (!existingFeedback) {
+  if (!feedback) {
     return (
       <div className="container">
         <div className="flex items-center justify-center py-8">
@@ -52,26 +56,26 @@ export default async function FeedbackPage({
     );
   }
 
-  const [existingContact] = await db
-    .select({ name: contact.name })
-    .from(contact)
-    .where(eq(contact.email, existingFeedback.from));
+  const [contact] = await db
+    .select({ name: contactTable.name })
+    .from(contactTable)
+    .where(eq(contactTable.email, feedback.from));
 
-  const feedbackTags = existingFeedback.tags
-    ? (typeof existingFeedback.tags === "string"
-        ? parsePgArray(existingFeedback.tags)
-        : existingFeedback.tags
+  const feedbackTags = feedback.tags
+    ? (typeof feedback.tags === "string"
+        ? parsePgArray(feedback.tags)
+        : feedback.tags
       ).filter(Boolean)
     : [];
 
   const headerItems = [
     {
       label: "From",
-      value: existingContact.name || existingFeedback.from,
+      value: contact.name || feedback.from,
     },
     {
       label: "Subject",
-      value: existingFeedback.subject,
+      value: feedback.subject,
     },
     {
       label: "Impact",
@@ -79,13 +83,13 @@ export default async function FeedbackPage({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Badge variant={getImpact(existingFeedback.impact).variant}>
-                {getImpact(existingFeedback.impact).label}
+              <Badge variant={getImpact(feedback.impact).variant}>
+                {getImpact(feedback.impact).label}
               </Badge>
             </TooltipTrigger>
             <TooltipContent>
               <TextShimmer>{`${APP_NAME} AI`}</TextShimmer>{" "}
-              {getImpact(existingFeedback.impact).description}
+              {getImpact(feedback.impact).description}
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -128,7 +132,7 @@ export default async function FeedbackPage({
               Email
             </span>
             <h1 className="w-full truncate text-xl font-bold tracking-tight">
-              {existingFeedback.from}
+              {feedback.from}
             </h1>
           </div>
         </div>
@@ -145,6 +149,29 @@ export default async function FeedbackPage({
               <div className="flex text-sm/6">{item.value}</div>
             </div>
           ))}
+        </div>
+
+        <div className="mt-8 flex flex-col gap-2">
+          <div className="mt-8 flex flex-col gap-2">
+            <label className="text-muted-foreground text-xs uppercase">
+              Events
+            </label>
+            <div className="relative w-full overflow-x-auto rounded-md border p-8">
+              <div className="relative flex w-fit gap-12">
+                <span className="pointer-events-none absolute top-1/2 left-8 mt-0.5 h-0.5 w-[calc(100%-4rem)] -translate-y-8 bg-[#e5e5e5] select-none dark:bg-[#191B21]"></span>
+                <div className="relative flex min-w-[6rem] flex-col items-center justify-center gap-2">
+                  <div className="group flex cursor-default flex-col items-center justify-center gap-2 rounded-lg outline-none">
+                    <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border" />
+                    <Badge variant="secondary">OS</Badge>
+                  </div>
+                  <span className="text-muted-foreground text-center text-xs font-normal">
+                    {feedback.metadata?.os}
+                  </span>
+                </div>
+              </div>
+              <DotPattern cy={1} cr={1} cx={1} y={8} />
+            </div>
+          </div>
         </div>
 
         <Tabs defaultValue="tab-1" className="gap-0">
@@ -169,11 +196,11 @@ export default async function FeedbackPage({
             value="tab-1"
             className="-mt-px rounded-lg rounded-tl-none border p-4 pt-5"
           >
-            {existingFeedback.summary?.length === 1 ? (
-              <p>{existingFeedback.summary[0]}</p>
+            {feedback.summary?.length === 1 ? (
+              <p>{feedback.summary[0]}</p>
             ) : (
               <ul className="list-disc pl-4">
-                {existingFeedback.summary?.map((item, index) => (
+                {feedback.summary?.map((item, index) => (
                   <li key={index}>{item}</li>
                 ))}
               </ul>
@@ -183,7 +210,7 @@ export default async function FeedbackPage({
             value="tab-2"
             className="-mt-px rounded-lg rounded-tl-none border p-4 pt-5"
           >
-            <p>{existingFeedback.text || ""}</p>
+            <p>{feedback.text || ""}</p>
           </TabsContent>
         </Tabs>
       </div>
