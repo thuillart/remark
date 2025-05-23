@@ -10,12 +10,50 @@ export const contactMetadataSchema = z
   .optional();
 export type ContactMetadata = z.infer<typeof contactMetadataSchema>;
 
+export const feedbackMetadataOsSchema = z.enum([
+  "Windows",
+  "macOS",
+  "iOS",
+  "Android",
+  "Linux",
+  "ChromeOS",
+]);
+export type FeedbackMetadataOs = z.infer<typeof feedbackMetadataOsSchema>;
+
+export const feedbackMetadataDeviceSchema = z.enum([
+  "mobile",
+  "tablet",
+  "desktop",
+  "console",
+  "smarttv",
+  "wearable",
+  "embedded",
+]);
+export type FeedbackMetadataDevice = z.infer<
+  typeof feedbackMetadataDeviceSchema
+>;
+
+export const feedbackMetadataBrowserSchema = z.enum([
+  "Chrome",
+  "Firefox",
+  "Safari",
+  "Edge",
+  "Opera",
+  "Brave",
+  "Arc",
+  "Zen",
+  "Samsung Internet",
+]);
+export type FeedbackMetadataBrowser = z.infer<
+  typeof feedbackMetadataBrowserSchema
+>;
+
 export const feedbackMetadataSchema = z
   .object({
-    os: z.string().optional(),
+    os: feedbackMetadataOsSchema.optional(),
     path: z.string().optional(), // e.g. "/search"
-    device: z.string().optional(),
-    browser: z.string().optional(),
+    device: feedbackMetadataDeviceSchema.optional(),
+    browser: feedbackMetadataBrowserSchema.optional(),
   })
   .optional();
 export type FeedbackMetadata = z.infer<typeof feedbackMetadataSchema>;

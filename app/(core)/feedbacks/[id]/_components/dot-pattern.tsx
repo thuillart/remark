@@ -30,7 +30,7 @@ export function DotPattern({
   return (
     <svg
       className={cn(
-        "fill-muted-foreground/50 pointer-events-none absolute inset-0 size-full [mask-image:linear-gradient(to_right,transparent,white_20%,white_80%,transparent)]",
+        "fill-foreground/10 pointer-events-none absolute inset-0 size-full",
         className,
       )}
       {...props}

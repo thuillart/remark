@@ -127,9 +127,9 @@ export const enrichFeedback = actionClient
             2. Use the user's first name if provided; otherwise, use "The user".
             3. Imitate human-like patterns by using a casual and natural language. 
         5. Metadata: If it matches a value from the following lists, use it; otherwise, omit the field:
-            1. os: Pick one from: Windows, macOS, iOS, Android, Linux, ChromeOS
-            2. device: Pick one from: mobile, tablet, desktop, console, smarttv, wearable, embedded
-            3. browser: Pick one from: Chrome, Firefox, Safari, Edge, Opera, Brave, Arc, Zen, Samsung Internet
+            1. os: Map the detected OS to the closest matching value from: Windows, macOS, iOS, Android, Linux, ChromeOS
+            2. device: Map the detected device to the closest matching value from: mobile, tablet, desktop, console, smarttv, wearable, embedded
+            3. browser: Map the detected browser to the closest matching value from: Chrome, Firefox, Safari, Edge, Opera, Brave, Arc, Zen, Samsung Internet
       `,
     });
 

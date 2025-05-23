@@ -1,4 +1,22 @@
-import { RiChat1Line, RiChatAiLine, RiInbox2Fill } from "@remixicon/react";
+import {
+  RiAndroidFill,
+  RiAppleFill,
+  RiAppleLine,
+  RiChat1Line,
+  RiChatAiLine,
+  RiChromeFill,
+  RiComputerLine,
+  RiFridgeLine,
+  RiGamepadLine,
+  RiInbox2Fill,
+  RiLinkM,
+  RiPhoneLine,
+  RiTabletLine,
+  RiTimer2Line,
+  RiTvLine,
+  RiUbuntuFill,
+  RiWindowsFill,
+} from "@remixicon/react";
 import { and, eq } from "drizzle-orm";
 import { parsePgArray } from "drizzle-orm/pg-core";
 import { headers } from "next/headers";
@@ -24,6 +42,7 @@ import {
   feedback as feedbackTable,
 } from "@/lib/db/schema";
 import { FeedbackTag } from "@/lib/schema";
+import { format } from "date-fns";
 
 export default async function FeedbackPage({
   params,
@@ -152,25 +171,125 @@ export default async function FeedbackPage({
         </div>
 
         <div className="mt-8 flex flex-col gap-2">
-          <div className="mt-8 flex flex-col gap-2">
-            <label className="text-muted-foreground text-xs uppercase">
-              Events
-            </label>
-            <div className="relative w-full overflow-x-auto rounded-md border p-8">
-              <div className="relative flex w-fit gap-12">
-                <span className="pointer-events-none absolute top-1/2 left-8 mt-0.5 h-0.5 w-[calc(100%-4rem)] -translate-y-8 bg-[#e5e5e5] select-none dark:bg-[#191B21]"></span>
-                <div className="relative flex min-w-[6rem] flex-col items-center justify-center gap-2">
+          <label className="text-muted-foreground text-xs uppercase">
+            Flow chart
+          </label>
+          <div className="relative w-full overflow-x-auto rounded-md border p-8">
+            <div className="relative flex w-fit gap-12">
+              <span className="bg-border pointer-events-none absolute top-1/2 left-8 mt-0.5 h-0.5 w-[calc(100%-4rem)] -translate-y-8 select-none" />
+
+              {feedback.metadata?.device && (
+                <div className="relative z-1 flex min-w-24 flex-col items-center justify-center gap-2">
                   <div className="group flex cursor-default flex-col items-center justify-center gap-2 rounded-lg outline-none">
-                    <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border" />
+                    <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border">
+                      {feedback.metadata?.device === "mobile" && (
+                        <RiPhoneLine className="opacity-80" />
+                      )}
+                      {feedback.metadata?.device === "tablet" && (
+                        <RiTabletLine className="opacity-80" />
+                      )}
+                      {feedback.metadata?.device === "desktop" && (
+                        <RiComputerLine className="opacity-80" />
+                      )}
+                      {feedback.metadata?.device === "console" && (
+                        <RiGamepadLine className="opacity-80" />
+                      )}
+                      {feedback.metadata?.device === "smarttv" && (
+                        <RiTvLine className="opacity-80" />
+                      )}
+                      {feedback.metadata?.device === "wearable" && (
+                        <RiTimer2Line className="opacity-80" />
+                      )}
+                      {feedback.metadata?.device === "embedded" && (
+                        <RiFridgeLine className="opacity-80" />
+                      )}
+                    </div>
+                    <Badge variant="secondary">Device</Badge>
+                  </div>
+                  <span className="text-muted-foreground text-center text-xs font-normal">
+                    {feedback.metadata?.device}
+                  </span>
+                </div>
+              )}
+
+              {feedback.metadata?.os && (
+                <div className="relative z-1 flex min-w-24 flex-col items-center justify-center gap-2">
+                  <div className="group flex cursor-default flex-col items-center justify-center gap-2 rounded-lg outline-none">
+                    <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border">
+                      {feedback.metadata?.os === "Windows" && (
+                        <RiWindowsFill className="opacity-80" />
+                      )}
+                      {feedback.metadata?.os === "macOS" && (
+                        <RiAppleLine className="opacity-80" />
+                      )}
+                      {feedback.metadata?.os === "iOS" && (
+                        <RiAppleFill className="opacity-80" />
+                      )}
+                      {feedback.metadata?.os === "Android" && (
+                        <RiAndroidFill className="opacity-80" />
+                      )}
+                      {feedback.metadata?.os === "Linux" && (
+                        <RiUbuntuFill className="opacity-80" />
+                      )}
+                      {feedback.metadata?.os === "ChromeOS" && (
+                        <RiChromeFill className="opacity-80" />
+                      )}
+                    </div>
                     <Badge variant="secondary">OS</Badge>
                   </div>
                   <span className="text-muted-foreground text-center text-xs font-normal">
                     {feedback.metadata?.os}
                   </span>
                 </div>
+              )}
+
+              {feedback.metadata?.browser && (
+                <div className="relative z-1 flex min-w-24 flex-col items-center justify-center gap-2">
+                  <div className="group flex cursor-default flex-col items-center justify-center gap-2 rounded-lg outline-none">
+                    <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border" />
+                    <Badge variant="secondary">Browser</Badge>
+                  </div>
+                  <span className="text-muted-foreground text-center text-xs font-normal">
+                    {feedback.metadata?.browser}
+                  </span>
+                </div>
+              )}
+
+              {feedback.metadata?.path && (
+                <div className="relative z-1 flex min-w-24 flex-col items-center justify-center gap-2">
+                  <div className="group flex cursor-default flex-col items-center justify-center gap-2 rounded-lg outline-none">
+                    <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border">
+                      <RiLinkM className="opacity-80" />
+                    </div>
+                    <Badge variant="secondary">Page</Badge>
+                  </div>
+                  <span className="text-muted-foreground text-center text-xs font-normal">
+                    {feedback.metadata?.path.split("/").pop()}
+                  </span>
+                </div>
+              )}
+
+              <div className="relative z-1 flex min-w-24 flex-col items-center justify-center gap-2">
+                <div className="group flex cursor-default flex-col items-center justify-center gap-2 rounded-lg outline-none">
+                  <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border" />
+                  <Badge variant="secondary">Sent</Badge>
+                </div>
+                <span className="text-muted-foreground text-center text-xs font-normal">
+                  {format(feedback.createdAt, "MMM d, h:mm a")}
+                </span>
               </div>
-              <DotPattern cy={1} cr={1} cx={1} y={8} />
+
+              <div className="relative z-1 flex min-w-24 flex-col items-center justify-center gap-2">
+                <div className="group flex cursor-default flex-col items-center justify-center gap-2 rounded-lg outline-none">
+                  <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border" />
+                  <Badge variant="green">Processed</Badge>
+                </div>
+                <span className="text-muted-foreground text-center text-xs font-normal">
+                  {format(feedback.createdAt, "MMM d, h:mm a")}
+                </span>
+              </div>
             </div>
+            <DotPattern cy={1} cr={1} cx={1} y={7} x={6} />
           </div>
         </div>
 
