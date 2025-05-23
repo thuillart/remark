@@ -1,5 +1,6 @@
 "use server";
 
+import { google } from "@ai-sdk/google";
 import { embed, generateText } from "ai";
 import { randomUUID } from "crypto";
 import dedent from "dedent";
@@ -20,11 +21,11 @@ import {
 } from "@/lib/safe-action";
 import {
   feedbackEnrichmentSchema,
+  feedbackInputMetadataSchema,
   feedbackMetadataSchema,
   SubscriptionSlugSchema,
 } from "@/lib/schema";
 import { tryCatch } from "@/lib/utils";
-import { google } from "@ai-sdk/google";
 
 export const createFeedback = authActionClient
   .schema(
@@ -81,10 +82,12 @@ export const enrichFeedback = actionClient
     z.object({
       from: z.string().email(),
       text: z.string(),
-      metadata: feedbackMetadataSchema,
+      metadata: feedbackInputMetadataSchema,
     }),
   )
   .action(async ({ parsedInput: { from, text, metadata } }) => {
+    console.log("about to enrich feedback", from, text, metadata);
+
     const existingContact = await db.query.contact.findFirst({
       where: eq(contact.email, from),
     });
@@ -118,9 +121,9 @@ export const enrichFeedback = actionClient
             2. Use the user's first name if provided; otherwise, use "The user".
             3. Imitate human-like patterns by using a casual and natural language. 
         5. Metadata: You MUST use EXACTLY one of the allowed values below for each field (case-sensitive, spelling must match exactly, no extra spaces). If no exact match, omit the field.
-            - OS: Windows, macOS, iOS, Android, Linux, ChromeOS
+            - OS: Windows, macOS, iOS, Android, Linux, ChromeOS, iPadOS, tvOS, watchOS
             - Device: mobile, tablet, desktop, console, smarttv, wearable, embedded
-            - Browser: Chrome, Firefox, Safari, Edge, Opera, Brave, Arc, Zen, Samsung Interne
+            - Browser: Chrome, Firefox, Safari, Edge, Opera, Brave, Arc, Zen, Samsung Internet
         
         Output a raw JSON object matching this structure:
 
@@ -133,6 +136,8 @@ export const enrichFeedback = actionClient
         }
       `,
     });
+
+    console.log("what ai said", output);
 
     // Strip markdown code block formatting if present
     const cleanOutput = output.replace(/```json\n?|\n?```/g, "").trim();

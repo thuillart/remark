@@ -10,6 +10,31 @@ export const contactMetadataSchema = z
   .optional();
 export type ContactMetadata = z.infer<typeof contactMetadataSchema>;
 
+export const feedbackTagSchema = z.enum([
+  "bug",
+  "feature_request",
+  "ui",
+  "ux",
+  "speed",
+  "security",
+  "pricing",
+  "billing",
+  "dx",
+  "i18n",
+  "compliance",
+  "a11y",
+  "kudos",
+]);
+export type FeedbackTag = z.infer<typeof feedbackTagSchema>;
+
+export const feedbackImpactSchema = z.enum([
+  "minor",
+  "major",
+  "positive",
+  "critical",
+]);
+export type FeedbackImpact = z.infer<typeof feedbackImpactSchema>;
+
 export const feedbackMetadataOsSchema = z.enum([
   "Windows",
   "macOS",
@@ -17,6 +42,9 @@ export const feedbackMetadataOsSchema = z.enum([
   "Android",
   "Linux",
   "ChromeOS",
+  "iPadOS",
+  "tvOS",
+  "watchOS",
 ]);
 export type FeedbackMetadataOs = z.infer<typeof feedbackMetadataOsSchema>;
 
@@ -48,95 +76,48 @@ export type FeedbackMetadataBrowser = z.infer<
   typeof feedbackMetadataBrowserSchema
 >;
 
-export const feedbackMetadataSchema = z
-  .object({
-    os: feedbackMetadataOsSchema.optional(),
-    path: z.string().optional(), // e.g. "/search"
-    device: feedbackMetadataDeviceSchema.optional(),
-    browser: feedbackMetadataBrowserSchema.optional(),
-  })
-  .optional();
-export type FeedbackMetadata = z.infer<typeof feedbackMetadataSchema>;
-
-export const feedbackTagSchema = z.enum([
-  /**
-   * Something's not working as expected.
-   */
-  "bug",
-  /**
-   * Asking for a missing feature.
-   */
-  "feature_request",
-  /**
-   * The way it looks could be better.
-   */
-  "ui",
-  /**
-   * The way it's designed to work could be better.
-   */
-  "ux",
-  /**
-   * When it's slow or laggy.
-   */
-  "speed",
-  /**
-   * Found a security problem.
-   */
-  "security",
-  /**
-   * The price doesn't feel right.
-   */
-  "pricing",
-  /**
-   * Anything related to billing or payments.
-   */
-  "billing",
-  /**
-   * The development experience (e.g. docs, API, SDKs, etc.) could be better.
-   */
-  "dx",
-  /**
-   * When translations aren't correct.
-   */
-  "i18n",
-  /**
-   * Something about terms or privacy, or legal.
-   */
-  "compliance",
-  /**
-   * Not accessible enough for some users.
-   */
-  "a11y",
-  /**
-   * Anything that's positive and/or encouraging.
-   */
-  "kudos",
-]);
-export type FeedbackTag = z.infer<typeof feedbackTagSchema>;
-
-export const feedbackImpactSchema = z.enum([
-  "minor",
-  "major",
-  "positive",
-  "critical",
-]);
-export type FeedbackImpact = z.infer<typeof feedbackImpactSchema>;
+export const feedbackEnrichmentMetadataSchema = z.object({
+  os: feedbackMetadataOsSchema.optional(),
+  device: feedbackMetadataDeviceSchema.optional(),
+  browser: feedbackMetadataBrowserSchema.optional(),
+});
+export type FeedbackEnrichmentMetadata = z.infer<
+  typeof feedbackEnrichmentMetadataSchema
+>;
 
 export const feedbackEnrichmentSchema = z.object({
   tags: z.array(feedbackTagSchema),
   impact: feedbackImpactSchema,
   subject: z.string(),
   summary: z.array(z.string()),
+  metadata: feedbackEnrichmentMetadataSchema,
 });
 export type FeedbackEnrichment = z.infer<typeof feedbackEnrichmentSchema>;
+
+export const feedbackInputMetadataSchema = z
+  .object({
+    os: z.string().optional(),
+    path: z.string().optional(),
+    device: z.string().optional(),
+    browser: z.string().optional(),
+  })
+  .optional();
+export type FeedbackInputMetadata = z.infer<typeof feedbackInputMetadataSchema>;
 
 export const feedbackInputSchema = z.object({
   from: z.string().email(),
   text: z.string(),
   name: z.string().optional(),
-  metadata: feedbackMetadataSchema,
+  metadata: feedbackInputMetadataSchema,
 });
 export type FeedbackInput = z.infer<typeof feedbackInputSchema>;
+
+export const feedbackMetadataSchema = feedbackEnrichmentMetadataSchema
+  .extend({
+    path: z.string().optional(),
+  })
+  .optional();
+export type FeedbackMetadata = z.infer<typeof feedbackMetadataSchema>;
 
 export const voteStatusSchema = z.enum(["open", "in_progress", "completed"]);
 export type VoteStatus = z.infer<typeof voteStatusSchema>;
