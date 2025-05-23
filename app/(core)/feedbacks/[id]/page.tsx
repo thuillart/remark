@@ -1,16 +1,21 @@
 import {
   RiAndroidFill,
   RiAppleFill,
-  RiAppleLine,
   RiChat1Line,
   RiChatAiLine,
+  RiCheckboxCircleLine,
   RiChromeFill,
   RiComputerLine,
+  RiEdgeFill,
+  RiFirefoxFill,
   RiFridgeLine,
   RiGamepadLine,
   RiInbox2Fill,
   RiLinkM,
+  RiOperaFill,
   RiPhoneLine,
+  RiSafariFill,
+  RiSendPlane2Line,
   RiTabletLine,
   RiTimer2Line,
   RiTvLine,
@@ -175,7 +180,7 @@ export default async function FeedbackPage({
             Flow chart
           </label>
           <div className="relative w-full overflow-x-auto rounded-md border p-8">
-            <div className="relative flex w-fit gap-12">
+            <div className="relative mx-auto flex w-fit gap-12">
               <span className="bg-border pointer-events-none absolute top-1/2 left-8 mt-0.5 h-0.5 w-[calc(100%-4rem)] -translate-y-8 select-none" />
 
               {feedback.metadata?.device && (
@@ -220,7 +225,7 @@ export default async function FeedbackPage({
                         <RiWindowsFill className="opacity-80" />
                       )}
                       {feedback.metadata?.os === "macOS" && (
-                        <RiAppleLine className="opacity-80" />
+                        <RiAppleFill className="mb-0.5 ml-px opacity-80" />
                       )}
                       {feedback.metadata?.os === "iOS" && (
                         <RiAppleFill className="opacity-80" />
@@ -246,7 +251,32 @@ export default async function FeedbackPage({
               {feedback.metadata?.browser && (
                 <div className="relative z-1 flex min-w-24 flex-col items-center justify-center gap-2">
                   <div className="group flex cursor-default flex-col items-center justify-center gap-2 rounded-lg outline-none">
-                    <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border" />
+                    <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border">
+                      {feedback.metadata?.browser === "Chrome" && (
+                        <RiChromeFill className="opacity-80" />
+                      )}
+                      {feedback.metadata?.browser === "Firefox" && (
+                        <RiFirefoxFill className="opacity-80" />
+                      )}
+                      {feedback.metadata?.browser === "Safari" && (
+                        <RiSafariFill className="opacity-80" />
+                      )}
+                      {feedback.metadata?.browser === "Edge" && (
+                        <RiEdgeFill className="opacity-80" />
+                      )}
+                      {feedback.metadata?.browser === "Opera" && (
+                        <RiOperaFill className="opacity-80" />
+                      )}
+                      {feedback.metadata?.browser === "Brave" && (
+                        <RiChromeFill className="opacity-80" />
+                      )}
+                      {feedback.metadata?.browser === "Arc" && (
+                        <RiChromeFill className="opacity-80" />
+                      )}
+                      {feedback.metadata?.browser === "Zen" && (
+                        <RiFirefoxFill className="opacity-80" />
+                      )}
+                    </div>
                     <Badge variant="secondary">Browser</Badge>
                   </div>
                   <span className="text-muted-foreground text-center text-xs font-normal">
@@ -271,7 +301,9 @@ export default async function FeedbackPage({
 
               <div className="relative z-1 flex min-w-24 flex-col items-center justify-center gap-2">
                 <div className="group flex cursor-default flex-col items-center justify-center gap-2 rounded-lg outline-none">
-                  <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border" />
+                  <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border">
+                    <RiSendPlane2Line size={20} className="ml-px opacity-80" />
+                  </div>
                   <Badge variant="secondary">Sent</Badge>
                 </div>
                 <span className="text-muted-foreground text-center text-xs font-normal">
@@ -281,7 +313,12 @@ export default async function FeedbackPage({
 
               <div className="relative z-1 flex min-w-24 flex-col items-center justify-center gap-2">
                 <div className="group flex cursor-default flex-col items-center justify-center gap-2 rounded-lg outline-none">
-                  <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border" />
+                  <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border">
+                    <RiCheckboxCircleLine
+                      size={20}
+                      className="ml-px text-green-700 opacity-80 dark:text-green-400"
+                    />
+                  </div>
                   <Badge variant="green">Processed</Badge>
                 </div>
                 <span className="text-muted-foreground text-center text-xs font-normal">
