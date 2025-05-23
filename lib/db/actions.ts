@@ -91,6 +91,7 @@ export const enrichFeedback = actionClient
 
     const { text: output } = await generateText({
       model: google("gemini-2.5-flash-preview-04-17"),
+      toolChoice: "none",
       prompt: dedent`
         You are a ticket-classification engine.
 
