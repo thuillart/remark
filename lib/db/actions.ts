@@ -90,7 +90,7 @@ export const enrichFeedback = actionClient
     });
 
     const { text: output } = await generateText({
-      model: google("gemini-2.5-flash-preview-04-17"),
+      model: google("gemini-2.0-flash-thinking-exp-01-21"),
       prompt: dedent`
         You are a ticket-classification engine.
 
@@ -302,7 +302,7 @@ export const createVote = actionClient
   .action(async ({ parsedInput: { subjects, groupsIds, referenceId } }) => {
     // Generate a merged subject using AI
     const { text: subject } = await generateText({
-      model: google("gemini-2.5-flash-preview-04-17"),
+      model: google("gemini-2.0-flash-thinking-exp-01-21"),
       prompt: dedent`
         Given these similar feedback subjects from multiple users, create a single, concise subject (1-6 words) that captures their common request or suggestion.
 
