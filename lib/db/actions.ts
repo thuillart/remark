@@ -107,15 +107,7 @@ export const enrichFeedback = actionClient
           2,
         )}
 
-        Output a raw JSON object matching this structure:
-
-        {
-          "tags": [],
-          "impact": "",
-          "subject": "",
-          "summary": [],
-          "metadata": { "os": "", "device": "", "browser": "" }
-        }
+        
 
         Instructions: 
 
@@ -129,7 +121,17 @@ export const enrichFeedback = actionClient
         5. Metadata: You MUST use EXACTLY one of the allowed values below for each field (case-sensitive, spelling must match exactly, no extra spaces). If no exact match, omit the field.
             - OS: Windows, macOS, iOS, Android, Linux, ChromeOS
             - Device: mobile, tablet, desktop, console, smarttv, wearable, embedded
-            - Browser: Chrome, Firefox, Safari, Edge, Opera, Brave, Arc, Zen, Samsung Internet
+            - Browser: Chrome, Firefox, Safari, Edge, Opera, Brave, Arc, Zen, Samsung Interne
+        
+        Output a raw JSON object matching this structure:
+
+        {
+          "tags": [],
+          "impact": "",
+          "subject": "",
+          "summary": [],
+          "metadata": { "os": "", "device": "", "browser": "" }
+        }
       `,
     });
 
