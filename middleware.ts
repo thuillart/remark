@@ -55,7 +55,19 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Don't need middleware
-    "/((?!_next/static|_next/image|favicon.ico|docs/|terms|notice|api).*)",
+    // Protected routes that need authentication
+    "/profile/:path*",
+    "/api-keys/:path*",
+    "/contacts/:path*",
+    "/settings/:path*",
+    "/feedbacks/:path*",
+
+    // Public routes that need special handling
+    "/",
+    "/home",
+    "/sign-in",
+
+    // Exclude static assets, public pages, and API routes
+    "/((?!_next/static|_next/image|favicon.ico|docs/|terms/|notice/|api/).*)",
   ],
 };
