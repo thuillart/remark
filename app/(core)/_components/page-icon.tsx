@@ -24,7 +24,7 @@ export function PageIcon({
             size === "lg" ? "rounded-xl" : "rounded-md",
           )}
         >
-          <Icon size={size === "lg" ? 40 : 14} />
+          <Icon size={size === "lg" ? 40 : 14} className="opacity-80" />
         </div>
       </div>
     </>

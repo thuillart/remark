@@ -1,18 +1,53 @@
-import { RiChat1Line, RiChatAiLine, RiInbox2Fill } from "@remixicon/react";
+import {
+  RiAndroidFill,
+  RiAppleFill,
+  RiChat1Line,
+  RiChatAiLine,
+  RiCheckboxCircleLine,
+  RiChromeFill,
+  RiComputerLine,
+  RiEdgeFill,
+  RiFirefoxFill,
+  RiFridgeLine,
+  RiGamepadLine,
+  RiInbox2Fill,
+  RiLinkM,
+  RiOperaFill,
+  RiPhoneLine,
+  RiSafariFill,
+  RiSendPlane2Line,
+  RiTabletLine,
+  RiTimer2Line,
+  RiTvLine,
+  RiUbuntuFill,
+  RiWindowsFill,
+} from "@remixicon/react";
 import { and, eq } from "drizzle-orm";
 import { parsePgArray } from "drizzle-orm/pg-core";
 import { headers } from "next/headers";
 import React from "react";
 
+import { TextShimmer } from "@/components/text-shimmer";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { PageIcon } from "@/core/components/page-icon";
-import { getImpactBadgeVariant, getTag } from "@/feedbacks/lib/utils";
+import { DotPattern } from "@/feedbacks/id/components/dot-pattern";
+import { getImpact, getTag } from "@/feedbacks/lib/utils";
 import { auth } from "@/lib/auth";
+import { APP_NAME } from "@/lib/constants";
 import { db } from "@/lib/db/drizzle";
-import { contact, feedback as feedbackTable } from "@/lib/db/schema";
+import {
+  contact as contactTable,
+  feedback as feedbackTable,
+} from "@/lib/db/schema";
 import { FeedbackTag } from "@/lib/schema";
-import { capitalizeFirstLetter } from "@/lib/utils";
+import { format } from "date-fns";
 
 export default async function FeedbackPage({
   params,
@@ -25,7 +60,7 @@ export default async function FeedbackPage({
     headers: await headers(),
   });
 
-  const [existingFeedback] = await db
+  const [feedback] = await db
     .select()
     .from(feedbackTable)
     .where(
@@ -35,12 +70,80 @@ export default async function FeedbackPage({
       ),
     );
 
-  const [existingContact] = await db
-    .select({ name: contact.name })
-    .from(contact)
-    .where(eq(contact.email, existingFeedback.from));
+  if (!feedback) {
+    return (
+      <div className="container">
+        <div className="flex items-center justify-center py-8">
+          <p className="text-muted-foreground">Feedback not found</p>
+        </div>
+      </div>
+    );
+  }
 
-  console.log(JSON.stringify(existingFeedback.tags, null, 2));
+  const [contact] = await db
+    .select({ name: contactTable.name })
+    .from(contactTable)
+    .where(eq(contactTable.email, feedback.from));
+
+  const feedbackTags = feedback.tags
+    ? (typeof feedback.tags === "string"
+        ? parsePgArray(feedback.tags)
+        : feedback.tags
+      ).filter(Boolean)
+    : [];
+
+  const headerItems = [
+    {
+      label: "From",
+      value: contact.name || feedback.from,
+    },
+    {
+      label: "Subject",
+      value: feedback.subject,
+    },
+    {
+      label: "Impact",
+      value: (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge variant={getImpact(feedback.impact).variant}>
+                {getImpact(feedback.impact).label}
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent>
+              <TextShimmer>{`${APP_NAME} AI`}</TextShimmer>{" "}
+              {getImpact(feedback.impact).description}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ),
+    },
+    {
+      label: "Tags",
+      value: (
+        <div className="flex flex-wrap gap-2">
+          {feedbackTags.map((tagValue: FeedbackTag) => {
+            const tag = getTag(tagValue);
+            if (!tag) return null;
+            return (
+              <TooltipProvider key={tagValue}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge variant={tag.variant}>
+                      {React.createElement(tag.Icon)}
+                      {tag.label}
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent>{tag.tooltip}</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            );
+          })}
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div className="container">
@@ -53,57 +156,13 @@ export default async function FeedbackPage({
               Email
             </span>
             <h1 className="w-full truncate text-xl font-bold tracking-tight">
-              {existingFeedback.from}
+              {feedback.from}
             </h1>
           </div>
         </div>
 
-        {/* Header */}
         <div className="grid grid-cols-2 md:grid-cols-4">
-          {[
-            {
-              label: "From",
-              value: existingContact.name || existingFeedback.from,
-            },
-            {
-              label: "Subject",
-              value: existingFeedback.subject,
-            },
-            {
-              label: "Impact",
-              value: (
-                <Badge
-                  size="sm"
-                  variant={getImpactBadgeVariant(existingFeedback.impact)}
-                >
-                  {capitalizeFirstLetter(existingFeedback.impact || "")}
-                </Badge>
-              ),
-            },
-            {
-              label: "Tags",
-              value: (
-                <div className="flex flex-wrap gap-2">
-                  {existingFeedback.tags
-                    ? (typeof existingFeedback.tags === "string"
-                        ? parsePgArray(existingFeedback.tags)
-                        : existingFeedback.tags
-                      ).map((tag) => {
-                        if (!tag) return null;
-                        const tagMeta = getTag(tag as FeedbackTag);
-                        if (!tagMeta) return null;
-                        return (
-                          <Badge key={tag} size="sm" variant={tagMeta.variant}>
-                            {React.createElement(tagMeta.Icon, { size: 16 })}
-                            {tagMeta.label}
-                          </Badge>
-                        );
-                      })
-                    : null}
-                </div>
-              ),
-            },
-          ].map((item) => (
+          {headerItems.map((item) => (
             <div
               key={item.label}
               className="flex w-full flex-col gap-2 md:basis-1/3"
@@ -111,9 +170,164 @@ export default async function FeedbackPage({
               <label className="text-muted-foreground text-xs uppercase">
                 {item.label}
               </label>
-              <div className="flex gap-2 text-sm">{item.value}</div>
+              <div className="flex text-sm/6">{item.value}</div>
             </div>
           ))}
+        </div>
+
+        <div className="mt-8 flex flex-col gap-2">
+          <label className="text-muted-foreground text-xs uppercase">
+            Flow chart
+          </label>
+          <div className="relative w-full overflow-x-auto rounded-md border p-8">
+            <div className="relative mx-auto flex w-fit gap-12">
+              <span className="bg-border pointer-events-none absolute top-1/2 left-8 mt-0.5 h-0.5 w-[calc(100%-4rem)] -translate-y-8 select-none" />
+
+              {feedback.metadata?.device && (
+                <div className="relative z-1 flex min-w-24 flex-col items-center justify-center gap-2">
+                  <div className="group flex cursor-default flex-col items-center justify-center gap-2 rounded-lg outline-none">
+                    <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border">
+                      {feedback.metadata?.device === "mobile" && (
+                        <RiPhoneLine className="opacity-80" />
+                      )}
+                      {feedback.metadata?.device === "tablet" && (
+                        <RiTabletLine className="opacity-80" />
+                      )}
+                      {feedback.metadata?.device === "desktop" && (
+                        <RiComputerLine className="opacity-80" />
+                      )}
+                      {feedback.metadata?.device === "console" && (
+                        <RiGamepadLine className="opacity-80" />
+                      )}
+                      {feedback.metadata?.device === "smarttv" && (
+                        <RiTvLine className="opacity-80" />
+                      )}
+                      {feedback.metadata?.device === "wearable" && (
+                        <RiTimer2Line className="opacity-80" />
+                      )}
+                      {feedback.metadata?.device === "embedded" && (
+                        <RiFridgeLine className="opacity-80" />
+                      )}
+                    </div>
+                    <Badge variant="secondary">Device</Badge>
+                  </div>
+                  <span className="text-muted-foreground text-center text-xs font-normal">
+                    {feedback.metadata?.device}
+                  </span>
+                </div>
+              )}
+
+              {feedback.metadata?.os && (
+                <div className="relative z-1 flex min-w-24 flex-col items-center justify-center gap-2">
+                  <div className="group flex cursor-default flex-col items-center justify-center gap-2 rounded-lg outline-none">
+                    <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border">
+                      {feedback.metadata?.os === "Windows" && (
+                        <RiWindowsFill className="opacity-80" />
+                      )}
+                      {feedback.metadata?.os === "macOS" && (
+                        <RiAppleFill className="mb-0.5 ml-px opacity-80" />
+                      )}
+                      {feedback.metadata?.os === "iOS" && (
+                        <RiAppleFill className="opacity-80" />
+                      )}
+                      {feedback.metadata?.os === "Android" && (
+                        <RiAndroidFill className="opacity-80" />
+                      )}
+                      {feedback.metadata?.os === "Linux" && (
+                        <RiUbuntuFill className="opacity-80" />
+                      )}
+                      {feedback.metadata?.os === "ChromeOS" && (
+                        <RiChromeFill className="opacity-80" />
+                      )}
+                    </div>
+                    <Badge variant="secondary">OS</Badge>
+                  </div>
+                  <span className="text-muted-foreground text-center text-xs font-normal">
+                    {feedback.metadata?.os}
+                  </span>
+                </div>
+              )}
+
+              {feedback.metadata?.browser && (
+                <div className="relative z-1 flex min-w-24 flex-col items-center justify-center gap-2">
+                  <div className="group flex cursor-default flex-col items-center justify-center gap-2 rounded-lg outline-none">
+                    <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border">
+                      {feedback.metadata?.browser === "Chrome" && (
+                        <RiChromeFill className="opacity-80" />
+                      )}
+                      {feedback.metadata?.browser === "Firefox" && (
+                        <RiFirefoxFill className="opacity-80" />
+                      )}
+                      {feedback.metadata?.browser === "Safari" && (
+                        <RiSafariFill className="opacity-80" />
+                      )}
+                      {feedback.metadata?.browser === "Edge" && (
+                        <RiEdgeFill className="opacity-80" />
+                      )}
+                      {feedback.metadata?.browser === "Opera" && (
+                        <RiOperaFill className="opacity-80" />
+                      )}
+                      {feedback.metadata?.browser === "Brave" && (
+                        <RiChromeFill className="opacity-80" />
+                      )}
+                      {feedback.metadata?.browser === "Arc" && (
+                        <RiChromeFill className="opacity-80" />
+                      )}
+                      {feedback.metadata?.browser === "Zen" && (
+                        <RiFirefoxFill className="opacity-80" />
+                      )}
+                    </div>
+                    <Badge variant="secondary">Browser</Badge>
+                  </div>
+                  <span className="text-muted-foreground text-center text-xs font-normal">
+                    {feedback.metadata?.browser}
+                  </span>
+                </div>
+              )}
+
+              {feedback.metadata?.path && (
+                <div className="relative z-1 flex min-w-24 flex-col items-center justify-center gap-2">
+                  <div className="group flex cursor-default flex-col items-center justify-center gap-2 rounded-lg outline-none">
+                    <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border">
+                      <RiLinkM className="opacity-80" />
+                    </div>
+                    <Badge variant="secondary">Page</Badge>
+                  </div>
+                  <span className="text-muted-foreground text-center text-xs font-normal">
+                    {feedback.metadata?.path.split("/").pop()}
+                  </span>
+                </div>
+              )}
+
+              <div className="relative z-1 flex min-w-24 flex-col items-center justify-center gap-2">
+                <div className="group flex cursor-default flex-col items-center justify-center gap-2 rounded-lg outline-none">
+                  <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border">
+                    <RiSendPlane2Line size={20} className="ml-px opacity-80" />
+                  </div>
+                  <Badge variant="secondary">Sent</Badge>
+                </div>
+                <span className="text-muted-foreground text-center text-xs font-normal">
+                  {format(feedback.createdAt, "MMM d, h:mm a")}
+                </span>
+              </div>
+
+              <div className="relative z-1 flex min-w-24 flex-col items-center justify-center gap-2">
+                <div className="group flex cursor-default flex-col items-center justify-center gap-2 rounded-lg outline-none">
+                  <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border">
+                    <RiCheckboxCircleLine
+                      size={20}
+                      className="ml-px text-green-700 opacity-80 dark:text-green-400"
+                    />
+                  </div>
+                  <Badge variant="green">Processed</Badge>
+                </div>
+                <span className="text-muted-foreground text-center text-xs font-normal">
+                  {format(feedback.createdAt, "MMM d, h:mm a")}
+                </span>
+              </div>
+            </div>
+            <DotPattern cy={1} cr={1} cx={1} y={7} x={6} />
+          </div>
         </div>
 
         <Tabs defaultValue="tab-1" className="gap-0">
@@ -138,11 +352,11 @@ export default async function FeedbackPage({
             value="tab-1"
             className="-mt-px rounded-lg rounded-tl-none border p-4 pt-5"
           >
-            {existingFeedback.summary?.length === 1 ? (
-              <p>{existingFeedback.summary[0]}</p>
+            {feedback.summary?.length === 1 ? (
+              <p>{feedback.summary[0]}</p>
             ) : (
               <ul className="list-disc pl-4">
-                {existingFeedback.summary?.map((item, index) => (
+                {feedback.summary?.map((item, index) => (
                   <li key={index}>{item}</li>
                 ))}
               </ul>
@@ -152,11 +366,7 @@ export default async function FeedbackPage({
             value="tab-2"
             className="-mt-px rounded-lg rounded-tl-none border p-4 pt-5"
           >
-            {typeof existingFeedback.text === "string" ? (
-              <p>{existingFeedback.text}</p>
-            ) : (
-              <p>{existingFeedback.text || ""}</p>
-            )}
+            <p>{feedback.text || ""}</p>
           </TabsContent>
         </Tabs>
       </div>

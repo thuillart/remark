@@ -1,123 +1,156 @@
 import { type BadgeProps } from "@/components/ui/badge";
-import { FeedbackTag } from "@/lib/schema";
+import { FeedbackImpact, FeedbackTag } from "@/lib/schema";
 import {
   RemixiconComponentType,
-  RiBookLine,
-  RiBugLine,
+  RiAccessibilityLine,
+  RiAuctionLine,
+  RiBillLine,
+  RiBracketsLine,
+  RiBrushLine,
+  RiBug2Line,
+  RiFlowChart,
+  RiHeart3Line,
   RiLightbulbLine,
   RiMoneyDollarBoxLine,
-  RiPaletteLine,
   RiShieldLine,
-  RiSpeedLine,
-  RiTerminalLine,
-  RiThumbUpLine,
+  RiSpeedUpLine,
   RiTranslate2,
-  RiUserVoiceLine,
 } from "@remixicon/react";
 
-export function getTag(tag: FeedbackTag):
-  | {
-      Icon: RemixiconComponentType;
-      label: string;
-      variant: BadgeProps["variant"];
-    }
-  | undefined {
-  if (!tag) return undefined;
+interface TagProps {
+  Icon: RemixiconComponentType;
+  label: string;
+  variant: BadgeProps["variant"];
+  tooltip: string;
+}
 
+export function getTag(tag: FeedbackTag): TagProps {
   switch (tag) {
     case "bug":
       return {
-        Icon: RiBugLine,
+        Icon: RiBug2Line,
         label: "Bug",
         variant: "destructive",
+        tooltip: "When something's not working right",
       };
     case "feature_request":
       return {
         Icon: RiLightbulbLine,
-        label: "Request",
+        label: "Feature Request",
         variant: "yellow",
+        tooltip: "When someone wants a new feature",
       };
     case "ui":
       return {
-        Icon: RiPaletteLine,
+        Icon: RiBrushLine,
         label: "UI",
         variant: "pink",
+        tooltip: "When the design needs tweaking",
       };
     case "ux":
       return {
-        Icon: RiUserVoiceLine,
+        Icon: RiFlowChart,
         label: "UX",
         variant: "orange",
+        tooltip: "When the user flow feels off",
       };
     case "speed":
       return {
-        Icon: RiSpeedLine,
+        Icon: RiSpeedUpLine,
         label: "Speed",
-        variant: "yellow",
+        variant: "blue",
+        tooltip: "When things are running slow",
       };
     case "security":
       return {
         Icon: RiShieldLine,
         label: "Security",
         variant: "destructive",
+        tooltip: "For security-related concerns",
       };
     case "pricing":
       return {
         Icon: RiMoneyDollarBoxLine,
         label: "Pricing",
         variant: "green",
+        tooltip: "When the pricing needs adjustment",
       };
     case "billing":
       return {
-        Icon: RiMoneyDollarBoxLine,
+        Icon: RiBillLine,
         label: "Billing",
         variant: "green",
+        tooltip: "When there's a billing problem",
       };
     case "dx":
       return {
-        Icon: RiTerminalLine,
+        Icon: RiBracketsLine,
         label: "DX",
         variant: "indigo",
+        tooltip: "When the dev experience could be better",
       };
     case "i18n":
       return {
         Icon: RiTranslate2,
         label: "i18n",
-        variant: "yellow",
+        variant: "blue",
+        tooltip: "When language support is needed",
       };
     case "compliance":
       return {
-        Icon: RiBookLine,
+        Icon: RiAuctionLine,
         label: "Compliance",
         variant: "purple",
+        tooltip: "When there's a compliance issue",
       };
     case "a11y":
       return {
-        Icon: RiUserVoiceLine,
+        Icon: RiAccessibilityLine,
         label: "A11y",
         variant: "blue",
+        tooltip: "When accessibility needs improvement",
       };
     case "kudos":
       return {
-        Icon: RiThumbUpLine,
+        Icon: RiHeart3Line,
         label: "Kudos",
         variant: "teal",
+        tooltip: "When someone wants to say thanks",
       };
-    default:
-      return undefined;
   }
 }
 
-export function getImpactBadgeVariant(
-  impact: string | undefined,
-): BadgeProps["variant"] {
-  if (!impact) return "secondary";
-  switch (impact.toLowerCase()) {
+interface ImpactProps {
+  label: string;
+  variant: BadgeProps["variant"];
+  description: string;
+}
+
+export function getImpact(impact: FeedbackImpact): ImpactProps {
+  switch (impact) {
     case "critical":
-      return "destructive";
+      return {
+        label: "Critical",
+        variant: "destructive",
+        description: "thinks this needs attention now before it gets worse",
+      };
     case "major":
-      return "warning";
-    default:
-      return "secondary";
+      return {
+        label: "Major",
+        variant: "warning",
+        description: "thinks this could become serious if not fixed soon",
+      };
+    case "minor":
+      return {
+        label: "Minor",
+        variant: "secondary",
+        description: "thinks this can wait but worth checking soon",
+      };
+    case "positive":
+      return {
+        label: "Positive",
+        variant: "green",
+        description: "simply thinks that all your hard work is paying off",
+      };
   }
 }
