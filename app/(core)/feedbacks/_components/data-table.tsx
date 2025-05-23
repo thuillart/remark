@@ -30,6 +30,11 @@ import { TextShimmer } from "@/components/text-shimmer";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -113,7 +118,7 @@ export const columns: ColumnDef<Feedback>[] = [
               {getImpact(row.original.impact).label}
             </Badge>
           </TooltipTrigger>
-          <TooltipContent className="max-w-3xs px-2 py-1">
+          <TooltipContent className="max-w-66 px-2 py-1">
             <TextShimmer>{`${APP_NAME} AI`}</TextShimmer>{" "}
             {getImpact(row.original.impact).description}
           </TooltipContent>
@@ -139,39 +144,53 @@ export const columns: ColumnDef<Feedback>[] = [
       return (
         <div className="flex flex-nowrap gap-2">
           {firstTag && (
-            <Badge
-              variant={getTag(firstTag as FeedbackTag).variant}
-              className="relative"
-            >
-              {React.createElement(getTag(firstTag as FeedbackTag).Icon, {
-                size: 16,
-              })}
-              {getTag(firstTag as FeedbackTag).label}
-            </Badge>
-          )}
-          {hasMore && (
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Badge variant="outline" className="cursor-pointer">
-                    +{otherTags.length}
+                  <Badge
+                    variant={getTag(firstTag as FeedbackTag).variant}
+                    className="relative cursor-pointer"
+                  >
+                    {React.createElement(getTag(firstTag as FeedbackTag).Icon, {
+                      size: 16,
+                    })}
+                    {getTag(firstTag as FeedbackTag).label}
                   </Badge>
                 </TooltipTrigger>
-                <TooltipContent className="p-1">
-                  <div className="flex flex-wrap gap-1">
-                    {otherTags.map((tag) => {
-                      const tagMeta = getTag(tag as FeedbackTag);
-                      return (
-                        <Badge key={tag} variant={tagMeta.variant}>
-                          {React.createElement(tagMeta.Icon, { size: 16 })}
-                          {tagMeta.label}
-                        </Badge>
-                      );
-                    })}
-                  </div>
+                <TooltipContent className="px-2 py-1">
+                  {getTag(firstTag as FeedbackTag).tooltip}
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
+          )}
+          {hasMore && (
+            <HoverCard openDelay={0} closeDelay={100}>
+              <HoverCardTrigger asChild>
+                <Badge variant="outline">+{otherTags.length}</Badge>
+              </HoverCardTrigger>
+              <HoverCardContent side="top" className="w-fit p-1 shadow-none">
+                <div className="flex flex-wrap gap-1">
+                  {otherTags.map((tag) => {
+                    const tagMeta = getTag(tag as FeedbackTag);
+                    return (
+                      <TooltipProvider key={tag}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Badge variant={tagMeta.variant}>
+                              {React.createElement(tagMeta.Icon, { size: 16 })}
+                              {tagMeta.label}
+                            </Badge>
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-2xs px-2 py-1">
+                            {tagMeta.tooltip}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    );
+                  })}
+                </div>
+              </HoverCardContent>
+            </HoverCard>
           )}
         </div>
       );
