@@ -126,10 +126,10 @@ export const enrichFeedback = actionClient
             1. Split into an array of issues. 
             2. Use the user's first name if provided; otherwise, use "The user".
             3. Imitate human-like patterns by using a casual and natural language. 
-        5. Metadata: You MUST use EXACTLY one of the allowed values. If it matches a value from the following lists, use it; otherwise, omit the field:
-            1. os: Windows, macOS, iOS, Android, Linux, ChromeOS.
-            2. device: mobile, tablet, desktop, console, smarttv, wearable, embedded.
-            3. browser: Chrome, Firefox, Safari, Edge, Opera, Brave, Arc, Zen, Samsung Internet.
+        5. Metadata: You MUST use EXACTLY one of the allowed values below for each field (case-sensitive, spelling must match exactly, no extra spaces). If no exact match, omit the field.
+            - OS: Windows, macOS, iOS, Android, Linux, ChromeOS
+            - Device: mobile, tablet, desktop, console, smarttv, wearable, embedded
+            - Browser: Chrome, Firefox, Safari, Edge, Opera, Brave, Arc, Zen, Samsung Internet
       `,
     });
 
