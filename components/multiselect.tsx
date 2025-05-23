@@ -422,8 +422,6 @@ const MultipleSelector = ({
     return undefined;
   }, [creatable, commandProps?.filter]);
 
-  console.log(value);
-
   return (
     <Command
       ref={dropdownRef}

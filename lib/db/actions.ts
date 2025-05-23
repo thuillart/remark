@@ -86,8 +86,6 @@ export const enrichFeedback = actionClient
     }),
   )
   .action(async ({ parsedInput: { from, text, metadata } }) => {
-    console.log("about to enrich feedback", from, text, metadata);
-
     const existingContact = await db.query.contact.findFirst({
       where: eq(contact.email, from),
     });
@@ -136,8 +134,6 @@ export const enrichFeedback = actionClient
         }
       `,
     });
-
-    console.log("what ai said", output);
 
     // Strip markdown code block formatting if present
     const cleanOutput = output.replace(/```json\n?|\n?```/g, "").trim();

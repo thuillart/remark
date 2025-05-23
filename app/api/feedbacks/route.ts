@@ -46,16 +46,12 @@ async function secretPOST(request: NextRequest, context: Context) {
   const body = await request.json();
   const { from, text, metadata } = bodySchema.parse(body);
 
-  console.log("about to enrich feedback", from, text, metadata);
-
   // First enrich the feedback
   const result = await enrichFeedback({
     from,
     text,
     metadata,
   });
-
-  console.log("ai done", result?.data?.enrichment);
 
   if (!result.data) {
     return new Response(
