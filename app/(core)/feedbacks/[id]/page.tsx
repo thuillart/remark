@@ -212,7 +212,13 @@ export default async function FeedbackPage({
                     <Badge variant="secondary">Device</Badge>
                   </div>
                   <span className="text-muted-foreground text-center text-xs font-normal">
-                    {feedback.metadata?.device}
+                    {feedback.metadata?.device === "mobile" && "Mobile"}
+                    {feedback.metadata?.device === "tablet" && "Tablet"}
+                    {feedback.metadata?.device === "desktop" && "Desktop"}
+                    {feedback.metadata?.device === "console" && "Console"}
+                    {feedback.metadata?.device === "smarttv" && "Smart TV"}
+                    {feedback.metadata?.device === "wearable" && "Wearable"}
+                    {feedback.metadata?.device === "embedded" && "Embedded"}
                   </span>
                 </div>
               )}
@@ -279,7 +285,7 @@ export default async function FeedbackPage({
                     </div>
                     <Badge variant="secondary">Browser</Badge>
                   </div>
-                  <span className="text-muted-foreground text-center text-xs font-normal">
+                  <span className="text-muted-foreground text-center text-xs">
                     {feedback.metadata?.browser}
                   </span>
                 </div>
@@ -293,7 +299,7 @@ export default async function FeedbackPage({
                     </div>
                     <Badge variant="secondary">Page</Badge>
                   </div>
-                  <span className="text-muted-foreground text-center text-xs font-normal">
+                  <span className="text-muted-foreground text-center text-xs">
                     {feedback.metadata?.path.split("/").pop()}
                   </span>
                 </div>
@@ -306,7 +312,7 @@ export default async function FeedbackPage({
                   </div>
                   <Badge variant="secondary">Sent</Badge>
                 </div>
-                <span className="text-muted-foreground text-center text-xs font-normal">
+                <span className="text-muted-foreground text-center text-xs">
                   {format(feedback.createdAt, "MMM d, h:mm a")}
                 </span>
               </div>
@@ -321,7 +327,7 @@ export default async function FeedbackPage({
                   </div>
                   <Badge variant="green">Processed</Badge>
                 </div>
-                <span className="text-muted-foreground text-center text-xs font-normal">
+                <span className="text-muted-foreground text-center text-xs">
                   {format(feedback.createdAt, "MMM d, h:mm a")}
                 </span>
               </div>
