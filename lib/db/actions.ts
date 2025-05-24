@@ -115,9 +115,8 @@ export const enrichFeedback = actionClient
 
         1. Tags: 
            - For positive feedback: use "kudos"
-           - For issues: pick the most relevant tag(s) that best categorize the feedback
-           - Available tags: bug, feature_request, ui, ux, speed, security, pricing, billing, dx, i18n, compliance, a11y
-           - Use multiple tags only when the feedback contains distinct, separate issues
+           - For issues: select the most relevant tag(s) from: bug, feature_request, ui, ux, speed, security, pricing, billing, dx, i18n, compliance, a11y
+           - Only use multiple tags for completely unrelated issues
         2. Impact: Classify as: positive (favorable), minor (low-impact), major (medium-impact), critical (high-impact or blocking).
         3. Subject: Write the core idea in 1-6 words natural phrase.
         4. Summary: 
