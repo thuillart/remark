@@ -90,6 +90,8 @@ export const enrichFeedback = actionClient
       where: eq(contact.email, from),
     });
 
+    console.log("we are about to pass ");
+
     const { text: output } = await generateText({
       model: google("gemini-2.5-flash-preview-04-17"),
       toolChoice: "none",
@@ -122,10 +124,15 @@ export const enrichFeedback = actionClient
             1. Split into an array of issues. 
             2. Use the user's first name if provided; otherwise, use "The user".
             3. Imitate human-like patterns by using a casual and natural language. 
-        5. Metadata: You MUST use EXACTLY one of the allowed values below for each field (case-sensitive, spelling must match exactly, no extra spaces). If no exact match, omit the field.
-            - OS: Windows, macOS, iOS, Android, Linux, ChromeOS, iPadOS, tvOS, watchOS
-            - Device: mobile, tablet, desktop, console, smarttv, wearable, embedded
-            - Browser: Chrome, Firefox, Safari, Edge, Opera, Brave, Arc, Zen, Samsung Internet
+        5. Metadata: For each field below, match the input to the EXACT allowed values (case-sensitive). Common variations:
+           - OS: 
+             * "Mac OS", "MacOS", "Mac" → "macOS"
+             * "Windows 10", "Windows 11", "Win" → "Windows"
+             * "Chrome OS", "ChromeOS" → "ChromeOS"
+             * Other values must match exactly: iOS, Android, Linux, iPadOS, tvOS, watchOS
+           - Device: mobile, tablet, desktop, console, smarttv, wearable, embedded
+           - Browser: Chrome, Firefox, Safari, Edge, Opera, Brave, Arc, Zen, Samsung Internet
+           If you can't match exactly, omit the field entirely.
         
         Output a raw JSON object matching this structure:
 
@@ -134,10 +141,12 @@ export const enrichFeedback = actionClient
           "impact": "",
           "subject": "",
           "summary": [],
-          "metadata": { "os": "", "device": "", "browser": "" }
+          "metadata": {}
         }
       `,
     });
+
+    console.log("unprocessed output by AI: ", output);
 
     // Strip markdown code block formatting if present
     const cleanOutput = output.replace(/```json\n?|\n?```/g, "").trim();
