@@ -90,6 +90,8 @@ export const enrichFeedback = actionClient
       where: eq(contact.email, from),
     });
 
+    console.log("we are about to pass ");
+
     const { text: output } = await generateText({
       model: google("gemini-2.5-flash-preview-04-17"),
       toolChoice: "none",
@@ -111,29 +113,50 @@ export const enrichFeedback = actionClient
 
         Instructions: 
 
-        1. Tags: At least one from: bug, feature_request, ui, ux, speed, security, pricing, billing, dx, i18n, compliance, a11y, kudos.
-        2. Impact: Classify as: positive (favorable), minor (low-impact), major (medium-impact), critical (high-impact or blocking).
-        3. Subject: Write the core idea in 1-6 words natural phrase.
+        1. Tags: 
+           - For purely positive feedback: use "kudos"
+           - For issues: select from: bug, feature_request, ui, ux, speed, security, pricing, billing, dx, i18n, compliance, a11y
+           - Only use more than one tag when issues are unrelated
+        2. Impact: Classify as: critical (blocking), major (significant), minor (low), positive (praise only)
+        3. Subject:
+           1. Write a natural 1-6 word phrase
+           2. Start with the most impactful issue
+           3. Use present tense and active voice
+           4. Connect issues with "and" instead of commas
+           Example: "Incorrect billing details and slow page"
         4. Summary: 
-            1. Split into an array of issues. 
-            2. Use the user's first name if provided; otherwise, use "The user".
-            3. Imitate human-like patterns by using a casual and natural language. 
-        5. Metadata: You MUST use EXACTLY one of the allowed values below for each field (case-sensitive, spelling must match exactly, no extra spaces). If no exact match, omit the field.
-            - OS: Windows, macOS, iOS, Android, Linux, ChromeOS, iPadOS, tvOS, watchOS
-            - Device: mobile, tablet, desktop, console, smarttv, wearable, embedded
-            - Browser: Chrome, Firefox, Safari, Edge, Opera, Brave, Arc, Zen, Samsung Internet
-        
-        Output a raw JSON object matching this structure:
+            1. List each issue as a separate point
+            2. Write naturally as if telling a colleague about the feedback
+            3. Keep the tone friendly but professional
+            4. Specify when issues are user-specific
+            5. Style rules:
+               - Use present tense and active voice
+               - Use contractions and informal verbs ("says" over "reports")
+               - Avoid passive voice and formal terms
+               - Use pronouns to avoid repetition
+               - Start subsequent points with "Also" or "Additionally"
+            Example:
+            [
+              "Armand says his subscription details aren't showing up correctly.",
+              "Also, the billing page sometimes takes up to 30 seconds to load on his end."
+            ]
+        5. Metadata: Match input to exact values (case-sensitive). Omit if no match.
+           - OS: "Mac OS"/"MacOS"/"Mac" → "macOS". Others: Windows, iOS, Android, Linux, ChromeOS, iPadOS, tvOS, watchOS
+           - Device: mobile, tablet, desktop, console, smarttv, wearable, embedded
+           - Browser: Chrome, Firefox, Safari, Edge, Opera, Brave, Arc, Zen, Samsung Internet
+        6. The output must be a valid JSON object matching this structure:
 
         {
           "tags": [],
           "impact": "",
           "subject": "",
           "summary": [],
-          "metadata": { "os": "", "device": "", "browser": "" }
+          "metadata": {}
         }
       `,
     });
+
+    console.log("unprocessed output by AI: ", output);
 
     // Strip markdown code block formatting if present
     const cleanOutput = output.replace(/```json\n?|\n?```/g, "").trim();
