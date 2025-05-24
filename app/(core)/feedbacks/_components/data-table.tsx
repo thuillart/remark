@@ -6,7 +6,6 @@ import {
   RiArrowRightUpLine,
   RiCalendarLine,
   RiChat1Line,
-  RiChatAiFill,
   RiCloseLine,
   RiFilter3Line,
 } from "@remixicon/react";
@@ -67,7 +66,6 @@ import {
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { EmptyState } from "@/core/components/empty-state";
@@ -77,6 +75,7 @@ import { getImpact, getTag } from "@/feedbacks/lib/utils";
 import { APP_NAME } from "@/lib/constants";
 import { FeedbackImpact, FeedbackTag } from "@/lib/schema";
 import { capitalizeFirstLetter, cn } from "@/lib/utils";
+import { MessageSquare } from "lucide-react";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -97,7 +96,7 @@ export const columns: ColumnDef<Feedback>[] = [
           href={`/feedbacks/${row.original.id}`}
           className="group/link flex items-center gap-3"
         >
-          <PageIcon size="md" Icon={RiChatAiFill} />
+          <PageIcon size="md" Icon={MessageSquare} />
           <span className="decoration-muted-foreground pr-4.5 whitespace-nowrap underline underline-offset-5 transition-[color,text-decoration-color] duration-150 ease-in-out group-hover/link:decoration-current">
             {row.original.from}
             <RiArrowRightUpLine className="text-muted-foreground group-hover/link:text-primary absolute mt-1.25 inline-block size-[1em] no-underline transition duration-[inherit] ease-[inherit] group-hover/link:translate-x-px group-hover/link:-translate-y-px" />
@@ -144,24 +143,15 @@ export const columns: ColumnDef<Feedback>[] = [
       return (
         <div className="flex flex-nowrap gap-2">
           {firstTag && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Badge
-                    variant={getTag(firstTag as FeedbackTag).variant}
-                    className="relative cursor-pointer"
-                  >
-                    {React.createElement(getTag(firstTag as FeedbackTag).Icon, {
-                      size: 16,
-                    })}
-                    {getTag(firstTag as FeedbackTag).label}
-                  </Badge>
-                </TooltipTrigger>
-                <TooltipContent className="px-2 py-1">
-                  {getTag(firstTag as FeedbackTag).tooltip}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            <Badge
+              variant={getTag(firstTag as FeedbackTag).variant}
+              className="relative cursor-pointer"
+            >
+              {React.createElement(getTag(firstTag as FeedbackTag).Icon, {
+                size: 16,
+              })}
+              {getTag(firstTag as FeedbackTag).label}
+            </Badge>
           )}
           {hasMore && (
             <HoverCard openDelay={0} closeDelay={100}>
@@ -173,19 +163,10 @@ export const columns: ColumnDef<Feedback>[] = [
                   {otherTags.map((tag) => {
                     const tagMeta = getTag(tag as FeedbackTag);
                     return (
-                      <TooltipProvider key={tag}>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Badge variant={tagMeta.variant}>
-                              {React.createElement(tagMeta.Icon, { size: 16 })}
-                              {tagMeta.label}
-                            </Badge>
-                          </TooltipTrigger>
-                          <TooltipContent className="max-w-2xs px-2 py-1">
-                            {tagMeta.tooltip}
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
+                      <Badge key={tag} variant={tagMeta.variant}>
+                        {React.createElement(tagMeta.Icon, { size: 16 })}
+                        {tagMeta.label}
+                      </Badge>
                     );
                   })}
                 </div>

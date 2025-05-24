@@ -126,20 +126,13 @@ export default async function FeedbackPage({
       value: (
         <div className="flex flex-wrap gap-2">
           {feedbackTags.map((tagValue: FeedbackTag) => {
-            const tag = getTag(tagValue, feedback.impact);
+            const tag = getTag(tagValue);
             if (!tag) return null;
             return (
-              <TooltipProvider key={tagValue}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Badge variant={tag.variant}>
-                      {React.createElement(tag.Icon)}
-                      {tag.label}
-                    </Badge>
-                  </TooltipTrigger>
-                  <TooltipContent>{tag.tooltip}</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              <Badge key={tagValue} variant={tag.variant}>
+                {React.createElement(tag.Icon)}
+                {tag.label}
+              </Badge>
             );
           })}
         </div>
