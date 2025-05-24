@@ -114,26 +114,26 @@ export const enrichFeedback = actionClient
         Instructions: 
 
         1. Tags: 
-           - If the feedback is purely positive: use ONLY "kudos"
-           - If the feedback contains any issues: select the most relevant tag(s) from: bug, feature_request, ui, ux, speed, security, pricing, billing, dx, i18n, compliance, a11y
-           - Only use multiple tags for completely unrelated issues
-        2. Impact: Classify as: positive (favorable), minor (low-impact), major (medium-impact), critical (high-impact or blocking).
-        3. Subject: Write a natural, descriptive phrase (1-6 words) that captures the main issues. Avoid generic terms like "feedback" or category names.
+           - For purely positive feedback: use "kudos"
+           - For issues: select from: bug, feature_request, ui, ux, speed, security, pricing, billing, dx, i18n, compliance, a11y
+           - Only use more than one tag when issues are unrelated
+        2. Impact: Classify as: critical (blocking), major (significant), minor (low), positive (praise only)
+        3. Subject: Write a natural 1-6 word phrase that captures the main issues. Start with the most impactful issue. Example: "Loading slowness and incorrect billing details"
         4. Summary: 
-            1. Split into an array of issues. 
-            2. Use the user's first name if provided; otherwise, use "The user".
-            3. Imitate human-like patterns by using a casual and natural language. 
-        5. Metadata: For each field below, match the input to the EXACT allowed values (case-sensitive). Common variations:
-           - OS: 
-             * "Mac OS", "MacOS", "Mac" → "macOS"
-             * "Windows 10", "Windows 11", "Win" → "Windows"
-             * "Chrome OS", "ChromeOS" → "ChromeOS"
-             * Other values must match exactly: iOS, Android, Linux, iPadOS, tvOS, watchOS
+            1. List each issue as a separate point
+            2. Write naturally as if telling a colleague about the feedback
+            3. Keep the tone friendly but professional
+            4. Specify when issues are user-specific
+            Example:
+            [
+              "Armand says his subscription details aren't showing up correctly.",
+              "Also, the billing page sometimes takes up to 30 seconds to load on his end."
+            ]
+        5. Metadata: Match input to exact values (case-sensitive). Omit if no match.
+           - OS: "Mac OS"/"MacOS"/"Mac" → "macOS". Others: Windows, iOS, Android, Linux, ChromeOS, iPadOS, tvOS, watchOS
            - Device: mobile, tablet, desktop, console, smarttv, wearable, embedded
            - Browser: Chrome, Firefox, Safari, Edge, Opera, Brave, Arc, Zen, Samsung Internet
-           If you can't match exactly, omit the field entirely.
-        
-        Output a raw JSON object matching this structure:
+        6. The output must be a valid JSON object matching this structure:
 
         {
           "tags": [],
