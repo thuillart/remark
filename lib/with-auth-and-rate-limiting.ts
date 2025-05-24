@@ -75,11 +75,11 @@ export function withAuthAndRateLimiting(handler: Handler): Handler {
           break;
         case "USAGE_EXCEEDED":
           message =
-            "Monthly usage limit exceeded. Please upgrade your plan for more requests.";
+            "Monthly usage limit exceeded. Wait for next month or upgrade for more requests.";
           break;
         case "RATE_LIMITED": {
-          const retryAfterInSeconds = error.details?.tryAgainIn || 60;
-          message = `Rate limit exceeded. Please try again in ${retryAfterInSeconds} seconds.`;
+          message =
+            "You've reached your daily limit. Try again tomorrow or upgrade to get rid of it.";
           status = 429;
           break;
         }
