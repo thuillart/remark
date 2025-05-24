@@ -85,10 +85,13 @@ export function withAuthAndRateLimiting(handler: Handler): Handler {
         }
       }
 
-      return new Response(JSON.stringify({ error: message }), {
-        status,
-        headers: { "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({ code: error.code, error: message }),
+        {
+          status,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     }
 
     if (!key) {
