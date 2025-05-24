@@ -5,20 +5,12 @@ import {
   RiChatAiLine,
   RiCheckboxCircleLine,
   RiChromeFill,
-  RiComputerLine,
   RiEdgeFill,
   RiFirefoxFill,
-  RiFridgeLine,
-  RiGamepadLine,
-  RiInbox2Fill,
   RiLinkM,
   RiOperaFill,
-  RiPhoneLine,
   RiSafariFill,
   RiSendPlane2Line,
-  RiTabletLine,
-  RiTimer2Line,
-  RiTvLine,
   RiUbuntuFill,
   RiWindowsFill,
 } from "@remixicon/react";
@@ -48,6 +40,16 @@ import {
 } from "@/lib/db/schema";
 import { FeedbackTag } from "@/lib/schema";
 import { format } from "date-fns";
+import {
+  Gamepad2,
+  MessageSquare,
+  Monitor,
+  Refrigerator,
+  Smartphone,
+  Tablet,
+  TvMinimal,
+  Watch,
+} from "lucide-react";
 
 export default async function FeedbackPage({
   params,
@@ -124,7 +126,7 @@ export default async function FeedbackPage({
       value: (
         <div className="flex flex-wrap gap-2">
           {feedbackTags.map((tagValue: FeedbackTag) => {
-            const tag = getTag(tagValue);
+            const tag = getTag(tagValue, feedback.impact);
             if (!tag) return null;
             return (
               <TooltipProvider key={tagValue}>
@@ -149,7 +151,7 @@ export default async function FeedbackPage({
     <div className="container">
       <div className="space-y-8 py-8">
         <div className="flex flex-col items-center gap-6 md:flex-row">
-          <PageIcon size="lg" Icon={RiInbox2Fill} />
+          <PageIcon size="lg" Icon={MessageSquare} />
 
           <div className="w-full overflow-hidden text-center md:text-left">
             <span className="text-muted-foreground text-sm font-semibold">
@@ -188,25 +190,25 @@ export default async function FeedbackPage({
                   <div className="group flex cursor-default flex-col items-center justify-center gap-2 rounded-lg outline-none">
                     <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border">
                       {feedback.metadata?.device === "mobile" && (
-                        <RiPhoneLine className="opacity-80" />
+                        <Smartphone className="opacity-80" />
                       )}
                       {feedback.metadata?.device === "tablet" && (
-                        <RiTabletLine className="opacity-80" />
+                        <Tablet className="opacity-80" />
                       )}
                       {feedback.metadata?.device === "desktop" && (
-                        <RiComputerLine className="opacity-80" />
+                        <Monitor className="opacity-80" />
                       )}
                       {feedback.metadata?.device === "console" && (
-                        <RiGamepadLine className="opacity-80" />
+                        <Gamepad2 className="opacity-80" />
                       )}
                       {feedback.metadata?.device === "smarttv" && (
-                        <RiTvLine className="opacity-80" />
+                        <TvMinimal className="opacity-80" />
                       )}
                       {feedback.metadata?.device === "wearable" && (
-                        <RiTimer2Line className="opacity-80" />
+                        <Watch className="opacity-80" />
                       )}
                       {feedback.metadata?.device === "embedded" && (
-                        <RiFridgeLine className="opacity-80" />
+                        <Refrigerator className="opacity-80" />
                       )}
                     </div>
                     <Badge variant="secondary">Device</Badge>

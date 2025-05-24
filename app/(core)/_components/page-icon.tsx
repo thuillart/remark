@@ -1,12 +1,13 @@
+import { LucideIcon } from "lucide-react";
+
 import { cn } from "@/lib/utils";
-import { RemixiconComponentType } from "@remixicon/react";
 
 export function PageIcon({
   size,
   Icon,
 }: {
   size: "md" | "lg";
-  Icon: RemixiconComponentType;
+  Icon: LucideIcon;
 }) {
   return (
     <>
