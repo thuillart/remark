@@ -1,6 +1,5 @@
 import "server-only";
 
-import { RiGroup3Line } from "@remixicon/react";
 import {
   endOfWeek,
   format,
@@ -20,13 +19,14 @@ import { PageIcon } from "@/core/components/page-icon";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db/drizzle";
 import { contact, feedback } from "@/lib/db/schema";
+import { SquareUser } from "lucide-react";
 
 export default function ContactsPage() {
   return (
     <div className="container">
       <div className="py-8">
         <div className="flex flex-col items-center gap-6 md:flex-row">
-          <PageIcon size="lg" Icon={RiGroup3Line} />
+          <PageIcon size="lg" Icon={SquareUser} />
           <div className="text-center md:text-left">
             <span className="text-muted-foreground text-sm font-semibold">
               Segments
