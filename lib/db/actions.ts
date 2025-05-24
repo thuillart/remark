@@ -118,7 +118,12 @@ export const enrichFeedback = actionClient
            - For issues: select from: bug, feature_request, ui, ux, speed, security, pricing, billing, dx, i18n, compliance, a11y
            - Only use more than one tag when issues are unrelated
         2. Impact: Classify as: critical (blocking), major (significant), minor (low), positive (praise only)
-        3. Subject: Write a natural 1-6 word phrase that captures the main issues. Start with the most impactful issue. Use present tense and active voice. Connect issues with "and" instead of commas. Example: "Incorrect billing details and slow page"
+        3. Subject:
+           1. Write a natural 1-6 word phrase
+           2. Start with the most impactful issue
+           3. Use present tense and active voice
+           4. Connect issues with "and" instead of commas
+           Example: "Incorrect billing details and slow page"
         4. Summary: 
             1. List each issue as a separate point
             2. Write naturally as if telling a colleague about the feedback
