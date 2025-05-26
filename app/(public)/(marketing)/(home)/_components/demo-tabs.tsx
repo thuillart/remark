@@ -24,6 +24,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getImpact, getTag } from "@/feedbacks/lib/utils";
+import { FeedbackImpact, FeedbackTag } from "@/lib/schema";
 import { capitalizeFirstLetter, cn } from "@/lib/utils";
 
 type Tab = {
@@ -207,36 +209,47 @@ function hoursAgo(hours: number): Date {
   return date;
 }
 
-const feedbacks = [
+const feedbacks: {
+  from: string;
+  sent: Date;
+  tags: FeedbackTag[];
+  impact: FeedbackImpact;
+  subject: string;
+}[] = [
   {
     from: "alan@turing.com",
-    impact: "Critical",
-    subject: "Can't upgrade plan since last update",
+    impact: "critical",
+    subject: "Can't upgrade plan",
     sent: hoursAgo(1),
+    tags: ["bug"],
   },
   {
     from: "marie@curry.com",
-    impact: "Minor",
-    subject: "Typo in home page footer",
+    impact: "minor",
+    subject: "Home page footer typo",
     sent: hoursAgo(4),
+    tags: ["ui"],
   },
   {
     from: "nikola@tesla.com",
-    impact: "Major",
-    subject: "Next.js documentation is unclear",
+    impact: "major",
+    subject: "Unclear Next.js docs",
     sent: daysAgo(1),
+    tags: ["dx"],
   },
   {
     from: "isaac@newton.com",
-    impact: "Minor",
-    subject: "Kudos for the new UI revamp",
+    impact: "positive",
+    subject: "Love the new UI",
     sent: daysAgo(2),
+    tags: ["kudos"],
   },
   {
     from: "louis@pasteur.com",
-    impact: "Critical",
-    subject: "Can't checkout since last update",
+    impact: "critical",
+    subject: "Invoice inquiry",
     sent: daysAgo(3),
+    tags: ["billing"],
   },
 ];
 
@@ -286,6 +299,7 @@ function DataTable({ selectedTabId }: { selectedTabId: Tab["id"] }) {
                 <TableHead className="h-12">From</TableHead>
                 <TableHead className="h-12">Impact</TableHead>
                 <TableHead className="h-12">Subject</TableHead>
+                <TableHead className="h-12">Tags</TableHead>
                 <TableHead className="h-12">Sent</TableHead>
               </>
             )}
@@ -320,19 +334,24 @@ function DataTable({ selectedTabId }: { selectedTabId: Tab["id"] }) {
                 <>
                   <TableCell>{row.from}</TableCell>
                   <TableCell>
-                    <Badge
-                      variant={
-                        row.impact.toLowerCase() === "critical"
-                          ? "destructive"
-                          : row.impact.toLowerCase() === "major"
-                            ? "warning"
-                            : "outline"
-                      }
-                    >
-                      {row.impact}
+                    <Badge variant={getImpact(row.impact).variant}>
+                      {getImpact(row.impact).label}
                     </Badge>
                   </TableCell>
                   <TableCell>{row.subject}</TableCell>
+                  <TableCell>
+                    <div className="flex flex-wrap gap-2">
+                      {row.tags.map((tag) => {
+                        const tagMeta = getTag(tag as FeedbackTag);
+                        return (
+                          <Badge key={tag} variant={tagMeta.variant}>
+                            {React.createElement(tagMeta.Icon, { size: 16 })}
+                            {tagMeta.label}
+                          </Badge>
+                        );
+                      })}
+                    </div>
+                  </TableCell>
                   <TableCell>
                     {capitalizeFirstLetter(
                       formatDistanceToNow(row.sent, { addSuffix: true }),
