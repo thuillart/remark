@@ -172,25 +172,25 @@ export default async function FeedbackPage({
                   <div className="group flex cursor-default flex-col items-center justify-center gap-2 rounded-lg outline-none">
                     <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border">
                       {feedback.metadata?.device === "mobile" && (
-                        <Smartphone className="opacity-80" />
+                        <Smartphone size={20} className="opacity-80" />
                       )}
                       {feedback.metadata?.device === "tablet" && (
-                        <Tablet className="opacity-80" />
+                        <Tablet size={20} className="opacity-80" />
                       )}
                       {feedback.metadata?.device === "desktop" && (
-                        <Monitor className="opacity-80" />
+                        <Monitor size={20} className="opacity-80" />
                       )}
                       {feedback.metadata?.device === "console" && (
-                        <Gamepad2 className="opacity-80" />
+                        <Gamepad2 size={20} className="opacity-80" />
                       )}
                       {feedback.metadata?.device === "smarttv" && (
-                        <TvMinimal className="opacity-80" />
+                        <TvMinimal size={20} className="opacity-80" />
                       )}
                       {feedback.metadata?.device === "wearable" && (
-                        <Watch className="opacity-80" />
+                        <Watch size={20} className="opacity-80" />
                       )}
                       {feedback.metadata?.device === "embedded" && (
-                        <Refrigerator className="opacity-80" />
+                        <Refrigerator size={20} className="opacity-80" />
                       )}
                     </div>
                     <Badge variant="secondary">Device</Badge>
@@ -212,22 +212,25 @@ export default async function FeedbackPage({
                   <div className="group flex cursor-default flex-col items-center justify-center gap-2 rounded-lg outline-none">
                     <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border">
                       {feedback.metadata?.os === "Windows" && (
-                        <Logo.Windows className="opacity-80" />
+                        <Logo.Windows size={20} className="opacity-80" />
                       )}
                       {feedback.metadata?.os === "macOS" && (
-                        <Logo.Apple className="mb-0.5 ml-px opacity-80" />
+                        <Logo.Apple
+                          size={20}
+                          className="mb-0.5 ml-px opacity-80"
+                        />
                       )}
                       {feedback.metadata?.os === "iOS" && (
-                        <Logo.Apple className="opacity-80" />
+                        <Logo.Apple size={20} className="opacity-80" />
                       )}
                       {feedback.metadata?.os === "Android" && (
-                        <Logo.Android className="opacity-80" />
+                        <Logo.Android size={20} className="opacity-80" />
                       )}
                       {feedback.metadata?.os === "Linux" && (
-                        <Logo.Linux className="opacity-80" />
+                        <Logo.Linux size={20} className="opacity-80" />
                       )}
                       {feedback.metadata?.os === "ChromeOS" && (
-                        <Logo.Chrome className="opacity-80" />
+                        <Logo.Chrome size={20} className="opacity-80" />
                       )}
                     </div>
                     <Badge variant="secondary">OS</Badge>
@@ -243,28 +246,28 @@ export default async function FeedbackPage({
                   <div className="group flex cursor-default flex-col items-center justify-center gap-2 rounded-lg outline-none">
                     <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border">
                       {feedback.metadata?.browser === "Chrome" && (
-                        <Logo.Chrome className="opacity-80" />
+                        <Logo.Chrome size={20} className="opacity-80" />
                       )}
                       {feedback.metadata?.browser === "Firefox" && (
-                        <Logo.Firefox className="opacity-80" />
+                        <Logo.Firefox size={20} className="opacity-80" />
                       )}
                       {feedback.metadata?.browser === "Safari" && (
-                        <Logo.Safari className="opacity-80" />
+                        <Logo.Safari size={20} className="opacity-80" />
                       )}
                       {feedback.metadata?.browser === "Edge" && (
-                        <Logo.Edge className="opacity-80" />
+                        <Logo.Edge size={20} className="opacity-80" />
                       )}
                       {feedback.metadata?.browser === "Opera" && (
-                        <Logo.Opera className="opacity-80" />
+                        <Logo.Opera size={20} className="opacity-80" />
                       )}
                       {feedback.metadata?.browser === "Brave" && (
-                        <Logo.Brave className="opacity-80" />
+                        <Logo.Brave size={20} className="opacity-80" />
                       )}
                       {feedback.metadata?.browser === "Arc" && (
-                        <Logo.Arc className="opacity-80" />
+                        <Logo.Arc size={20} className="opacity-80" />
                       )}
                       {feedback.metadata?.browser === "Zen" && (
-                        <Logo.Zen className="opacity-80" />
+                        <Logo.Zen size={20} className="opacity-80" />
                       )}
                     </div>
                     <Badge variant="secondary">Browser</Badge>
@@ -279,7 +282,7 @@ export default async function FeedbackPage({
                 <div className="relative z-1 flex min-w-24 flex-col items-center justify-center gap-2">
                   <div className="group flex cursor-default flex-col items-center justify-center gap-2 rounded-lg outline-none">
                     <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border">
-                      <Link className="opacity-80" />
+                      <Link size={20} className="opacity-80" />
                     </div>
                     <Badge variant="secondary">Page</Badge>
                   </div>
@@ -306,7 +309,7 @@ export default async function FeedbackPage({
                   <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border">
                     <BadgeCheck
                       size={20}
-                      className="ml-px text-green-700 opacity-80 dark:text-green-400"
+                      className="ml-px text-green-700 opacity-80 [--animate-spin:spin_5s_linear_infinite] *:first:origin-center *:first:animate-spin dark:text-green-400"
                     />
                   </div>
                   <Badge variant="green">Processed</Badge>
