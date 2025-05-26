@@ -172,25 +172,25 @@ export default async function FeedbackPage({
                   <div className="group flex cursor-default flex-col items-center justify-center gap-2 rounded-lg outline-none">
                     <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border">
                       {feedback.metadata?.device === "mobile" && (
-                        <Smartphone size={20} className="opacity-80" />
+                        <Smartphone size={20} className="opacity-60" />
                       )}
                       {feedback.metadata?.device === "tablet" && (
-                        <Tablet size={20} className="opacity-80" />
+                        <Tablet size={20} className="opacity-60" />
                       )}
                       {feedback.metadata?.device === "desktop" && (
-                        <Monitor size={20} className="opacity-80" />
+                        <Monitor size={20} className="opacity-60" />
                       )}
                       {feedback.metadata?.device === "console" && (
-                        <Gamepad2 size={20} className="opacity-80" />
+                        <Gamepad2 size={20} className="opacity-60" />
                       )}
                       {feedback.metadata?.device === "smarttv" && (
-                        <TvMinimal size={20} className="opacity-80" />
+                        <TvMinimal size={20} className="opacity-60" />
                       )}
                       {feedback.metadata?.device === "wearable" && (
-                        <Watch size={20} className="opacity-80" />
+                        <Watch size={20} className="opacity-60" />
                       )}
                       {feedback.metadata?.device === "embedded" && (
-                        <Refrigerator size={20} className="opacity-80" />
+                        <Refrigerator size={20} className="opacity-60" />
                       )}
                     </div>
                     <Badge variant="secondary">Device</Badge>
@@ -282,7 +282,7 @@ export default async function FeedbackPage({
                 <div className="relative z-1 flex min-w-24 flex-col items-center justify-center gap-2">
                   <div className="group flex cursor-default flex-col items-center justify-center gap-2 rounded-lg outline-none">
                     <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border">
-                      <Link size={20} className="opacity-80" />
+                      <Link size={20} className="opacity-60" />
                     </div>
                     <Badge variant="secondary">Page</Badge>
                   </div>
@@ -295,7 +295,7 @@ export default async function FeedbackPage({
               <div className="relative z-1 flex min-w-24 flex-col items-center justify-center gap-2">
                 <div className="group flex cursor-default flex-col items-center justify-center gap-2 rounded-lg outline-none">
                   <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border">
-                    <SendHorizonal size={20} className="ml-px opacity-80" />
+                    <SendHorizonal size={20} className="ml-px opacity-60" />
                   </div>
                   <Badge variant="secondary">Sent</Badge>
                 </div>
