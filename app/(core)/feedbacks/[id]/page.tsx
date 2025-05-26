@@ -1,15 +1,3 @@
-import {
-  RiAndroidFill,
-  RiAppleFill,
-  RiChromeFill,
-  RiEdgeFill,
-  RiFirefoxFill,
-  RiOperaFill,
-  RiSafariFill,
-  RiUbuntuFill,
-  RiWindowsFill,
-} from "@remixicon/react";
-
 import { format } from "date-fns";
 import { and, eq } from "drizzle-orm";
 import { parsePgArray } from "drizzle-orm/pg-core";
@@ -30,6 +18,7 @@ import {
 import { headers } from "next/headers";
 import React from "react";
 
+import { Logo } from "@/components/logo";
 import { TextShimmer } from "@/components/text-shimmer";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -223,22 +212,22 @@ export default async function FeedbackPage({
                   <div className="group flex cursor-default flex-col items-center justify-center gap-2 rounded-lg outline-none">
                     <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border">
                       {feedback.metadata?.os === "Windows" && (
-                        <RiWindowsFill className="opacity-80" />
+                        <Logo.Windows className="opacity-80" />
                       )}
                       {feedback.metadata?.os === "macOS" && (
-                        <RiAppleFill className="mb-0.5 ml-px opacity-80" />
+                        <Logo.Apple className="mb-0.5 ml-px opacity-80" />
                       )}
                       {feedback.metadata?.os === "iOS" && (
-                        <RiAppleFill className="opacity-80" />
+                        <Logo.Apple className="opacity-80" />
                       )}
                       {feedback.metadata?.os === "Android" && (
-                        <RiAndroidFill className="opacity-80" />
+                        <Logo.Android className="opacity-80" />
                       )}
                       {feedback.metadata?.os === "Linux" && (
-                        <RiUbuntuFill className="opacity-80" />
+                        <Logo.Linux className="opacity-80" />
                       )}
                       {feedback.metadata?.os === "ChromeOS" && (
-                        <RiChromeFill className="opacity-80" />
+                        <Logo.Chrome className="opacity-80" />
                       )}
                     </div>
                     <Badge variant="secondary">OS</Badge>
@@ -254,28 +243,28 @@ export default async function FeedbackPage({
                   <div className="group flex cursor-default flex-col items-center justify-center gap-2 rounded-lg outline-none">
                     <div className="bg-background relative z-2 flex size-10 shrink-0 items-center justify-center rounded-lg border">
                       {feedback.metadata?.browser === "Chrome" && (
-                        <RiChromeFill className="opacity-80" />
+                        <Logo.Chrome className="opacity-80" />
                       )}
                       {feedback.metadata?.browser === "Firefox" && (
-                        <RiFirefoxFill className="opacity-80" />
+                        <Logo.Firefox className="opacity-80" />
                       )}
                       {feedback.metadata?.browser === "Safari" && (
-                        <RiSafariFill className="opacity-80" />
+                        <Logo.Safari className="opacity-80" />
                       )}
                       {feedback.metadata?.browser === "Edge" && (
-                        <RiEdgeFill className="opacity-80" />
+                        <Logo.Edge className="opacity-80" />
                       )}
                       {feedback.metadata?.browser === "Opera" && (
-                        <RiOperaFill className="opacity-80" />
+                        <Logo.Opera className="opacity-80" />
                       )}
                       {feedback.metadata?.browser === "Brave" && (
-                        <RiChromeFill className="opacity-80" />
+                        <Logo.Brave className="opacity-80" />
                       )}
                       {feedback.metadata?.browser === "Arc" && (
-                        <RiChromeFill className="opacity-80" />
+                        <Logo.Arc className="opacity-80" />
                       )}
                       {feedback.metadata?.browser === "Zen" && (
-                        <RiFirefoxFill className="opacity-80" />
+                        <Logo.Zen className="opacity-80" />
                       )}
                     </div>
                     <Badge variant="secondary">Browser</Badge>

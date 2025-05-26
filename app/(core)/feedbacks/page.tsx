@@ -4,6 +4,7 @@ import { PageTitle } from "@/core/components/page-title";
 import { DataTable } from "@/feedbacks/components/data-table";
 import { TableSkeleton } from "@/feedbacks/components/table-skeleton";
 
+import { Logo } from "@/components/logo";
 import { getFeedbacks } from "@/lib/db/queries";
 
 export default function FeedbacksPage() {
@@ -13,6 +14,20 @@ export default function FeedbacksPage() {
       <Suspense fallback={<TableSkeleton />}>
         <FeedbacksTable />
       </Suspense>
+      <div className="flex">
+        <Logo.Android />
+        <Logo.Apple />
+        <Logo.Brave />
+        <Logo.Chrome />
+        <Logo.Arc />
+        <Logo.Firefox />
+        <Logo.Zen />
+        <Logo.Edge />
+        <Logo.Opera />
+        <Logo.Safari />
+        <Logo.Linux />
+        <Logo.Windows />
+      </div>
     </>
   );
 }
