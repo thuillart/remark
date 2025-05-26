@@ -7,7 +7,7 @@ import {
   type Variants,
   motion,
 } from "motion/react";
-import React, { Fragment } from "react";
+import React from "react";
 
 import {
   Carousel,
@@ -115,7 +115,7 @@ export function SegmentsCarousel() {
       opts={{ loop: true, align: "center" }}
       setApi={setApi}
       plugins={[plugin.current]}
-      className="relative before:absolute before:inset-0 before:left-auto before:z-1 before:w-4 before:bg-gradient-to-l before:from-background before:to-transparent after:absolute after:inset-0 after:right-auto after:z-1 after:w-4 after:bg-gradient-to-r after:from-background after:to-transparent after:md:w-10 before:md:w-10"
+      className="before:from-background after:from-background relative before:absolute before:inset-0 before:left-auto before:z-1 before:w-4 before:bg-gradient-to-l before:to-transparent after:absolute after:inset-0 after:right-auto after:z-1 after:w-4 after:bg-gradient-to-r after:to-transparent before:md:w-10 after:md:w-10"
       onMouseLeave={() => plugin.current.play()}
     >
       <CarouselContent className="h-50 py-6 md:h-64 md:py-10">
@@ -134,41 +134,41 @@ export function SegmentsCarousel() {
                   current - 1 !== index && "shadow-none",
                 )}
               >
-                <div className="-z-1 pointer-events-none absolute inset-0">
+                <div className="pointer-events-none absolute inset-0 -z-1">
                   <div
                     className={cn(
-                      "-right-3 -top-3 absolute aspect-square w-28 rounded-full bg-gradient-to-b from-muted-foreground to-muted opacity-75 blur-2xl",
+                      "from-muted-foreground to-muted absolute -top-3 -right-3 aspect-square w-28 rounded-full bg-gradient-to-b opacity-75 blur-2xl",
                     )}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-tl from-background/5" />
-                  <div className="absolute inset-0 bg-gradient-to-b from-background/60 backdrop-filter" />
+                  <div className="from-background/5 absolute inset-0 bg-gradient-to-tl" />
+                  <div className="from-background/60 absolute inset-0 bg-gradient-to-b backdrop-filter" />
                 </div>
 
                 <div className="space-y-1.5 md:space-y-3">
-                  <h3 className="font-medium text-xs uppercase tracking-wide">
+                  <h3 className="text-xs font-medium tracking-wide uppercase">
                     {title}
                   </h3>
-                  <p className="font-medium text-2xl/6 md:text-3xl/6">
+                  <p className="text-2xl/6 font-medium md:text-3xl/6">
                     {count}%
                   </p>
                 </div>
 
                 <motion.div className="mt-auto">
                   {items.map(({ title, count }, index) => (
-                    <Fragment key={title}>
+                    <React.Fragment key={title}>
                       <div
                         key={title}
-                        className="flex w-full items-center justify-between pt-3 not-last:pb-3 text-slate-12"
+                        className="text-slate-12 flex w-full items-center justify-between pt-3 not-last:pb-3"
                       >
                         <div className="inline-flex items-center gap-3">
                           <div className="relative size-2">
-                            <div className="absolute inset-0 rounded-full bg-muted-foreground/50" />
+                            <div className="bg-muted-foreground/50 absolute inset-0 rounded-full" />
                             {["ping-outer", "ping-inner"].map((key) => (
                               <motion.div
                                 key={key}
                                 animate="animate"
                                 variants={pingVariants}
-                                className="absolute inset-0 rounded-full bg-muted-foreground/50"
+                                className="bg-muted-foreground/50 absolute inset-0 rounded-full"
                                 transition={pingTransition(index)}
                               />
                             ))}
@@ -179,7 +179,7 @@ export function SegmentsCarousel() {
                       </div>
 
                       {index !== items.length - 1 && <hr />}
-                    </Fragment>
+                    </React.Fragment>
                   ))}
                 </motion.div>
               </motion.div>

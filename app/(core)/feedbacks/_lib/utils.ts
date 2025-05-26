@@ -1,23 +1,25 @@
+import {
+  Braces,
+  Bug,
+  CreditCard,
+  Gauge,
+  Heart,
+  Languages,
+  Lightbulb,
+  LucideIcon,
+  PersonStanding,
+  Receipt,
+  Scale,
+  Shield,
+  SwatchBook,
+  Workflow,
+} from "lucide-react";
+
 import { type BadgeProps } from "@/components/ui/badge";
 import { FeedbackImpact, FeedbackTag } from "@/lib/schema";
-import {
-  RemixiconComponentType,
-  RiAccessibilityLine,
-  RiAuctionLine,
-  RiBillLine,
-  RiBracketsLine,
-  RiBug2Line,
-  RiFlowChart,
-  RiLightbulbLine,
-  RiMoneyDollarBoxLine,
-  RiShieldLine,
-  RiSpeedUpLine,
-  RiTranslate2,
-} from "@remixicon/react";
-import { Heart, LucideIcon, SwatchBook } from "lucide-react";
 
 interface TagProps {
-  Icon: RemixiconComponentType | LucideIcon;
+  Icon: LucideIcon;
   label: string;
   variant: BadgeProps["variant"];
 }
@@ -26,13 +28,13 @@ export function getTag(tag: FeedbackTag): TagProps {
   switch (tag) {
     case "bug":
       return {
-        Icon: RiBug2Line,
+        Icon: Bug,
         label: "Bug",
         variant: "destructive",
       };
     case "feature_request":
       return {
-        Icon: RiLightbulbLine,
+        Icon: Lightbulb,
         label: "Feature Request",
         variant: "yellow",
       };
@@ -44,55 +46,55 @@ export function getTag(tag: FeedbackTag): TagProps {
       };
     case "ux":
       return {
-        Icon: RiFlowChart,
+        Icon: Workflow,
         label: "UX",
         variant: "orange",
       };
     case "speed":
       return {
-        Icon: RiSpeedUpLine,
+        Icon: Gauge,
         label: "Speed",
         variant: "blue",
       };
     case "security":
       return {
-        Icon: RiShieldLine,
+        Icon: Shield,
         label: "Security",
         variant: "destructive",
       };
     case "pricing":
       return {
-        Icon: RiMoneyDollarBoxLine,
+        Icon: Receipt,
         label: "Pricing",
         variant: "green",
       };
     case "billing":
       return {
-        Icon: RiBillLine,
+        Icon: CreditCard,
         label: "Billing",
         variant: "green",
       };
     case "dx":
       return {
-        Icon: RiBracketsLine,
+        Icon: Braces,
         label: "DX",
         variant: "indigo",
       };
     case "i18n":
       return {
-        Icon: RiTranslate2,
+        Icon: Languages,
         label: "i18n",
         variant: "blue",
       };
     case "compliance":
       return {
-        Icon: RiAuctionLine,
+        Icon: Scale,
         label: "Compliance",
         variant: "purple",
       };
     case "a11y":
       return {
-        Icon: RiAccessibilityLine,
+        Icon: PersonStanding,
         label: "A11y",
         variant: "blue",
       };

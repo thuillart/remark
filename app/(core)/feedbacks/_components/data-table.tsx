@@ -1,15 +1,6 @@
 "use client";
 
 import {
-  RiArrowLeftLine,
-  RiArrowRightLine,
-  RiArrowRightUpLine,
-  RiCalendarLine,
-  RiChat1Line,
-  RiCloseLine,
-  RiFilter3Line,
-} from "@remixicon/react";
-import {
   ColumnDef,
   FilterFn,
   flexRender,
@@ -21,6 +12,15 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { formatDistance, formatRelative } from "date-fns";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  Calendar,
+  Funnel,
+  MessageSquare,
+  X,
+} from "lucide-react";
 import Link from "next/link";
 import { useQueryState } from "nuqs";
 import React from "react";
@@ -75,7 +75,6 @@ import { getImpact, getTag } from "@/feedbacks/lib/utils";
 import { APP_NAME } from "@/lib/constants";
 import { FeedbackImpact, FeedbackTag } from "@/lib/schema";
 import { capitalizeFirstLetter, cn } from "@/lib/utils";
-import { MessageSquare } from "lucide-react";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -99,7 +98,7 @@ export const columns: ColumnDef<Feedback>[] = [
           <PageIcon size="md" Icon={MessageSquare} />
           <span className="decoration-muted-foreground pr-4.5 whitespace-nowrap underline underline-offset-5 transition-[color,text-decoration-color] duration-150 ease-in-out group-hover/link:decoration-current">
             {row.original.from}
-            <RiArrowRightUpLine className="text-muted-foreground group-hover/link:text-primary absolute mt-1.25 inline-block size-[1em] no-underline transition duration-[inherit] ease-[inherit] group-hover/link:translate-x-px group-hover/link:-translate-y-px" />
+            <ArrowUpRight className="text-muted-foreground group-hover/link:text-primary absolute mt-1.25 inline-block size-[1em] no-underline transition duration-[inherit] ease-[inherit] group-hover/link:translate-x-px group-hover/link:-translate-y-px" />
           </span>
         </Link>
       );
@@ -361,7 +360,7 @@ function SearchAndFilters({ data }: { data: Feedback[] }) {
 
         {/* Decorative icon */}
         <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
-          <RiFilter3Line size={16} aria-hidden="true" />
+          <Funnel size={16} />
         </div>
 
         {/* Clear button */}
@@ -371,7 +370,7 @@ function SearchAndFilters({ data }: { data: Feedback[] }) {
             className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-3 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
             aria-label="Clear filter"
           >
-            <RiCloseLine size={16} aria-hidden="true" />
+            <X size={16} />
           </button>
         )}
       </div>
@@ -386,7 +385,7 @@ function SearchAndFilters({ data }: { data: Feedback[] }) {
           >
             <SelectTrigger className="relative ps-9">
               <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 group-has-[select[disabled]]:opacity-50">
-                <RiCalendarLine size={16} aria-hidden="true" />
+                <Calendar size={16} />
               </div>
               <SelectValue />
             </SelectTrigger>
@@ -406,7 +405,7 @@ function SearchAndFilters({ data }: { data: Feedback[] }) {
           <PopoverTrigger asChild>
             <Button variant="outline" className="justify-between">
               <div className="flex items-center gap-2">
-                <RiFilter3Line size={16} className="-ms-1 opacity-60" />
+                <Funnel size={16} className="-ms-1 opacity-60" />
                 Tags
               </div>
               {hasSelectedTags && (
@@ -775,8 +774,8 @@ export function DataTable({ data }: { data: Feedback[] }) {
     return (
       <div className="container">
         <EmptyState
-          title="You haven't received any feedbacks yet"
-          icons={[RiChat1Line, RiChat1Line, RiChat1Line]}
+          title="You have not received any feedbacks yet"
+          icons={[MessageSquare, MessageSquare, MessageSquare]}
           description="Any sent feedback will appear here once received."
         />
       </div>
@@ -882,7 +881,7 @@ export function DataTable({ data }: { data: Feedback[] }) {
                       disabled={!canPreviousPage}
                       aria-label="Go to previous page"
                     >
-                      <RiArrowLeftLine size={16} aria-hidden="true" />
+                      <ArrowLeft size={16} />
                     </Button>
                   </PaginationItem>
 
@@ -933,7 +932,7 @@ export function DataTable({ data }: { data: Feedback[] }) {
                       className="disabled:pointer-events-none disabled:opacity-50"
                       aria-label="Go to next page"
                     >
-                      <RiArrowRightLine size={16} aria-hidden="true" />
+                      <ArrowRight size={16} />
                     </Button>
                   </PaginationItem>
                 </PaginationContent>

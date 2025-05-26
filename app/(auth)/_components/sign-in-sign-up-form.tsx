@@ -1,13 +1,13 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { RiGithubFill, RiGitlabFill } from "@remixicon/react";
 import { BadgeAlertIcon, InboxIcon } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { AppIcon } from "@/components/app-icon";
 import { CircleArrow } from "@/components/circle-arrow";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
@@ -126,7 +126,7 @@ export function SignInSignUpForm({ mode }: { mode: Mode }) {
     <>
       <div className="flex flex-col items-center gap-2">
         <div className="flex size-11 shrink-0 items-center justify-center rounded-full border select-none">
-          <Logo variant="icon" className="h-4.5 text-2xl" />
+          <AppIcon variant="icon" className="h-4.5 text-2xl" />
         </div>
         <div className="flex flex-col text-center">
           <h2 className="text-lg font-semibold tracking-tight">
@@ -192,7 +192,7 @@ export function SignInSignUpForm({ mode }: { mode: Mode }) {
           onClick={() => signInWithOAuthProvider("github")}
           className="w-full"
         >
-          <RiGithubFill size={20} />
+          <Logo.GitHub />
           Sign {isSignUp ? "Up" : "In"} with GitHub
         </Button>
 
@@ -202,7 +202,7 @@ export function SignInSignUpForm({ mode }: { mode: Mode }) {
           onClick={() => signInWithOAuthProvider("gitlab")}
           className="w-full"
         >
-          <RiGitlabFill size={20} className="fill-[#FC6D26]" />
+          <Logo.GitLab />
           Sign {isSignUp ? "Up" : "In"} with GitLab
         </Button>
       </div>

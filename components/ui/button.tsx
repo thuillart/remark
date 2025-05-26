@@ -5,7 +5,7 @@ import { Loader2Icon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "group/button inline-flex items-center gap-2 whitespace-nowrap rounded-md font-medium text-sm outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+  "group/button inline-flex items-center gap-2 whitespace-nowrap rounded-md font-medium text-sm outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none justify-center disabled:opacity-50 [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
@@ -21,7 +21,7 @@ const buttonVariants = cva(
         link: "whitespace-nowrap text-foreground",
       },
       loading: {
-        true: "text-transparent has-[>svg:is(.loading)]:[&_svg]:not-first:opacity-0",
+        true: "!text-transparent has-[>svg:is(.loading)]:[&_svg]:not-first:opacity-0",
       },
       size: {
         default: "",
@@ -35,10 +35,6 @@ const buttonVariants = cva(
         variant: ["ghost", "default", "outline", "secondary", "destructive"],
         size: "default",
         className: "h-9 px-4 py-2",
-      },
-      {
-        variant: ["ghost", "default", "outline", "secondary", "destructive"],
-        className: " justify-center",
       },
     ],
     defaultVariants: {
@@ -78,7 +74,7 @@ function Button({
         <Loader2Icon
           size={20}
           className={cn(
-            "absolute animate-spin text-primary-foreground",
+            "text-primary-foreground absolute animate-spin",
             variant === "outline" && "text-muted-foreground",
             // Used for conditional styling when button is loading
             "loading",

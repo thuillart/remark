@@ -1,17 +1,18 @@
 "use client";
 
-import { RiGithubFill, RiGitlabFill, RiKeyLine } from "@remixicon/react";
 import type { Account } from "better-auth";
 import type { Passkey } from "better-auth/plugins/passkey";
 import { format } from "date-fns";
 import {
   AlertTriangle,
   CheckCircle2,
+  KeyRound,
   KeyRoundIcon,
   Trash2,
 } from "lucide-react";
 import React from "react";
 
+import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -237,7 +238,7 @@ export function SignInMethods() {
                   onClick={() => link("github")}
                   disabled={loading !== null}
                 >
-                  <RiGithubFill />
+                  <Logo.GitHub />
                   Link GitHub
                 </Button>
               )}
@@ -250,7 +251,7 @@ export function SignInMethods() {
                   onClick={() => link("gitlab")}
                   disabled={loading !== null}
                 >
-                  <RiGitlabFill className="fill-[#FC6D26]" />
+                  <Logo.GitLab />
                   Link GitLab
                 </Button>
               )}
@@ -263,7 +264,7 @@ export function SignInMethods() {
                   onClick={() => link("passkey")}
                   disabled={loading !== null}
                 >
-                  <RiKeyLine className="opacity-60" />
+                  <KeyRound className="opacity-60" />
                   Add Passkey
                 </Button>
               )}
@@ -285,10 +286,9 @@ export function SignInMethods() {
               {accounts.map((account) => {
                 const providerId = account.providerId;
                 const isGithub = providerId === "github";
-                const isGitlab = providerId === "gitlab";
                 const providerName = isGithub ? "GitHub" : "GitLab";
 
-                const Logo = isGithub ? RiGithubFill : RiGitlabFill;
+                const ProviderLogo = isGithub ? Logo.GitHub : Logo.GitLab;
 
                 const date = format(account.createdAt, "MMMM d, yyyy");
 
@@ -296,7 +296,7 @@ export function SignInMethods() {
                   <TableRow key={account.id} className="hover:bg-transparent">
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <Logo className={cn({ "fill-[#FC6D26]": isGitlab })} />
+                        <ProviderLogo />
                         <div className="text-sm font-medium">
                           {providerName}
                         </div>

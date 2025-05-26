@@ -1,4 +1,4 @@
-import { LogoLink } from "@/components/logo";
+import { AppIconLink } from "@/components/app-icon";
 import { HeaderEndContent } from "@/public/components/header-end-content";
 import { HeaderLayout } from "@/public/components/header-layout";
 
@@ -12,11 +12,11 @@ export function Header({ startContent }: { startContent?: React.ReactNode }) {
           <div className="flex h-14 items-center justify-between">
             {hasStartContent ? (
               <div className="inline-flex items-center gap-x-2.5">
-                <LogoLink />
+                <AppIconLink />
                 {startContent}
               </div>
             ) : (
-              <LogoLink />
+              <AppIconLink />
             )}
             <HeaderEndContent />
           </div>

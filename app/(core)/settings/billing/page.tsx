@@ -1,24 +1,24 @@
-import { RiAlertLine, RiDiamondLine } from "@remixicon/react";
-import { Suspense } from "react";
+import { CreditCard } from "lucide-react";
+import { headers } from "next/headers";
+import React from "react";
 
-import { CurrentPlanCard } from "@/billing/components/current-plan-card";
-import { ResolveSubscriptionButton } from "@/billing/components/resolve-subscription-button";
+import { CurrentPlan } from "@/billing/components/current-plan";
 import { UpdatePlanDialog } from "@/billing/components/update-plan-dialog";
-import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/core/components/empty-state";
 import { auth } from "@/lib/auth";
 import { polarClient } from "@/lib/configs/polar";
 import { getSlugFromProductId } from "@/lib/configs/products";
-import { headers } from "next/headers";
 
 export default function BillingPage() {
   return (
     <div className="container">
-      <Suspense fallback={<Skeleton className="h-38 rounded-xl border" />}>
+      <React.Suspense
+        fallback={<Skeleton className="h-38 rounded-xl border" />}
+      >
         <BillingCard />
-      </Suspense>
+      </React.Suspense>
     </div>
   );
 }
@@ -41,8 +41,8 @@ async function BillingCard() {
   if (!subscription) {
     return (
       <EmptyState
-        icons={[RiDiamondLine, RiDiamondLine, RiDiamondLine]}
-        title="You're not subscribed to any plan yet"
+        icons={[CreditCard, CreditCard, CreditCard]}
+        title="You are not subscribed to any plan yet"
         action={
           <UpdatePlanDialog currentPlan="free">
             <Button
@@ -59,23 +59,11 @@ async function BillingCard() {
   }
 
   return (
-    <>
-      {subscription.status !== "active" && (
-        <Alert
-          icon={<RiAlertLine className="opacity-60" />}
-          action={<ResolveSubscriptionButton />}
-          layout="row"
-          variant="warning"
-        >
-          <p className="text-sm">Your subscription isn&apos;t active.</p>
-        </Alert>
-      )}
-
-      <CurrentPlanCard
-        slug={getSlugFromProductId(subscription.productId)}
-        periodEnd={subscription.endsAt}
-        cancelAtPeriodEnd={subscription.cancelAtPeriodEnd}
-      />
-    </>
+    <CurrentPlan
+      slug={getSlugFromProductId(subscription.productId)}
+      startedAt={subscription.startedAt}
+      currentPeriodEnd={subscription.currentPeriodEnd}
+      cancelAtPeriodEnd={Boolean(subscription.cancelAtPeriodEnd)}
+    />
   );
 }

@@ -1,12 +1,7 @@
-import {
-  RiDiscordFill,
-  RiGithubFill,
-  RiTwitterXFill,
-  RiYoutubeFill,
-} from "@remixicon/react";
 import Link from "next/link";
 
-import { LogoLink } from "@/components/logo";
+import { AppIconLink } from "@/components/app-icon";
+import { Logo } from "@/components/logo";
 import {
   DISCORD_URL,
   GITHUB_URL,
@@ -22,7 +17,7 @@ export function Footer() {
       <FooterArtwork />
       <div className="container">
         <div className="flex flex-wrap justify-between gap-x-24 gap-y-12">
-          <LogoLink />
+          <AppIconLink />
           <FooterMenu />
         </div>
         <div className="mt-16 flex flex-wrap-reverse items-center justify-between gap-x-12 gap-y-6">
@@ -73,10 +68,13 @@ function FooterSocial() {
         <li key={label}>
           <Link
             href={href}
-            className="not-hover:text-muted-foreground transition-colors"
+            className="group text-muted-foreground transition-colors"
           >
             <span className="sr-only">{label}</span>
-            <Icon size={20} />
+            <Icon
+              size={18}
+              className="group-[:not(:hover)]:*:first:fill-muted-foreground"
+            />
           </Link>
         </li>
       ))}
@@ -130,21 +128,21 @@ const socialItems = [
   {
     label: "X",
     href: X_URL,
-    Icon: RiTwitterXFill,
+    Icon: Logo.X,
   },
   {
     label: "GitHub",
     href: GITHUB_URL,
-    Icon: RiGithubFill,
+    Icon: Logo.GitHub,
   },
   {
     label: "Discord",
     href: DISCORD_URL,
-    Icon: RiDiscordFill,
+    Icon: Logo.Discord,
   },
   {
     label: "YouTube",
     href: YOUTUBE_URL,
-    Icon: RiYoutubeFill,
+    Icon: Logo.YouTube,
   },
 ];

@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { BadgeAlertIcon, InboxIcon } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -14,13 +15,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Form, FormField, FormMessage } from "@/components/ui/form";
-import { FormControl } from "@/components/ui/form";
-import { FormItem } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "@/lib/utils";
-import { BadgeAlertIcon, InboxIcon } from "lucide-react";
 
 const formSchema = z.object({
   email: z.string().email(),

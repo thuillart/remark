@@ -1,3 +1,5 @@
+import { ArrowLeft, ArrowRight, Calendar, Funnel } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -21,12 +23,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  RiArrowLeftLine,
-  RiArrowRightLine,
-  RiCalendarLine,
-  RiFilter3Line,
-} from "@remixicon/react";
 
 const SKELETON_IDS = ["sk1", "sk2", "sk3", "sk4", "sk5"];
 
@@ -45,7 +41,7 @@ export function TableSkeleton() {
               placeholder="Filter by email..."
             />
             <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3">
-              <RiFilter3Line size={16} aria-hidden="true" />
+              <Funnel size={16} />
             </div>
           </div>
 
@@ -56,7 +52,7 @@ export function TableSkeleton() {
               <Select disabled>
                 <SelectTrigger className="relative ps-9">
                   <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3">
-                    <RiCalendarLine size={16} aria-hidden="true" />
+                    <Calendar size={16} />
                   </div>
                   <SelectValue placeholder="Select time range" />
                 </SelectTrigger>
@@ -133,7 +129,7 @@ export function TableSkeleton() {
                     disabled
                     aria-label="Go to previous page"
                   >
-                    <RiArrowLeftLine size={16} aria-hidden="true" />
+                    <ArrowLeft size={16} />
                   </Button>
                 </PaginationItem>
                 <PaginationItem>
@@ -148,7 +144,7 @@ export function TableSkeleton() {
                     disabled
                     aria-label="Go to next page"
                   >
-                    <RiArrowRightLine size={16} aria-hidden="true" />
+                    <ArrowRight size={16} />
                   </Button>
                 </PaginationItem>
               </PaginationContent>
