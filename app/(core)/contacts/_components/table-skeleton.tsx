@@ -1,4 +1,4 @@
-import { RiFilter3Line } from "@remixicon/react";
+import { Funnel } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -65,7 +65,7 @@ export function TableSkeleton() {
 
           {/* Decorative icon */}
           <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
-            <RiFilter3Line size={16} aria-hidden="true" />
+            <Funnel size={16} />
           </div>
         </div>
 

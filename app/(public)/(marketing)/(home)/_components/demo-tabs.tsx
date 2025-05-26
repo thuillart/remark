@@ -1,5 +1,7 @@
 "use client";
 
+import { formatDistanceToNow } from "date-fns";
+import { AtSign, Clock, Funnel } from "lucide-react";
 import { type Transition, type Variants, motion } from "motion/react";
 import React from "react";
 
@@ -23,13 +25,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { capitalizeFirstLetter, cn } from "@/lib/utils";
-import { RiAtLine, RiFilterLine, RiTimeLine } from "@remixicon/react";
-import { formatDistanceToNow } from "date-fns";
 
 type Tab = {
   id: number;
   title: string;
-  artwork: React.ReactNode;
   description: string;
 };
 
@@ -37,13 +36,11 @@ const tabs: Tab[] = [
   {
     id: 1,
     title: "Analyze",
-    artwork: <div>hey</div>,
     description: "See who's asking for what.",
   },
   {
     id: 2,
     title: "Prioritize",
-    artwork: <div>bye</div>,
     description: "Most asked features come first.",
   },
 ];
@@ -157,7 +154,7 @@ function SearchAndFilters() {
         />
 
         <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
-          <RiAtLine size={16} />
+          <AtSign size={16} />
         </div>
       </div>
 
@@ -169,7 +166,7 @@ function SearchAndFilters() {
               aria-label="Select time"
             >
               <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 group-has-[select[disabled]]:opacity-50">
-                <RiTimeLine size={16} aria-hidden="true" />
+                <Clock size={16} />
               </div>
               <SelectValue placeholder="Select time" />
             </SelectTrigger>
@@ -185,7 +182,7 @@ function SearchAndFilters() {
             className="pointer-events-none w-full justify-between pl-3"
           >
             <div className="flex items-center gap-2">
-              <RiFilterLine size={16} className="text-muted-foreground/80" />
+              <Funnel size={16} className="text-muted-foreground/80" />
               Filters
             </div>
             <span className="bg-background text-muted-foreground/70 -me-1 inline-flex size-4.5 max-h-full items-center justify-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">

@@ -1,12 +1,6 @@
 "use client";
 
 import {
-  RiArrowLeftLine,
-  RiArrowRightLine,
-  RiCloseLine,
-  RiFilter3Line,
-} from "@remixicon/react";
-import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
@@ -16,8 +10,9 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { formatDistance } from "date-fns";
+import { ArrowLeft, ArrowRight, Funnel, X } from "lucide-react";
 import { useQueryState } from "nuqs";
-import { useRef } from "react";
+import React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -113,7 +108,7 @@ export const columns: ColumnDef<Contact>[] = [
 ];
 
 export function DataTable({ data }: { data: Contact[] }) {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = React.useRef<HTMLInputElement>(null);
   const [search, setSearch] = useQueryState("search");
   const [page, setPage] = useQueryState("page", { defaultValue: "1" });
   const [rowsCount, setRowsCount] = useQueryState("count", {
@@ -173,7 +168,7 @@ export function DataTable({ data }: { data: Contact[] }) {
 
           {/* Decorative icon */}
           <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
-            <RiFilter3Line size={16} aria-hidden="true" />
+            <Funnel size={16} />
           </div>
 
           {/* Clear button */}
@@ -183,7 +178,7 @@ export function DataTable({ data }: { data: Contact[] }) {
               className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-3 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
               aria-label="Clear filter"
             >
-              <RiCloseLine size={16} aria-hidden="true" />
+              <X size={16} aria-hidden="true" />
             </button>
           )}
         </div>
@@ -278,7 +273,7 @@ export function DataTable({ data }: { data: Contact[] }) {
                     disabled={currentPage <= 1}
                     aria-label="Go to previous page"
                   >
-                    <RiArrowLeftLine size={16} aria-hidden="true" />
+                    <ArrowLeft size={16} />
                   </Button>
                 </PaginationItem>
 
@@ -323,7 +318,7 @@ export function DataTable({ data }: { data: Contact[] }) {
                     className="disabled:pointer-events-none disabled:opacity-50"
                     aria-label="Go to next page"
                   >
-                    <RiArrowRightLine size={16} aria-hidden="true" />
+                    <ArrowRight size={16} />
                   </Button>
                 </PaginationItem>
               </PaginationContent>

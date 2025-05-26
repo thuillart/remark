@@ -1,12 +1,13 @@
 "use client";
 
-import { RiGithubFill, RiGitlabFill, RiKeyLine } from "@remixicon/react";
+import { RiGithubFill, RiGitlabFill } from "@remixicon/react";
 import type { Account } from "better-auth";
 import type { Passkey } from "better-auth/plugins/passkey";
 import { format } from "date-fns";
 import {
   AlertTriangle,
   CheckCircle2,
+  KeyRound,
   KeyRoundIcon,
   Trash2,
 } from "lucide-react";
@@ -263,7 +264,7 @@ export function SignInMethods() {
                   onClick={() => link("passkey")}
                   disabled={loading !== null}
                 >
-                  <RiKeyLine className="opacity-60" />
+                  <KeyRound className="opacity-60" />
                   Add Passkey
                 </Button>
               )}
