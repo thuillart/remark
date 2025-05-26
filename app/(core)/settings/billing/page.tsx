@@ -1,7 +1,6 @@
-import { RiAlertLine, RiDiamondLine } from "@remixicon/react";
+import { RiAlertLine } from "@remixicon/react";
 import { Suspense } from "react";
 
-import { CurrentPlanCard } from "@/billing/components/current-plan-card";
 import { ResolveSubscriptionButton } from "@/billing/components/resolve-subscription-button";
 import { UpdatePlanDialog } from "@/billing/components/update-plan-dialog";
 import { Alert } from "@/components/ui/alert";
@@ -11,7 +10,9 @@ import { EmptyState } from "@/core/components/empty-state";
 import { auth } from "@/lib/auth";
 import { polarClient } from "@/lib/configs/polar";
 import { getSlugFromProductId } from "@/lib/configs/products";
+import { CreditCard } from "lucide-react";
 import { headers } from "next/headers";
+import { NewCurrentPlanCard } from "./_components/new-current-plan-card";
 
 export default function BillingPage() {
   return (
@@ -38,11 +39,20 @@ async function BillingCard() {
     (subscription) => subscription.status === "active",
   );
 
+  // TO be able to get the payment method, we retrieve the checkout session
+  const checkoutSession = await polarClient.checkouts.list({
+    query: user.email,
+    productId: subscription.productId,
+    customerId: customerState?.id,
+  });
+
+  console.log(checkoutSession.result);
+
   if (!subscription) {
     return (
       <EmptyState
-        icons={[RiDiamondLine, RiDiamondLine, RiDiamondLine]}
-        title="You're not subscribed to any plan yet"
+        icons={[CreditCard, CreditCard, CreditCard]}
+        title="You are not subscribed to any plan yet"
         action={
           <UpdatePlanDialog currentPlan="free">
             <Button
@@ -71,10 +81,10 @@ async function BillingCard() {
         </Alert>
       )}
 
-      <CurrentPlanCard
+      <NewCurrentPlanCard
         slug={getSlugFromProductId(subscription.productId)}
-        periodEnd={subscription.endsAt}
-        cancelAtPeriodEnd={subscription.cancelAtPeriodEnd}
+        startedAt={subscription.startedAt}
+        currentPeriodEnd={subscription.currentPeriodEnd}
       />
     </>
   );

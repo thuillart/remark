@@ -1,8 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { RiSparkling2Line } from "@remixicon/react";
-import { BadgeAlertIcon, HeartIcon } from "lucide-react";
+import { BadgeAlertIcon, HeartIcon, Sparkles } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -66,7 +65,7 @@ export function FeedbackPopover() {
       <PopoverTrigger asChild>
         <Button size="sm" variant="outline">
           Feedback
-          <RiSparkling2Line size={16} className="opacity-60" />
+          <Sparkles size={16} className="opacity-60" />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-xs p-3 md:w-sm">

@@ -5,7 +5,6 @@ import {
   RiArrowRightLine,
   RiArrowRightUpLine,
   RiCalendarLine,
-  RiChat1Line,
   RiCloseLine,
   RiFilter3Line,
 } from "@remixicon/react";
@@ -775,8 +774,8 @@ export function DataTable({ data }: { data: Feedback[] }) {
     return (
       <div className="container">
         <EmptyState
-          title="You haven't received any feedbacks yet"
-          icons={[RiChat1Line, RiChat1Line, RiChat1Line]}
+          title="You have not received any feedbacks yet"
+          icons={[MessageSquare, MessageSquare, MessageSquare]}
           description="Any sent feedback will appear here once received."
         />
       </div>

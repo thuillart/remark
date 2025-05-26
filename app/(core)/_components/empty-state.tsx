@@ -1,4 +1,4 @@
-import type { RemixiconComponentType } from "@remixicon/react";
+import { LucideIcon } from "lucide-react";
 import { createElement } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 interface EmptyStateProps {
   title: string | React.ReactNode;
-  icons?: RemixiconComponentType[];
+  icons?: LucideIcon[];
   action?:
     | {
         label: string;

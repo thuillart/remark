@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  RiAccountCircleLine,
-  RiHome2Line,
-  RiLogoutBoxLine,
-  RiMoonLine,
-  RiMoreFill,
-  RiSunLine,
-} from "@remixicon/react";
+import { Ellipsis, Home, LogOut, Moon, Sun, UserRoundPen } from "lucide-react";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -58,7 +51,7 @@ export function DesktopDropdownMenu() {
           </div>
 
           <div className="flex size-6 items-center justify-center">
-            <RiMoreFill className="opacity-60" />
+            <Ellipsis className="opacity-60" />
           </div>
         </Button>
       </DropdownMenuTrigger>
@@ -66,7 +59,7 @@ export function DesktopDropdownMenu() {
       <DropdownMenuContent className="w-56 min-w-0">
         <DropdownMenuItem asChild>
           <Link href="/profile">
-            <RiAccountCircleLine className="opacity-60" />
+            <UserRoundPen className="opacity-60" />
             My profile
           </Link>
         </DropdownMenuItem>
@@ -79,9 +72,9 @@ export function DesktopDropdownMenu() {
         >
           <div className="flex items-center gap-2">
             {theme === "dark" ? (
-              <RiSunLine className="opacity-60" />
+              <Sun className="opacity-60" />
             ) : (
-              <RiMoonLine className="opacity-60" />
+              <Moon className="opacity-60" />
             )}
             Toggle theme
           </div>
@@ -90,7 +83,7 @@ export function DesktopDropdownMenu() {
 
         <DropdownMenuItem asChild>
           <Link href="/home">
-            <RiHome2Line className="opacity-60" />
+            <Home className="opacity-60" />
             Home page
           </Link>
         </DropdownMenuItem>
@@ -108,7 +101,7 @@ export function DesktopDropdownMenu() {
             });
           }}
         >
-          <RiLogoutBoxLine className="opacity-60" />
+          <LogOut className="opacity-60" />
           Logout
         </DropdownMenuItem>
       </DropdownMenuContent>

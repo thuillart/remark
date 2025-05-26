@@ -35,7 +35,7 @@ export function CurrentPlanCard({
   }
 
   return (
-    <Card className="relative">
+    <Card className="relative mb-4">
       <GlowEffect borderWidth={2} />
 
       <CardHeader>

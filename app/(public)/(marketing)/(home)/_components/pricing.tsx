@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import React, { cache, Suspense } from "react";
+import React from "react";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { ContactUsButton } from "@/home/components/contact-us-button";
@@ -14,7 +14,7 @@ import { SubscriptionSlug } from "@/lib/schema";
 export const dynamic = "force-dynamic";
 
 // Cache the fetch request for auth state
-const getCachedSubscriptionState = cache(async () => {
+const getCachedSubscriptionState = React.cache(async () => {
   const { data: customerState } = await authClient.customer.state();
   return customerState;
 });
@@ -111,7 +111,7 @@ export async function Pricing() {
           </p>
         </div>
         <div className="mt-18 grid gap-4 md:grid-cols-3">
-          <Suspense
+          <React.Suspense
             fallback={
               <>
                 <Skeleton className="h-97.5 rounded-2xl border" />
@@ -121,7 +121,7 @@ export async function Pricing() {
             }
           >
             <PricingCards />
-          </Suspense>
+          </React.Suspense>
         </div>
         <div className="mt-12 flex justify-center">
           <div className="relative flex flex-col items-center gap-2 rounded-2xl border px-6 py-4 font-medium md:flex-row">

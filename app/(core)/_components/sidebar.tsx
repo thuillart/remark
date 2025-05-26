@@ -1,13 +1,5 @@
 "use client";
 
-import {
-  type RemixiconComponentType,
-  RiChatPollLine,
-  RiContactsBook2Line,
-  RiEqualizer3Line,
-  RiInbox2Line,
-  RiKey2Line,
-} from "@remixicon/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -15,16 +7,22 @@ import { LogoLink } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { DesktopDropdownMenu } from "@/core/components/desktop-dropdown-menu";
 import { cn } from "@/lib/utils";
+import {
+  Inbox,
+  KeyRound,
+  LucideIcon,
+  Settings2,
+  UserRound,
+  Vote,
+} from "lucide-react";
 
-function NavItem({
-  href,
-  Icon,
-  label,
-}: {
+export interface Item {
   href: string;
-  Icon: RemixiconComponentType;
+  Icon: LucideIcon;
   label: string;
-}) {
+}
+
+function NavItem({ href, Icon, label }: Item) {
   const pathname = usePathname();
   const isActive = href === "/" ? pathname === "/" : pathname.startsWith(href);
 
@@ -46,36 +44,30 @@ function NavItem({
   );
 }
 
-export interface Item {
-  href: string;
-  Icon: RemixiconComponentType;
-  label: string;
-}
-
 export const navItems: Item[] = [
   {
     href: "/",
-    Icon: RiInbox2Line,
+    Icon: Inbox,
     label: "Feedbacks",
   },
   {
     href: "/votes",
-    Icon: RiChatPollLine,
+    Icon: Vote,
     label: "Votes",
   },
   {
     href: "/contacts",
-    Icon: RiContactsBook2Line,
+    Icon: UserRound,
     label: "Contacts",
   },
   {
     href: "/api-keys",
-    Icon: RiKey2Line,
+    Icon: KeyRound,
     label: "API Keys",
   },
   {
     href: "/settings/usage",
-    Icon: RiEqualizer3Line,
+    Icon: Settings2,
     label: "Settings",
   },
 ];
