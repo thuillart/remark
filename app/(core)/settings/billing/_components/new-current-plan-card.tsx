@@ -30,11 +30,13 @@ export function NewCurrentPlanCard({
   startedAt: Date;
   currentPeriodEnd: Date;
 }) {
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState<"portal" | "cancel" | null>(
+    null,
+  );
   const [isHovering, setIsHovering] = React.useState(false);
 
-  async function handlePortal() {
-    setIsLoading(true);
+  async function handlePortal(from: "portal" | "cancel") {
+    setIsLoading(from);
     await authClient.customer.portal();
   }
 
@@ -59,14 +61,19 @@ export function NewCurrentPlanCard({
         <div></div>
       </CardContent>
       <CardFooter className="justify-between">
-        <Button variant="outline" onClick={handlePortal} loading={isLoading}>
+        <Button
+          variant="outline"
+          onClick={() => handlePortal("portal")}
+          loading={isLoading === "portal"}
+        >
           Manage subscription
         </Button>
 
         <Button
-          onClick={handlePortal}
+          onClick={() => handlePortal("cancel")}
           variant="link"
-          className="group not-hover:text-destructive/80 text-destructive"
+          loading={isLoading === "cancel"}
+          className="has-[>svg:is(.loading)]:[&_svg]:first:text-destructive group not-hover:text-destructive/80 text-destructive"
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
         >
