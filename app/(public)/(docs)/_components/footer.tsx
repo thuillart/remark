@@ -1,11 +1,6 @@
-import {
-  RiDiscordFill,
-  RiGithubFill,
-  RiTwitterXLine,
-  RiYoutubeFill,
-} from "@remixicon/react";
 import Link from "next/link";
 
+import { Logo } from "@/components/logo";
 import { DISCORD_URL, GITHUB_URL, X_URL, YOUTUBE_URL } from "@/lib/constants";
 
 export function Footer() {
@@ -19,7 +14,10 @@ export function Footer() {
             target="_blank"
             className="text-muted-foreground hover:text-foreground transition-colors"
           >
-            <Icon size={20} />
+            <Icon
+              size={18}
+              className="not-hover:*:first:fill-muted-foreground"
+            />
           </Link>
         ))}
       </div>
@@ -31,21 +29,21 @@ const socials = [
   {
     name: "X",
     href: X_URL,
-    Icon: RiTwitterXLine,
+    Icon: Logo.X,
   },
   {
     name: "GitHub",
     href: GITHUB_URL,
-    Icon: RiGithubFill,
+    Icon: Logo.GitHub,
   },
   {
     name: "Discord",
     href: DISCORD_URL,
-    Icon: RiDiscordFill,
+    Icon: Logo.Discord,
   },
   {
     name: "YouTube",
     href: YOUTUBE_URL,
-    Icon: RiYoutubeFill,
+    Icon: Logo.YouTube,
   },
 ];

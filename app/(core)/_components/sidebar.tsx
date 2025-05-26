@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { LogoLink } from "@/components/logo";
+import { AppIconLink } from "@/components/app-icon";
 import { Button } from "@/components/ui/button";
 import { DesktopDropdownMenu } from "@/core/components/desktop-dropdown-menu";
 import { cn } from "@/lib/utils";
@@ -77,7 +77,7 @@ export function Sidebar() {
     <aside className="border-border bg-sidebar hidden h-screen w-3xs shrink-0 flex-col justify-between border-r p-4 md:flex">
       <div className="flex flex-col gap-8">
         <div className="ml-2.5 flex h-8 items-center">
-          <LogoLink />
+          <AppIconLink />
         </div>
 
         <ul className="flex flex-col gap-2">

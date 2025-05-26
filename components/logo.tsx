@@ -1,42 +1,120 @@
-import Link from "next/link";
+type LogoProps = React.SVGProps<SVGSVGElement> & {
+  size?: number;
+};
 
-import { APP_NAME } from "@/lib/constants";
-import { cn } from "@/lib/utils";
-
-function Logo({
-  variant,
-  className,
-}: {
-  variant?: "icon" | "wordmark";
-  className?: string;
-}) {
-  return (
-    <div className="inline-flex h-6 items-center gap-1.5 select-none">
-      <span
-        className={cn(
-          "font-borel h-3.75 text-xl font-medium antialiased select-none",
-          className,
-        )}
-      >
-        {variant === "icon" ? (
-          <>{APP_NAME.toLowerCase()[0]}</>
-        ) : (
-          <>{APP_NAME.toLowerCase()}</>
-        )}
-      </span>
-    </div>
-  );
+function BaseLogo({ children }: { children: React.ReactNode }) {
+  return children;
 }
 
-function LogoLink({ className }: { className?: string }) {
+function GitHub({ size, ...props }: LogoProps) {
   return (
-    <Link
-      href="/"
-      className={cn("flex transition-opacity hover:opacity-70", className)}
+    <svg
+      fill="none"
+      width={size || 20}
+      xmlns="http://www.w3.org/2000/svg"
+      height={size || 20}
+      viewBox="0 0 1024 1024"
+      {...props}
     >
-      <Logo />
-    </Link>
+      <path
+        d="M8 0C3.58 0 0 3.58 0 8C0 11.54 2.29 14.53 5.47 15.59C5.87 15.66 6.02 15.42 6.02 15.21C6.02 15.02 6.01 14.39 6.01 13.72C4 14.09 3.48 13.23 3.32 12.78C3.23 12.55 2.84 11.84 2.5 11.65C2.22 11.5 1.82 11.13 2.49 11.12C3.12 11.11 3.57 11.7 3.72 11.94C4.44 13.15 5.59 12.81 6.05 12.6C6.12 12.08 6.33 11.73 6.56 11.53C4.78 11.33 2.92 10.64 2.92 7.58C2.92 6.71 3.23 5.99 3.74 5.43C3.66 5.23 3.38 4.41 3.82 3.31C3.82 3.31 4.49 3.1 6.02 4.13C6.66 3.95 7.34 3.86 8.02 3.86C8.7 3.86 9.38 3.95 10.02 4.13C11.55 3.09 12.22 3.31 12.22 3.31C12.66 4.41 12.38 5.23 12.3 5.43C12.81 5.99 13.12 6.7 13.12 7.58C13.12 10.65 11.25 11.33 9.47 11.53C9.76 11.78 10.01 12.26 10.01 13.01C10.01 14.08 10 14.94 10 15.21C10 15.42 10.15 15.67 10.55 15.59C13.71 14.53 16 11.53 16 8C16 3.58 12.42 0 8 0Z"
+        fillRule="evenodd"
+        clipRule="evenodd"
+        className="fill-[#1B1F23] dark:fill-white"
+        transform="scale(64)"
+      />
+    </svg>
   );
 }
 
-export { Logo, LogoLink };
+function GitLab({ size, ...props }: LogoProps) {
+  return (
+    <svg
+      fill="none"
+      width={size || 20}
+      xmlns="http://www.w3.org/2000/svg"
+      height={size || 20}
+      viewBox="0 0 32 32"
+      {...props}
+    >
+      <path
+        d="m31.46 12.78-.04-.12-4.35-11.35A1.14 1.14 0 0 0 25.94.6c-.24 0-.47.1-.66.24-.19.15-.33.36-.39.6l-2.94 9h-11.9l-2.94-9A1.14 1.14 0 0 0 6.07.58a1.15 1.15 0 0 0-1.14.72L.58 12.68l-.05.11a8.1 8.1 0 0 0 2.68 9.34l.02.01.04.03 6.63 4.97 3.28 2.48 2 1.52a1.35 1.35 0 0 0 1.62 0l2-1.52 3.28-2.48 6.67-5h.02a8.09 8.09 0 0 0 2.7-9.36Z"
+        fill="#E24329"
+      />
+      <path
+        d="m31.46 12.78-.04-.12a14.75 14.75 0 0 0-5.86 2.64l-9.55 7.24 6.09 4.6 6.67-5h.02a8.09 8.09 0 0 0 2.67-9.36Z"
+        fill="#FC6D26"
+      />
+      <path
+        d="m9.9 27.14 3.28 2.48 2 1.52a1.35 1.35 0 0 0 1.62 0l2-1.52 3.28-2.48-6.1-4.6-6.07 4.6Z"
+        fill="#FCA326"
+      />
+      <path
+        d="M6.44 15.3a14.71 14.71 0 0 0-5.86-2.63l-.05.12a8.1 8.1 0 0 0 2.68 9.34l.02.01.04.03 6.63 4.97 6.1-4.6-9.56-7.24Z"
+        fill="#FC6D26"
+      />
+    </svg>
+  );
+}
+
+function YouTube({ size, ...props }: LogoProps) {
+  return (
+    <svg
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+      height={size - 1 || 18}
+      viewBox="0 0 256 180"
+      preserveAspectRatio="xMidYMid"
+      {...props}
+    >
+      <path
+        d="M250.346 28.075A32.18 32.18 0 0 0 227.69 5.418C207.824 0 127.87 0 127.87 0S47.912.164 28.046 5.582A32.18 32.18 0 0 0 5.39 28.24c-6.009 35.298-8.34 89.084.165 122.97a32.18 32.18 0 0 0 22.656 22.657c19.866 5.418 99.822 5.418 99.822 5.418s79.955 0 99.82-5.418a32.18 32.18 0 0 0 22.657-22.657c6.338-35.348 8.291-89.1-.164-123.134Z"
+        fill="red"
+      />
+      <path d="m102.421 128.06 66.328-38.418-66.328-38.418z" fill="white" />
+    </svg>
+  );
+}
+
+function Discord({ size, ...props }: LogoProps) {
+  return (
+    <svg
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+      height={size || 18}
+      viewBox="0 0 256 199"
+      preserveAspectRatio="xMidYMid"
+      {...props}
+    >
+      <path
+        d="M216.856 16.597A208.502 208.502 0 0 0 164.042 0c-2.275 4.113-4.933 9.645-6.766 14.046-19.692-2.961-39.203-2.961-58.533 0-1.832-4.4-4.55-9.933-6.846-14.046a207.809 207.809 0 0 0-52.855 16.638C5.618 67.147-3.443 116.4 1.087 164.956c22.169 16.555 43.653 26.612 64.775 33.193A161.094 161.094 0 0 0 79.735 175.3a136.413 136.413 0 0 1-21.846-10.632 108.636 108.636 0 0 0 5.356-4.237c42.122 19.702 87.89 19.702 129.51 0a131.66 131.66 0 0 0 5.355 4.237 136.07 136.07 0 0 1-21.886 10.653c4.006 8.02 8.638 15.67 13.873 22.848 21.142-6.58 42.646-16.637 64.815-33.213 5.316-56.288-9.08-105.09-38.056-148.36ZM85.474 135.095c-12.645 0-23.015-11.805-23.015-26.18s10.149-26.2 23.015-26.2c12.867 0 23.236 11.804 23.015 26.2.02 14.375-10.148 26.18-23.015 26.18Zm85.051 0c-12.645 0-23.014-11.805-23.014-26.18s10.148-26.2 23.014-26.2c12.867 0 23.236 11.804 23.015 26.2 0 14.375-10.148 26.18-23.015 26.18Z"
+        fill="#5865F2"
+      />
+    </svg>
+  );
+}
+
+function X({ size, ...props }: LogoProps) {
+  return (
+    <svg
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+      width={size - 2 || 18}
+      viewBox="0 0 1200 1227"
+      {...props}
+    >
+      <path
+        d="M714.163 519.284 1160.89 0h-105.86L667.137 450.887 357.328 0H0l468.492 681.821L0 1226.37h105.866l409.625-476.152 327.181 476.152H1200L714.137 519.284h.026ZM569.165 687.828l-47.468-67.894-377.686-540.24h162.604l304.797 435.991 47.468 67.894 396.2 566.721H892.476L569.165 687.854v-.026Z"
+        className="fill-black dark:fill-white"
+      />
+    </svg>
+  );
+}
+
+export const Logo = Object.assign(BaseLogo, {
+  GitHub,
+  GitLab,
+  YouTube,
+  Discord,
+  X,
+});

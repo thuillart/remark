@@ -38,15 +38,6 @@ async function BillingCard() {
     (subscription) => subscription.status === "active",
   );
 
-  // TO be able to get the payment method, we retrieve the checkout session
-  const checkoutSession = await polarClient.checkouts.list({
-    query: user.email,
-    productId: subscription.productId,
-    customerId: customerState?.id,
-  });
-
-  console.log(checkoutSession.result);
-
   if (!subscription) {
     return (
       <EmptyState
