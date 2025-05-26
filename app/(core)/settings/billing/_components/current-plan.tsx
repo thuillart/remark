@@ -21,7 +21,7 @@ import { APP_NAME } from "@/lib/constants";
 import { SubscriptionSlug } from "@/lib/schema";
 import { capitalizeFirstLetter } from "@/lib/utils";
 
-export function NewCurrentPlanCard({
+export function CurrentPlan({
   slug,
   startedAt,
   currentPeriodEnd,
