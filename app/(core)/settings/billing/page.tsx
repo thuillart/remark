@@ -85,6 +85,7 @@ async function BillingCard() {
         slug={getSlugFromProductId(subscription.productId)}
         startedAt={subscription.startedAt}
         currentPeriodEnd={subscription.currentPeriodEnd}
+        cancelAtPeriodEnd={Boolean(subscription.cancelAtPeriodEnd)}
       />
     </>
   );

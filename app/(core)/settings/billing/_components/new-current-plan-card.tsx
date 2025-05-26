@@ -25,10 +25,12 @@ export function NewCurrentPlanCard({
   slug,
   startedAt,
   currentPeriodEnd,
+  cancelAtPeriodEnd,
 }: {
   slug: SubscriptionSlug;
   startedAt: Date;
   currentPeriodEnd: Date;
+  cancelAtPeriodEnd: boolean;
 }) {
   const [isLoading, setIsLoading] = React.useState<"portal" | "cancel" | null>(
     null,
@@ -53,7 +55,9 @@ export function NewCurrentPlanCard({
         </CardTitle>
         <CardDescription className="flex items-center gap-2">
           <Calendar size={16} className="opacity-80" />
-          Next payment on {format(currentPeriodEnd, "d MMMM yyyy")}.
+          {cancelAtPeriodEnd
+            ? `Your subscription will end on ${format(currentPeriodEnd, "d MMMM yyyy")}.`
+            : `Next payment on ${format(currentPeriodEnd, "d MMMM yyyy")}.`}
         </CardDescription>
       </CardHeader>
       <CardContent>
