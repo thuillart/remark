@@ -24,9 +24,9 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronUpIcon,
-  CircleAlertIcon,
+  CircleAlert,
   CircleX,
-  Columns3Icon,
+  Columns3,
   EllipsisIcon,
   FilterIcon,
   ListFilter,
@@ -101,9 +101,8 @@ import { Vote } from "@/votes/lib/schema";
 import { getStatus } from "@/votes/lib/utils";
 
 // Custom filter function for multi-column searching
-const multiColumnFilterFn: FilterFn<Vote> = (row, columnId, filterValue) => {
-  const searchableRowContent =
-    `${row.original.subject} ${row.original.referenceId}`.toLowerCase();
+const multiColumnFilterFn: FilterFn<Vote> = (row, _columnId, filterValue) => {
+  const searchableRowContent = `${row.original.subject}`.toLowerCase();
   const searchTerm = (filterValue ?? "").toLowerCase();
   return searchableRowContent.includes(searchTerm);
 };
@@ -154,6 +153,7 @@ const columns: ColumnDef<Vote>[] = [
         </Badge>
       );
     },
+    size: 100,
     filterFn: statusFilterFn,
   },
 
@@ -163,24 +163,24 @@ const columns: ColumnDef<Vote>[] = [
     cell: ({ row }) => (
       <div className="font-medium">{row.getValue("count")}</div>
     ),
-    filterFn: multiColumnFilterFn,
-    enableHiding: false,
+    size: 100,
   },
 
   {
     accessorKey: "subject",
     header: "Subject",
+    size: 220,
+    filterFn: multiColumnFilterFn,
   },
 
   {
     accessorKey: "createdAt",
     header: "Created at",
     cell: ({ row }) => {
+      const exactDate = formatRelative(row.original.createdAt, new Date());
       const displayDate = formatDistance(row.original.createdAt, new Date(), {
         addSuffix: true,
       }).replace("about ", "");
-
-      const exactDate = formatRelative(row.original.createdAt, new Date());
 
       return (
         <Tooltip>
@@ -191,7 +191,7 @@ const columns: ColumnDef<Vote>[] = [
         </Tooltip>
       );
     },
-    size: 120,
+    size: 100,
   },
   {
     id: "actions",
@@ -217,7 +217,7 @@ export function DataTable({ data }: { data: Vote[] }) {
 
   const [sorting, setSorting] = React.useState<SortingState>([
     {
-      id: "name",
+      id: "subject",
       desc: false,
     },
   ]);
@@ -250,11 +250,6 @@ export function DataTable({ data }: { data: Vote[] }) {
     onColumnVisibilityChange: setColumnVisibility,
     getFilteredRowModel: getFilteredRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
-    filterFns: {
-      timeRange: () => true,
-      impact: () => true,
-      tags: () => true,
-    },
     state: {
       sorting,
       pagination,
@@ -309,20 +304,20 @@ export function DataTable({ data }: { data: Vote[] }) {
       {/* Filters */}
       <div className="flex items-center justify-between gap-3 max-sm:flex-wrap">
         <div className="flex gap-3 sm:grid sm:w-1/2 sm:grid-cols-4">
-          {/* Filter by name or email */}
+          {/* Filter by subject */}
           <div className="relative col-span-2">
             <Input
               id={`${id}-input`}
               ref={inputRef}
               className={cn(
                 "peer ps-9",
-                Boolean(table.getColumn("name")?.getFilterValue()) && "pe-9",
+                Boolean(table.getColumn("subject")?.getFilterValue()) && "pe-9",
               )}
               value={
-                (table.getColumn("name")?.getFilterValue() ?? "") as string
+                (table.getColumn("subject")?.getFilterValue() ?? "") as string
               }
               onChange={(e) =>
-                table.getColumn("name")?.setFilterValue(e.target.value)
+                table.getColumn("subject")?.setFilterValue(e.target.value)
               }
               type="text"
               aria-label="Filter by subject"
@@ -331,12 +326,12 @@ export function DataTable({ data }: { data: Vote[] }) {
             <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
               <ListFilter size={16} aria-hidden="true" />
             </div>
-            {Boolean(table.getColumn("name")?.getFilterValue()) && (
+            {Boolean(table.getColumn("subject")?.getFilterValue()) && (
               <button
                 className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
                 aria-label="Clear filter"
                 onClick={() => {
-                  table.getColumn("name")?.setFilterValue("");
+                  table.getColumn("subject")?.setFilterValue("");
                   if (inputRef.current) {
                     inputRef.current.focus();
                   }
@@ -398,11 +393,7 @@ export function DataTable({ data }: { data: Vote[] }) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">
-                <Columns3Icon
-                  className="-ms-1 opacity-60"
-                  size={16}
-                  aria-hidden="true"
-                />
+                <Columns3 size={16} className="-ms-1 opacity-60" />
                 View
               </Button>
             </DropdownMenuTrigger>
@@ -448,11 +439,8 @@ export function DataTable({ data }: { data: Vote[] }) {
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
-                  <div
-                    className="flex size-9 shrink-0 items-center justify-center rounded-full border"
-                    aria-hidden="true"
-                  >
-                    <CircleAlertIcon className="opacity-80" size={16} />
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-full border">
+                    <CircleAlert size={16} className="opacity-80" />
                   </div>
                   <AlertDialogHeader>
                     <AlertDialogTitle>
@@ -586,16 +574,14 @@ export function DataTable({ data }: { data: Vote[] }) {
       <div className="flex items-center justify-between gap-8">
         {/* Results per page */}
         <div className="flex items-center gap-3">
-          <Label htmlFor={id} className="max-sm:sr-only">
-            Rows per page
-          </Label>
+          <Label className="max-sm:sr-only">Rows per page</Label>
           <Select
             value={table.getState().pagination.pageSize.toString()}
             onValueChange={(value) => {
               table.setPageSize(Number(value));
             }}
           >
-            <SelectTrigger id={id} className="w-fit whitespace-nowrap">
+            <SelectTrigger className="w-fit whitespace-nowrap">
               <SelectValue placeholder="Select number of results" />
             </SelectTrigger>
             <SelectContent className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2">
