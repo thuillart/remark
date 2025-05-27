@@ -647,7 +647,7 @@ export function DataTable({ data }: { data: Feedback[] }) {
         const startDate = getDateFromTimeRange(filterValue);
         return startDate ? date.getTime() >= startDate.getTime() : true;
       },
-      tags: (row, columnId, filterValue: string[]) => {
+      tags: (row, _columnId, filterValue: string[]) => {
         if (!filterValue?.length) return true;
         const tags =
           typeof row.original.tags === "string"

@@ -1,0 +1,1 @@
+ALTER TABLE "vote" ADD COLUMN "archived" boolean DEFAULT false NOT NULL;

@@ -49,7 +49,10 @@ export function CurrentPlan({
           <TextShimmer>
             {`${APP_NAME} ${capitalizeFirstLetter(slug)}`}
           </TextShimmer>
-          <Badge variant="outline" className="justify-self-end rounded-full">
+          <Badge
+            variant="outline"
+            className="justify-self-end rounded-full font-normal tracking-normal"
+          >
             Joined on {format(startedAt, "d MMM yyyy")}
           </Badge>
         </CardTitle>

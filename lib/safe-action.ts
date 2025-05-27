@@ -13,7 +13,7 @@ export const authActionClient = actionClient.use(async ({ next }) => {
     headers: await headers(),
   });
 
-  if (!session || !session.user) {
+  if (!session) {
     throw new Error("Please sign in to continue");
   }
 

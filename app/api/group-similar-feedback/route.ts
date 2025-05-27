@@ -6,6 +6,7 @@ import { getSlugFromProductId } from "@/lib/configs/products";
 import { createVote } from "@/lib/db/actions";
 import { db } from "@/lib/db/drizzle";
 import { feedback, user, vote } from "@/lib/db/schema";
+import { FeedbackImpact } from "@/lib/schema";
 import { tryCatch } from "@/lib/utils";
 
 export async function GET(request: NextRequest) {
@@ -71,10 +72,6 @@ export async function GET(request: NextRequest) {
     return Response.json({ success: true });
   }
 
-  // Find similar feedbacks
-  console.log("🔍 Finding similar feedbacks...");
-  const SIMILARITY_THRESHOLD = 0.7; // 70%
-
   // Get all feedback IDs that are already in votes
   console.log("📝 Getting already processed feedbacks...");
   const existingVotes = await db
@@ -91,17 +88,69 @@ export async function GET(request: NextRequest) {
   // Ensure pgvector extension is enabled
   await db.execute(sql`CREATE EXTENSION IF NOT EXISTS vector;`);
 
+  // First, handle single feedbacks that don't have any similar matches
+  console.log("🔍 Processing single feedbacks...");
+  const singleFeedbacks = await db
+    .select()
+    .from(feedback)
+    .where(
+      and(
+        inArray(feedback.referenceId, paidIds),
+        not(inArray(feedback.id, Array.from(processedFeedbackIds))),
+        // Exclude positive feedback
+        not(eq(feedback.impact, "positive")),
+        not(sql`${feedback.tags}::text[] @> ARRAY['kudos']::text[]`),
+      ),
+    );
+
+  // Create votes for single feedbacks
+  for (const singleFeedback of singleFeedbacks) {
+    console.log(`\nProcessing single feedback ${singleFeedback.id}`);
+
+    const result = await createVote({
+      subjects: [singleFeedback.subject],
+      groupsIds: [singleFeedback.id],
+      referenceId: singleFeedback.referenceId,
+    });
+
+    if (result?.data?.failure) {
+      console.error(
+        `❌ Couldn't create vote for single feedback ${singleFeedback.id}:`,
+        result.data.failure,
+      );
+    } else {
+      console.log(
+        `✅ Successfully created vote for single feedback ${singleFeedback.id}`,
+      );
+    }
+  }
+
+  // Now proceed with finding similar pairs
+  console.log("\n🔍 Finding similar feedback pairs...");
+  const SIMILARITY_THRESHOLDS: Record<
+    Exclude<FeedbackImpact, "positive">,
+    number
+  > = {
+    critical: 0.8,
+    major: 0.75,
+    minor: 0.65,
+  };
+
   const pairs = await db
     .select({
       feedback1: {
         id: feedback.id,
         subject: feedback.subject,
         referenceId: feedback.referenceId,
+        impact: feedback.impact,
+        tags: feedback.tags,
       },
       feedback2: {
         id: sql<string>`f2.id`,
         subject: sql<string>`f2.subject`,
         referenceId: sql<string>`f2.reference_id`,
+        impact: sql<string>`f2.impact`,
+        tags: sql<string[]>`f2.tags`,
       },
       similarity: sql<number>`1 - ((${feedback.embedding}::vector) <=> (f2.embedding::vector))`,
     })
@@ -110,12 +159,30 @@ export async function GET(request: NextRequest) {
       sql`${feedback} as f2`,
       sql`${feedback.id} < f2.id 
           AND ${feedback.referenceId} = f2.reference_id
-          AND 1 - ((${feedback.embedding}::vector) <=> (f2.embedding::vector)) > ${SIMILARITY_THRESHOLD}`,
+          AND (
+            -- Critical issues need highest similarity
+            (${feedback.impact} = 'critical' AND f2.impact = 'critical' AND 1 - ((${feedback.embedding}::vector) <=> (f2.embedding::vector)) > ${SIMILARITY_THRESHOLDS.critical})
+            OR
+            -- Major issues need high similarity
+            (${feedback.impact} = 'major' AND f2.impact = 'major' AND 1 - ((${feedback.embedding}::vector) <=> (f2.embedding::vector)) > ${SIMILARITY_THRESHOLDS.major})
+            OR
+            -- Minor issues can be more lenient
+            (${feedback.impact} = 'minor' AND f2.impact = 'minor' AND 1 - ((${feedback.embedding}::vector) <=> (f2.embedding::vector)) > ${SIMILARITY_THRESHOLDS.minor})
+            OR
+            -- Cross-impact matching (e.g., critical with major)
+            (${feedback.impact} != f2.impact AND 1 - ((${feedback.embedding}::vector) <=> (f2.embedding::vector)) > ${SIMILARITY_THRESHOLDS.major})
+          )`,
     )
     .where(
       and(
         inArray(feedback.referenceId, paidIds),
         not(inArray(feedback.id, Array.from(processedFeedbackIds))),
+        // Exclude positive feedback
+        not(eq(feedback.impact, "positive")),
+        not(sql`${feedback.tags}::text[] @> ARRAY['kudos']::text[]`),
+        // Same for f2
+        not(eq(sql`f2.impact`, "positive")),
+        not(sql`f2.tags::text[] @> ARRAY['kudos']::text[]`),
       ),
     );
   console.log(`✅ Found ${pairs.length} similar feedback pairs`);
@@ -193,7 +260,7 @@ export async function GET(request: NextRequest) {
 // For local testing
 export async function POST(request: NextRequest) {
   if (process.env.NODE_ENV === "production") {
-    return new Response("Not available in production", { status: 403 });
+    return new Response("Not available in production for now", { status: 403 });
   }
 
   return GET(request);

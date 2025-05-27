@@ -111,6 +111,7 @@ interface ImpactProps {
   label: string;
   variant: BadgeProps["variant"];
   description: string;
+  tooltipWidth: string;
 }
 
 export function getImpact(impact: FeedbackImpact): ImpactProps {
@@ -120,24 +121,28 @@ export function getImpact(impact: FeedbackImpact): ImpactProps {
         label: "Critical",
         variant: "destructive",
         description: "thinks this needs attention now before it gets worse",
+        tooltipWidth: "w-24",
       };
     case "major":
       return {
         label: "Major",
         variant: "warning",
         description: "thinks this could become serious if not fixed soon",
+        tooltipWidth: "w-24",
       };
     case "minor":
       return {
         label: "Minor",
         variant: "secondary",
         description: "thinks this can wait but worth checking soon",
+        tooltipWidth: "w-24",
       };
     case "positive":
       return {
         label: "Positive",
         variant: "green",
         description: "simply thinks that all your hard work is paying off",
+        tooltipWidth: "w-24",
       };
   }
 }

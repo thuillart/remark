@@ -160,7 +160,7 @@ export const contact = pgTable("contact", {
   email: text("email").notNull(),
   referenceId: text("reference_id")
     .notNull()
-    .references(() => user.id),
+    .references(() => user.id, { onDelete: "cascade" }),
   name: text("name"),
   metadata: jsonb("metadata").$type<ContactMetadata>(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -183,7 +183,7 @@ export const vote = pgTable("vote", {
    */
   referenceId: text("reference_id")
     .notNull()
-    .references(() => user.id),
+    .references(() => user.id, { onDelete: "cascade" }),
   /**
    * The status of the vote.
    */
@@ -193,6 +193,10 @@ export const vote = pgTable("vote", {
    * Used to track which feedbacks were grouped together and to avoid reprocessing.
    */
   feedbackIds: text("feedback_ids").array().notNull(),
+  /**
+   * Whether the vote is archived (hidden from the main table)
+   */
+  archived: boolean("archived").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

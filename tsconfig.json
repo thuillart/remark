@@ -38,7 +38,11 @@
       "@/feedbacks/lib/*": ["app/(core)/feedbacks/_lib/*"],
       "@/contacts/components/*": ["app/(core)/contacts/_components/*"],
       "@/contacts/lib/*": ["app/(core)/contacts/_lib/*"],
-      "@/feedbacks/id/components/*": ["app/(core)/feedbacks/[id]/_components/*"]
+      "@/feedbacks/id/components/*": [
+        "app/(core)/feedbacks/[id]/_components/*"
+      ],
+      "@/votes/components/*": ["app/(core)/votes/_components/*"],
+      "@/votes/lib/*": ["app/(core)/votes/_lib/*"]
     }
   },
   "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],
