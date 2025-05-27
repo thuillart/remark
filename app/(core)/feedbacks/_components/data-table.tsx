@@ -647,13 +647,17 @@ export function DataTable({ data }: { data: Feedback[] }) {
         const startDate = getDateFromTimeRange(filterValue);
         return startDate ? date.getTime() >= startDate.getTime() : true;
       },
-      tags: (row, columnId, filterValue: string[]) => {
+      tags: (row, _columnId, filterValue: string[]) => {
         if (!filterValue?.length) return true;
         const tags =
           typeof row.original.tags === "string"
             ? parsePgArray(row.original.tags)
             : row.original.tags;
         return filterValue.every((tag) => tags.includes(tag));
+      },
+      status: (row, _columnId, filterValue) => {
+        const status = row.original.status;
+        return filterValue === "all" ? true : status === filterValue;
       },
     },
     manualPagination: true, // Important: manually control pagination
