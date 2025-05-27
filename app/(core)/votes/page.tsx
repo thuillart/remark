@@ -14,7 +14,7 @@ export default function VotesPage() {
     <>
       <PageTitle title="Votes" />
       <main className="container">
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense>
           <SuspensedTable />
         </Suspense>
       </main>
@@ -35,7 +35,5 @@ async function SuspensedTable() {
     .from(vote)
     .where(eq(vote.referenceId, user.id));
 
-  console.log("we've been hit");
-
-  return <DataTable data={votes} />;
+  return <DataTable data={[...votes]} />;
 }
