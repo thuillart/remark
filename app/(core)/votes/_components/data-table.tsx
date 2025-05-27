@@ -11,12 +11,12 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   PaginationState,
-  Row,
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import { formatDistance, formatRelative } from "date-fns";
 import {
+  Archive,
   ChevronDownIcon,
   ChevronFirstIcon,
   ChevronLastIcon,
@@ -25,10 +25,11 @@ import {
   ChevronUpIcon,
   CircleAlert,
   CircleX,
-  EllipsisIcon,
+  Clock3,
+  Construction,
   Filter,
   ListFilter,
-  TrashIcon,
+  Trash,
 } from "lucide-react";
 import React from "react";
 
@@ -46,19 +47,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -89,6 +77,7 @@ import {
 import {
   Tooltip,
   TooltipContent,
+  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { VoteStatus } from "@/lib/schema";
@@ -187,14 +176,7 @@ const columns: ColumnDef<Vote>[] = [
         </Tooltip>
       );
     },
-    size: 100,
-  },
-  {
-    id: "actions",
-    header: () => <span className="sr-only">Actions</span>,
-    cell: ({ row }) => <RowActions row={row} />,
-    size: 60,
-    enableHiding: false,
+    size: 150,
   },
 ];
 
@@ -367,47 +349,94 @@ export function DataTable({ data }: { data: Vote[] }) {
         </div>
 
         {/* Delete button */}
-        {table.getSelectedRowModel().rows.length > 0 && (
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button className="ml-auto" variant="outline">
-                <TrashIcon
-                  className="-ms-1 opacity-60"
-                  size={16}
-                  aria-hidden="true"
-                />
-                Delete
-                <span className="bg-background text-muted-foreground/70 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
-                  {table.getSelectedRowModel().rows.length}
-                </span>
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
-                <div className="flex size-9 shrink-0 items-center justify-center rounded-full border">
-                  <CircleAlert size={16} className="opacity-80" />
-                </div>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete{" "}
-                    {table.getSelectedRowModel().rows.length} selected{" "}
-                    {table.getSelectedRowModel().rows.length === 1
-                      ? "row"
-                      : "rows"}
-                    .
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
+        {table.getSelectedRowModel().rows.length > 0 &&
+          (() => {
+            const count = table.getSelectedRowModel().rows.length;
+
+            return (
+              <div className="flex items-center gap-3">
+                <Tooltip>
+                  <TooltipProvider>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        className="ring-input border-0 ring hover:bg-blue-50 hover:text-blue-700 hover:ring-blue-700/10 dark:hover:bg-blue-400/10 dark:hover:text-blue-400 dark:hover:ring-blue-400/30"
+                      >
+                        <Clock3 className="opacity-60" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Mark as opened</TooltipContent>
+                  </TooltipProvider>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipProvider>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        className="ring-input border-0 ring hover:bg-orange-50 hover:text-orange-700 hover:hover:ring-orange-700/10 dark:hover:bg-orange-400/10 dark:hover:text-orange-400 dark:hover:ring-orange-400/30"
+                      >
+                        <Construction className="opacity-60" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Mark as in progress</TooltipContent>
+                  </TooltipProvider>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipProvider>
+                    <TooltipTrigger asChild>
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        className="ring-input border-0 ring hover:bg-green-50 hover:text-green-700 hover:ring-green-600/20 dark:hover:bg-green-400/10 dark:hover:text-green-400 dark:hover:ring-green-400/20"
+                      >
+                        <Archive className="opacity-60" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>Mark as done</TooltipContent>
+                  </TooltipProvider>
+                </Tooltip>
+
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      className="ring-input border-0 ring hover:bg-red-50 hover:text-red-700 hover:ring-red-700/20 dark:hover:bg-red-400/10 dark:hover:text-red-400 dark:hover:ring-red-400/30"
+                      variant="outline"
+                    >
+                      <Trash size={16} className="-ms-1 opacity-60" />
+                      Delete
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-full border">
+                        <CircleAlert size={16} className="opacity-80" />
+                      </div>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Are you absolutely sure?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action cannot be undone. This will permanently
+                          delete {count} selected {count === 1 ? "row" : "rows"}
+                          .
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                    </div>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDeleteRows}>
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDeleteRows}>
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        )}
+            );
+          })()}
       </div>
 
       {/* Table */}
@@ -618,70 +647,5 @@ export function DataTable({ data }: { data: Vote[] }) {
         </div>
       </div>
     </div>
-  );
-}
-
-function RowActions({ row }: { row: Row<Vote> }) {
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <div className="flex justify-end">
-          <Button
-            size="icon"
-            variant="ghost"
-            className="shadow-none"
-            aria-label="Edit item"
-          >
-            <EllipsisIcon size={16} aria-hidden="true" />
-          </Button>
-        </div>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <span>Edit</span>
-            <DropdownMenuShortcut>⌘E</DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <span>Duplicate</span>
-            <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <span>Archive</span>
-            <DropdownMenuShortcut>⌘A</DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>More</DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent>
-                <DropdownMenuItem>Move to project</DropdownMenuItem>
-                <DropdownMenuItem>Move to folder</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>Advanced options</DropdownMenuItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <span>Share</span>
-            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <span>Add to favorites</span>
-            <DropdownMenuShortcut>⌘F</DropdownMenuShortcut>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem className="text-destructive focus:text-destructive">
-          <span>Delete</span>
-          <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
   );
 }

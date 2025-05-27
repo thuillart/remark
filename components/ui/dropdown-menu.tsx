@@ -181,7 +181,7 @@ function DropdownMenuShortcut({
   return (
     <kbd
       className={cn(
-        "border-border bg-background flex size-5 items-center justify-center rounded border text-xs",
+        "bg-background text-muted-foreground/70 ms-auto -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium",
         className,
       )}
       {...props}
