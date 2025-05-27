@@ -1,6 +1,11 @@
 "use client";
 
-import { deleteVote, updateVote } from "@/lib/db/actions";
+import {
+  archiveVote,
+  deleteVote,
+  unarchiveVote,
+  updateVote,
+} from "@/lib/db/actions";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -19,7 +24,7 @@ import { formatDistance, formatRelative } from "date-fns";
 import {
   Archive,
   BadgeAlert,
-  CheckCircle,
+  BadgeCheck,
   ChevronDownIcon,
   ChevronFirstIcon,
   ChevronLastIcon,
@@ -40,13 +45,13 @@ import React from "react";
 
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -191,9 +196,6 @@ export function DataTable({ data }: { data: Vote[] }) {
   const [isLoading, setIsLoading] = React.useState<null | "delete" | "update">(
     null,
   );
-  const [openDialog, setOpenDialog] = React.useState<
-    null | VoteStatus | "delete"
-  >(null);
 
   // --- nuqs state management ---
   // Pagination: rows per page
@@ -225,6 +227,12 @@ export function DataTable({ data }: { data: Vote[] }) {
     parse: (v) => v || "ascending",
     serialize: (v) => (v === "ascending" ? null : v),
     defaultValue: "ascending",
+  });
+  // Archived filter
+  const [showArchived, setShowArchived] = useQueryState<boolean>("archived", {
+    parse: (v) => v === "true",
+    serialize: (v) => (v ? "true" : null),
+    defaultValue: false,
   });
 
   // --- Handlers to update URL state ---
@@ -314,6 +322,7 @@ export function DataTable({ data }: { data: Vote[] }) {
     },
     filterFns: undefined,
   });
+
   console.log(
     "Table row data",
     table.getRowModel().rows.map((r) => r.original),
@@ -323,11 +332,10 @@ export function DataTable({ data }: { data: Vote[] }) {
   const allStatusValues = voteStatusSchema.options;
 
   // Get counts for each status
-  const statusCounts = React.useMemo(() => {
-    const statusColumn = table.getColumn("status");
-    if (!statusColumn) return new Map();
-    return statusColumn.getFacetedUniqueValues();
-  }, [table]);
+  const statusColumn = table.getColumn("status");
+  const statusCounts = !statusColumn
+    ? new Map()
+    : statusColumn.getFacetedUniqueValues();
 
   const selectedStatuses = (table.getColumn("status")?.getFilterValue() ??
     []) as string[];
@@ -351,16 +359,8 @@ export function DataTable({ data }: { data: Vote[] }) {
         return;
       }
       if (result?.data?.success) {
-        const count = selectedIds.length;
-        const label = getStatus(status).label;
-        toast({
-          Icon: CheckCircle,
-          title: "Updated successfully",
-          description: `Updated ${count} ${count === 1 ? "vote" : "votes"} to ${label}.`,
-        });
         router.refresh();
         table.resetRowSelection();
-        setOpenDialog(null);
         setIsLoading(null);
       }
     });
@@ -381,15 +381,52 @@ export function DataTable({ data }: { data: Vote[] }) {
         return;
       }
       if (result?.data?.success) {
-        const count = selectedIds.length;
-        toast({
-          Icon: CheckCircle,
-          title: "Deleted successfully",
-          description: `Deleted ${count} ${count === 1 ? "vote" : "votes"}.`,
-        });
         router.refresh();
         table.resetRowSelection();
-        setOpenDialog(null);
+        setIsLoading(null);
+      }
+    });
+  }
+
+  function handleBulkArchive() {
+    if (!selectedIds.length) return;
+    setIsLoading("update");
+    archiveVote({ voteIds: selectedIds }).then((result) => {
+      if (result?.data?.failure) {
+        toast({
+          Icon: BadgeAlert,
+          title: "Failed to archive votes",
+          variant: "destructive",
+          description: result?.data?.failure,
+        });
+        setIsLoading(null);
+        return;
+      }
+      if (result?.data?.success) {
+        router.refresh();
+        table.resetRowSelection();
+        setIsLoading(null);
+      }
+    });
+  }
+
+  function handleBulkUnarchive() {
+    if (!selectedIds.length) return;
+    setIsLoading("update");
+    unarchiveVote({ voteIds: selectedIds }).then((result) => {
+      if (result?.data?.failure) {
+        toast({
+          Icon: BadgeAlert,
+          title: "Failed to unarchive votes",
+          variant: "destructive",
+          description: result?.data?.failure,
+        });
+        setIsLoading(null);
+        return;
+      }
+      if (result?.data?.success) {
+        router.refresh();
+        table.resetRowSelection();
         setIsLoading(null);
       }
     });
@@ -474,6 +511,26 @@ export function DataTable({ data }: { data: Vote[] }) {
                       </div>
                     );
                   })}
+
+                  {/* Archived filter checkbox */}
+                  <div className="mt-2 flex items-center gap-2 border-t pt-2">
+                    <Checkbox
+                      id={`${id}-archived`}
+                      checked={showArchived}
+                      onCheckedChange={(checked: boolean) =>
+                        setShowArchived(!!checked)
+                      }
+                    />
+                    <Label
+                      htmlFor={`${id}-archived`}
+                      className="flex grow justify-between gap-2 font-normal"
+                    >
+                      Archived
+                      <span className="text-muted-foreground ms-2 text-xs">
+                        {data.filter((vote) => vote.archived).length}
+                      </span>
+                    </Label>
+                  </div>
                 </div>
               </div>
             </PopoverContent>
@@ -484,74 +541,185 @@ export function DataTable({ data }: { data: Vote[] }) {
         {selectedRows.length > 0 &&
           (() => {
             const count = selectedRows.length;
+            const allArchived = selectedRows.every(
+              (row) => row.original.archived,
+            );
             return (
               <div className="flex items-center gap-3">
                 {/* Mark as opened */}
                 <Tooltip>
                   <TooltipProvider>
-                    <TooltipTrigger asChild>
-                      <Button
-                        size="icon"
-                        variant="outline"
-                        className="ring-input border-0 ring hover:bg-blue-50 hover:text-blue-700 hover:ring-blue-700/10 dark:hover:bg-blue-400/10 dark:hover:text-blue-400 dark:hover:ring-blue-400/30"
-                        onClick={() => setOpenDialog("open")}
-                        disabled={isLoading === "update"}
-                      >
-                        <Clock3 className="opacity-60" />
-                      </Button>
-                    </TooltipTrigger>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <TooltipTrigger asChild>
+                          <Button size="icon" variant="outline">
+                            <Clock3 className="opacity-60" />
+                          </Button>
+                        </TooltipTrigger>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Mark as opened?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will mark {count} selected{" "}
+                            {count === 1 ? "row" : "rows"} as opened.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <Button
+                            onClick={() => handleBulkStatusUpdate("open")}
+                            loading={isLoading === "update"}
+                          >
+                            Update
+                          </Button>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                     <TooltipContent>Mark as opened</TooltipContent>
                   </TooltipProvider>
                 </Tooltip>
+
                 {/* Mark as in progress */}
                 <Tooltip>
                   <TooltipProvider>
-                    <TooltipTrigger asChild>
-                      <Button
-                        size="icon"
-                        variant="outline"
-                        className="ring-input border-0 ring hover:bg-orange-50 hover:text-orange-700 hover:hover:ring-orange-700/10 dark:hover:bg-orange-400/10 dark:hover:text-orange-400 dark:hover:ring-orange-400/30"
-                        onClick={() => setOpenDialog("in_progress")}
-                        disabled={isLoading === "update"}
-                      >
-                        <Construction className="opacity-60" />
-                      </Button>
-                    </TooltipTrigger>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <TooltipTrigger asChild>
+                          <Button size="icon" variant="outline">
+                            <Construction className="opacity-60" />
+                          </Button>
+                        </TooltipTrigger>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Mark as done?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will mark {count} selected{" "}
+                            {count === 1 ? "row" : "rows"} as in progress.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <Button
+                            onClick={() =>
+                              handleBulkStatusUpdate("in_progress")
+                            }
+                            loading={isLoading === "update"}
+                          >
+                            Update
+                          </Button>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                     <TooltipContent>Mark as in progress</TooltipContent>
                   </TooltipProvider>
                 </Tooltip>
+
                 {/* Mark as done */}
                 <Tooltip>
                   <TooltipProvider>
-                    <TooltipTrigger asChild>
-                      <Button
-                        size="icon"
-                        variant="outline"
-                        className="ring-input border-0 ring hover:bg-green-50 hover:text-green-700 hover:ring-green-600/20 dark:hover:bg-green-400/10 dark:hover:text-green-400 dark:hover:ring-green-400/20"
-                        onClick={() => setOpenDialog("completed")}
-                        disabled={isLoading === "update"}
-                      >
-                        <Archive className="opacity-60" />
-                      </Button>
-                    </TooltipTrigger>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <TooltipTrigger asChild>
+                          <Button size="icon" variant="outline">
+                            <BadgeCheck className="opacity-60" />
+                          </Button>
+                        </TooltipTrigger>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Mark as done?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will mark {count} selected{" "}
+                            {count === 1 ? "row" : "rows"} as done.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <Button
+                            onClick={() => handleBulkStatusUpdate("completed")}
+                            loading={isLoading === "update"}
+                          >
+                            Update
+                          </Button>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                     <TooltipContent>Mark as done</TooltipContent>
                   </TooltipProvider>
                 </Tooltip>
+
+                {/* Archive/Unarchive */}
+                {allArchived ? (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="outline">
+                        <Archive className="-ms-1 opacity-60" />
+                        Unarchive
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Unarchive selected?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will unarchive {count} selected{" "}
+                          {count === 1 ? "row" : "rows"}.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <Button
+                          onClick={handleBulkUnarchive}
+                          loading={isLoading === "update"}
+                        >
+                          Unarchive
+                        </Button>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                ) : (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="outline">
+                        <Archive className="-ms-1 opacity-60" />
+                        Archive
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Archive selected?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will archive {count} selected{" "}
+                          {count === 1 ? "row" : "rows"}. You can unarchive them
+                          later if needed.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <Button
+                          onClick={handleBulkArchive}
+                          loading={isLoading === "update"}
+                        >
+                          Archive
+                        </Button>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
+
                 {/* Delete */}
                 <>
-                  <Button
-                    className="ring-input border-0 ring hover:bg-red-50 hover:text-red-700 hover:ring-red-700/20 dark:hover:bg-red-400/10 dark:hover:text-red-400 dark:hover:ring-red-400/30"
-                    variant="outline"
-                    onClick={() => setOpenDialog("delete")}
-                    disabled={isLoading === "delete"}
-                  >
-                    <Trash size={16} className="-ms-1 opacity-60" />
-                    Delete
-                  </Button>
-                  <AlertDialog
-                    open={openDialog === "delete"}
-                    onOpenChange={() => {}}
-                  >
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        disabled={isLoading === "delete"}
+                      >
+                        <Trash className="-ms-1 opacity-60" />
+                        Delete
+                      </Button>
+                    </AlertDialogTrigger>
                     <AlertDialogContent>
                       <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
                         <div className="flex size-9 shrink-0 items-center justify-center rounded-full border">
@@ -569,30 +737,23 @@ export function DataTable({ data }: { data: Vote[] }) {
                         </AlertDialogHeader>
                       </div>
                       <AlertDialogFooter>
-                        <AlertDialogCancel
-                          disabled={isLoading === "delete"}
-                          onClick={() => setOpenDialog(null)}
-                        >
+                        <AlertDialogCancel disabled={isLoading === "delete"}>
                           Cancel
                         </AlertDialogCancel>
-                        <AlertDialogAction asChild>
-                          <Button
-                            loading={isLoading === "delete"}
-                            onClick={handleBulkDelete}
-                            disabled={isLoading === "delete"}
-                          >
-                            Delete
-                          </Button>
-                        </AlertDialogAction>
+
+                        <Button
+                          loading={isLoading === "delete"}
+                          onClick={handleBulkDelete}
+                          disabled={isLoading === "delete"}
+                        >
+                          Delete
+                        </Button>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>
                 </>
                 {/* Status update dialogs */}
-                <AlertDialog
-                  open={openDialog === "open"}
-                  onOpenChange={() => {}}
-                >
+                <AlertDialog>
                   <AlertDialogContent>
                     <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
                       <div className="flex size-9 shrink-0 items-center justify-center rounded-full border">
@@ -607,27 +768,19 @@ export function DataTable({ data }: { data: Vote[] }) {
                       </AlertDialogHeader>
                     </div>
                     <AlertDialogFooter>
-                      <AlertDialogCancel onClick={() => setOpenDialog(null)}>
-                        Cancel
-                      </AlertDialogCancel>
-                      <AlertDialogAction asChild>
-                        <Button
-                          loading={
-                            isLoading === "update" && openDialog === "open"
-                          }
-                          onClick={() => handleBulkStatusUpdate("open")}
-                          disabled={isLoading === "update"}
-                        >
-                          Update
-                        </Button>
-                      </AlertDialogAction>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+
+                      <Button
+                        loading={isLoading === "update"}
+                        onClick={() => handleBulkStatusUpdate("open")}
+                        disabled={isLoading === "update"}
+                      >
+                        Update
+                      </Button>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
-                <AlertDialog
-                  open={openDialog === "in_progress"}
-                  onOpenChange={() => {}}
-                >
+                <AlertDialog>
                   <AlertDialogContent>
                     <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
                       <div className="flex size-9 shrink-0 items-center justify-center rounded-full border">
@@ -644,31 +797,18 @@ export function DataTable({ data }: { data: Vote[] }) {
                       </AlertDialogHeader>
                     </div>
                     <AlertDialogFooter>
-                      <AlertDialogCancel
-                        onClick={() => setOpenDialog(null)}
-                        disabled={isLoading === "update"}
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+
+                      <Button
+                        onClick={() => handleBulkStatusUpdate("in_progress")}
+                        loading={isLoading === "update"}
                       >
-                        Cancel
-                      </AlertDialogCancel>
-                      <AlertDialogAction asChild>
-                        <Button
-                          loading={
-                            isLoading === "update" &&
-                            openDialog === "in_progress"
-                          }
-                          onClick={() => handleBulkStatusUpdate("in_progress")}
-                          disabled={isLoading === "update"}
-                        >
-                          Update
-                        </Button>
-                      </AlertDialogAction>
+                        Update
+                      </Button>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
-                <AlertDialog
-                  open={openDialog === "completed"}
-                  onOpenChange={() => {}}
-                >
+                <AlertDialog>
                   <AlertDialogContent>
                     <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
                       <div className="flex size-9 shrink-0 items-center justify-center rounded-full border">
@@ -683,23 +823,14 @@ export function DataTable({ data }: { data: Vote[] }) {
                       </AlertDialogHeader>
                     </div>
                     <AlertDialogFooter>
-                      <AlertDialogCancel
-                        disabled={isLoading === "update"}
-                        onClick={() => setOpenDialog(null)}
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+
+                      <Button
+                        loading={isLoading === "update"}
+                        onClick={() => handleBulkStatusUpdate("completed")}
                       >
-                        Cancel
-                      </AlertDialogCancel>
-                      <AlertDialogAction asChild>
-                        <Button
-                          loading={
-                            isLoading === "update" && openDialog === "completed"
-                          }
-                          onClick={() => handleBulkStatusUpdate("completed")}
-                          disabled={isLoading === "update"}
-                        >
-                          Update
-                        </Button>
-                      </AlertDialogAction>
+                        Update
+                      </Button>
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>

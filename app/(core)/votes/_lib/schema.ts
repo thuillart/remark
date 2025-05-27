@@ -9,6 +9,7 @@ export const voteSchema = z.object({
   referenceId: z.string(),
   status: voteStatusSchema,
   feedbackIds: z.array(z.string()),
+  archived: z.boolean(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });

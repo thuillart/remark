@@ -411,3 +411,49 @@ export const deleteVote = subscriptionActionClient
     revalidatePath("/votes");
     return { success: true };
   });
+
+export const archiveVote = subscriptionActionClient
+  .schema(
+    z.object({
+      voteIds: z.array(z.string()).min(1),
+    }),
+  )
+  .action(async ({ parsedInput: { voteIds }, ctx: { subscription } }) => {
+    if (subscription.slug === "free") {
+      return { failure: "This isn't available on the free plan." };
+    }
+
+    const { error } = await tryCatch(
+      db.update(vote).set({ archived: true }).where(inArray(vote.id, voteIds)),
+    );
+
+    if (error) {
+      return { failure: error.message };
+    }
+
+    revalidatePath("/votes");
+    return { success: true };
+  });
+
+export const unarchiveVote = subscriptionActionClient
+  .schema(
+    z.object({
+      voteIds: z.array(z.string()).min(1),
+    }),
+  )
+  .action(async ({ parsedInput: { voteIds }, ctx: { subscription } }) => {
+    if (subscription.slug === "free") {
+      return { failure: "This isn't available on the free plan." };
+    }
+
+    const { error } = await tryCatch(
+      db.update(vote).set({ archived: false }).where(inArray(vote.id, voteIds)),
+    );
+
+    if (error) {
+      return { failure: error.message };
+    }
+
+    revalidatePath("/votes");
+    return { success: true };
+  });

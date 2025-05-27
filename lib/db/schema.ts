@@ -193,6 +193,10 @@ export const vote = pgTable("vote", {
    * Used to track which feedbacks were grouped together and to avoid reprocessing.
    */
   feedbackIds: text("feedback_ids").array().notNull(),
+  /**
+   * Whether the vote is archived (hidden from the main table)
+   */
+  archived: boolean("archived").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

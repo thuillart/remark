@@ -23,12 +23,6 @@ export default function VotesPage() {
 }
 
 async function SuspensedTable() {
-  const votes = await getVotes();
-  return <DataTable data={votes} />;
-}
-
-async function getVotes() {
-  "use server";
   const session = await auth.api.getSession({ headers: await headers() });
   const user = session?.user;
 
@@ -41,5 +35,7 @@ async function getVotes() {
     .from(vote)
     .where(eq(vote.referenceId, user.id));
 
-  return votes;
+  console.log("we've been hit");
+
+  return <DataTable data={votes} />;
 }
