@@ -12,7 +12,7 @@ export function getStatus(status: Vote["status"]): Status {
   if (status === "in_progress") {
     return {
       Icon: Construction,
-      label: "Cooking",
+      label: "In progress",
       variant: "orange",
     };
   }

@@ -4,7 +4,7 @@ import { google } from "@ai-sdk/google";
 import { embed, generateText } from "ai";
 import { randomUUID } from "crypto";
 import dedent from "dedent";
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { z } from "zod";
@@ -24,6 +24,7 @@ import {
   feedbackInputMetadataSchema,
   feedbackMetadataSchema,
   SubscriptionSlugSchema,
+  voteStatusSchema,
 } from "@/lib/schema";
 import { tryCatch } from "@/lib/utils";
 
@@ -359,5 +360,54 @@ export const createVote = actionClient
       return { failure: error.message };
     }
 
+    return { success: true };
+  });
+
+export const updateVote = subscriptionActionClient
+  .schema(
+    z.object({
+      voteIds: z.array(z.string()).min(1),
+      status: voteStatusSchema,
+    }),
+  )
+  .action(
+    async ({ parsedInput: { voteIds, status }, ctx: { subscription } }) => {
+      if (subscription.slug === "free") {
+        return { failure: "This isn't available on the free plan." };
+      }
+
+      const { error } = await tryCatch(
+        db.update(vote).set({ status }).where(inArray(vote.id, voteIds)),
+      );
+
+      if (error) {
+        return { failure: error.message };
+      }
+
+      revalidatePath("/votes");
+      return { success: true };
+    },
+  );
+
+export const deleteVote = subscriptionActionClient
+  .schema(
+    z.object({
+      voteIds: z.array(z.string()).min(1),
+    }),
+  )
+  .action(async ({ parsedInput: { voteIds }, ctx: { subscription } }) => {
+    if (subscription.slug === "free") {
+      return { failure: "This isn't available on the free plan." };
+    }
+
+    const { error } = await tryCatch(
+      db.delete(vote).where(inArray(vote.id, voteIds)),
+    );
+
+    if (error) {
+      return { failure: error.message };
+    }
+
+    revalidatePath("/votes");
     return { success: true };
   });

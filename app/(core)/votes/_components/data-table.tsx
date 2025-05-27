@@ -1,5 +1,6 @@
 "use client";
 
+import { deleteVote, updateVote } from "@/lib/db/actions";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -17,6 +18,8 @@ import {
 import { formatDistance, formatRelative } from "date-fns";
 import {
   Archive,
+  BadgeAlert,
+  CheckCircle,
   ChevronDownIcon,
   ChevronFirstIcon,
   ChevronLastIcon,
@@ -31,6 +34,8 @@ import {
   ListFilter,
   Trash,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useQueryState } from "nuqs";
 import React from "react";
 
 import {
@@ -80,8 +85,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { VoteStatus } from "@/lib/schema";
-import { capitalizeFirstLetter, cn } from "@/lib/utils";
+import { VoteStatus, voteStatusSchema } from "@/lib/schema";
+import { capitalizeFirstLetter, cn, toast } from "@/lib/utils";
 import { Vote } from "@/votes/lib/schema";
 import { getStatus } from "@/votes/lib/utils";
 
@@ -181,51 +186,142 @@ const columns: ColumnDef<Vote>[] = [
 ];
 
 export function DataTable({ data }: { data: Vote[] }) {
+  console.log("DataTable received data", data);
   const id = React.useId();
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
+  const router = useRouter();
+  const [isLoading, setIsLoading] = React.useState<null | "delete" | "update">(
+    null,
   );
-  const [pagination, setPagination] = React.useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
+  const [openDialog, setOpenDialog] = React.useState<
+    null | VoteStatus | "delete"
+  >(null);
+
+  // --- nuqs state management ---
+  // Pagination: rows per page
+  const [rows, setRows] = useQueryState<number>("rows", {
+    parse: (v) => Number(v) || 10,
+    serialize: (v) => (v === 10 ? null : String(v)),
+    defaultValue: 10,
   });
-  const inputRef = React.useRef<HTMLInputElement>(null);
+  // Page index
+  const [page, setPage] = useQueryState<number>("page", {
+    parse: (v) => Number(v) || 0,
+    serialize: (v) => (v === 0 ? null : String(v)),
+    defaultValue: 0,
+  });
+  // Status filter
+  const [status, setStatus] = useQueryState<string[]>("status", {
+    parse: (v) => (v ? v.split(",") : []),
+    serialize: (v) => (v.length ? v.join(",") : null),
+    defaultValue: voteStatusSchema.options.filter((s) => s !== "completed"),
+  });
+  // Subject search
+  const [search, setSearch] = useQueryState<string>("search", {
+    parse: (v) => v || "",
+    serialize: (v) => (v ? v : null),
+    defaultValue: "",
+  });
+  // Sorting (subject only)
+  const [sort, setSort] = useQueryState<string>("sort", {
+    parse: (v) => v || "ascending",
+    serialize: (v) => (v === "ascending" ? null : v),
+    defaultValue: "ascending",
+  });
 
-  const [sorting, setSorting] = React.useState<SortingState>([
-    { id: "subject", desc: false },
-  ]);
+  // --- Handlers to update URL state ---
+  function handlePageChange(newPage: number) {
+    setPage(newPage);
+  }
+  function handleRowsChange(newRows: number) {
+    setRows(newRows);
+    setPage(0); // reset to first page
+  }
+  function handleStatusChange(checked: boolean, value: VoteStatus) {
+    let newStatus = status ? [...status] : [];
+    if (checked) {
+      newStatus.push(value);
+    } else {
+      newStatus = newStatus.filter((s) => s !== value);
+    }
+    setStatus(
+      newStatus.length
+        ? newStatus
+        : voteStatusSchema.options.filter((s) => s !== "completed"),
+    );
+    setPage(0);
+  }
+  function handleSearchChange(value: string) {
+    setSearch(value);
+    setPage(0);
+  }
+  function handleSortChange(desc: boolean) {
+    setSort(desc ? "descending" : "ascending");
+  }
 
-  const handleDeleteRows = () => {
-    table.resetRowSelection();
-  };
-
+  // --- Table instance ---
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    onSortingChange: setSorting,
+    onSortingChange: (updater) => {
+      let next: SortingState;
+      if (typeof updater === "function") {
+        next = updater([{ id: "subject", desc: sort === "descending" }]);
+      } else {
+        next = updater;
+      }
+      if (next.length && next[0].id === "subject") {
+        handleSortChange(next[0].desc);
+      }
+    },
     enableSortingRemoval: false,
     getPaginationRowModel: getPaginationRowModel(),
-    onPaginationChange: setPagination,
-    onColumnFiltersChange: setColumnFilters,
+    onPaginationChange: (updater) => {
+      let next: PaginationState;
+      if (typeof updater === "function") {
+        next = updater({ pageIndex: page, pageSize: rows });
+      } else {
+        next = updater;
+      }
+      handlePageChange(next.pageIndex);
+      if (next.pageSize !== rows) handleRowsChange(next.pageSize);
+    },
+    onColumnFiltersChange: (updater) => {
+      let next: ColumnFiltersState;
+      if (typeof updater === "function") {
+        next = updater([
+          { id: "status", value: status },
+          { id: "subject", value: search },
+        ]);
+      } else {
+        next = updater;
+      }
+      const statusFilter = next.find((f) => f.id === "status");
+      const subjectFilter = next.find((f) => f.id === "subject");
+      if (statusFilter) setStatus(statusFilter.value as string[]);
+      if (subjectFilter) setSearch(subjectFilter.value as string);
+      setPage(0);
+    },
     getFilteredRowModel: getFilteredRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     state: {
-      sorting,
-      pagination,
-      columnFilters,
+      sorting: [{ id: "subject", desc: sort === "descending" }],
+      pagination: { pageIndex: page, pageSize: rows },
+      columnFilters: [
+        { id: "status", value: status },
+        { id: "subject", value: search },
+      ],
     },
     filterFns: undefined,
   });
+  console.log(
+    "Table row data",
+    table.getRowModel().rows.map((r) => r.original),
+  );
 
-  // Get unique status values
-  const uniqueStatusValues = React.useMemo(() => {
-    const statusColumn = table.getColumn("status");
-    if (!statusColumn) return [];
-    const values = Array.from(statusColumn.getFacetedUniqueValues().keys());
-    return values.sort();
-  }, [table]);
+  // Always show all possible statuses
+  const allStatusValues = voteStatusSchema.options;
 
   // Get counts for each status
   const statusCounts = React.useMemo(() => {
@@ -237,25 +333,68 @@ export function DataTable({ data }: { data: Vote[] }) {
   const selectedStatuses = (table.getColumn("status")?.getFilterValue() ??
     []) as string[];
 
-  const handleStatusChange = (checked: boolean, value: VoteStatus) => {
-    const filterValue = table
-      .getColumn("status")
-      ?.getFilterValue() as VoteStatus[];
-    const newFilterValue = filterValue ? [...filterValue] : [];
+  // --- Bulk mutation handlers ---
+  const selectedRows = table.getSelectedRowModel().rows;
+  const selectedIds = selectedRows.map((row) => row.original.id);
 
-    if (checked) {
-      newFilterValue.push(value);
-    } else {
-      const index = newFilterValue.indexOf(value);
-      if (index > -1) {
-        newFilterValue.splice(index, 1);
+  function handleBulkStatusUpdate(status: VoteStatus) {
+    if (!selectedIds.length) return;
+    setIsLoading("update");
+    updateVote({ voteIds: selectedIds, status }).then((result) => {
+      if (result?.data?.failure) {
+        toast({
+          Icon: BadgeAlert,
+          title: "Failed to update votes",
+          variant: "destructive",
+          description: result?.data?.failure,
+        });
+        setIsLoading(null);
+        return;
       }
-    }
+      if (result?.data?.success) {
+        const count = selectedIds.length;
+        const label = getStatus(status).label;
+        toast({
+          Icon: CheckCircle,
+          title: "Updated successfully",
+          description: `Updated ${count} ${count === 1 ? "vote" : "votes"} to ${label}.`,
+        });
+        router.refresh();
+        table.resetRowSelection();
+        setOpenDialog(null);
+        setIsLoading(null);
+      }
+    });
+  }
 
-    table
-      .getColumn("status")
-      ?.setFilterValue(newFilterValue.length ? newFilterValue : undefined);
-  };
+  function handleBulkDelete() {
+    if (!selectedIds.length) return;
+    setIsLoading("delete");
+    deleteVote({ voteIds: selectedIds }).then((result) => {
+      if (result?.data?.failure) {
+        toast({
+          Icon: BadgeAlert,
+          title: "Failed to delete votes",
+          variant: "destructive",
+          description: result?.data?.failure,
+        });
+        setIsLoading(null);
+        return;
+      }
+      if (result?.data?.success) {
+        const count = selectedIds.length;
+        toast({
+          Icon: CheckCircle,
+          title: "Deleted successfully",
+          description: `Deleted ${count} ${count === 1 ? "vote" : "votes"}.`,
+        });
+        router.refresh();
+        table.resetRowSelection();
+        setOpenDialog(null);
+        setIsLoading(null);
+      }
+    });
+  }
 
   return (
     <div className="space-y-4">
@@ -266,7 +405,6 @@ export function DataTable({ data }: { data: Vote[] }) {
           <div className="relative col-span-3">
             <Input
               id={`${id}-input`}
-              ref={inputRef}
               className={cn(
                 "peer ps-9",
                 Boolean(table.getColumn("subject")?.getFilterValue()) && "pe-9",
@@ -274,9 +412,7 @@ export function DataTable({ data }: { data: Vote[] }) {
               value={
                 (table.getColumn("subject")?.getFilterValue() ?? "") as string
               }
-              onChange={(e) =>
-                table.getColumn("subject")?.setFilterValue(e.target.value)
-              }
+              onChange={(e) => handleSearchChange(e.target.value)}
               type="text"
               aria-label="Filter by subject"
               placeholder="Filter by subject..."
@@ -290,9 +426,6 @@ export function DataTable({ data }: { data: Vote[] }) {
                 aria-label="Clear filter"
                 onClick={() => {
                   table.getColumn("subject")?.setFilterValue("");
-                  if (inputRef.current) {
-                    inputRef.current.focus();
-                  }
                 }}
               >
                 <CircleX size={16} />
@@ -319,7 +452,7 @@ export function DataTable({ data }: { data: Vote[] }) {
                   Filters
                 </div>
                 <div className="space-y-3">
-                  {uniqueStatusValues.map((value: VoteStatus, i: number) => {
+                  {allStatusValues.map((value: VoteStatus, i: number) => {
                     const { label } = getStatus(value);
                     return (
                       <div key={value} className="flex items-center gap-2">
@@ -336,7 +469,7 @@ export function DataTable({ data }: { data: Vote[] }) {
                         >
                           {label}{" "}
                           <span className="text-muted-foreground ms-2 text-xs">
-                            {statusCounts.get(value)}
+                            {statusCounts.get(value) ?? 0}
                           </span>
                         </Label>
                       </div>
@@ -348,13 +481,13 @@ export function DataTable({ data }: { data: Vote[] }) {
           </Popover>
         </div>
 
-        {/* Delete button */}
-        {table.getSelectedRowModel().rows.length > 0 &&
+        {/* Bulk action buttons */}
+        {selectedRows.length > 0 &&
           (() => {
-            const count = table.getSelectedRowModel().rows.length;
-
+            const count = selectedRows.length;
             return (
               <div className="flex items-center gap-3">
+                {/* Mark as opened */}
                 <Tooltip>
                   <TooltipProvider>
                     <TooltipTrigger asChild>
@@ -362,6 +495,8 @@ export function DataTable({ data }: { data: Vote[] }) {
                         size="icon"
                         variant="outline"
                         className="ring-input border-0 ring hover:bg-blue-50 hover:text-blue-700 hover:ring-blue-700/10 dark:hover:bg-blue-400/10 dark:hover:text-blue-400 dark:hover:ring-blue-400/30"
+                        onClick={() => setOpenDialog("open")}
+                        disabled={isLoading === "update"}
                       >
                         <Clock3 className="opacity-60" />
                       </Button>
@@ -369,7 +504,7 @@ export function DataTable({ data }: { data: Vote[] }) {
                     <TooltipContent>Mark as opened</TooltipContent>
                   </TooltipProvider>
                 </Tooltip>
-
+                {/* Mark as in progress */}
                 <Tooltip>
                   <TooltipProvider>
                     <TooltipTrigger asChild>
@@ -377,6 +512,8 @@ export function DataTable({ data }: { data: Vote[] }) {
                         size="icon"
                         variant="outline"
                         className="ring-input border-0 ring hover:bg-orange-50 hover:text-orange-700 hover:hover:ring-orange-700/10 dark:hover:bg-orange-400/10 dark:hover:text-orange-400 dark:hover:ring-orange-400/30"
+                        onClick={() => setOpenDialog("in_progress")}
+                        disabled={isLoading === "update"}
                       >
                         <Construction className="opacity-60" />
                       </Button>
@@ -384,7 +521,7 @@ export function DataTable({ data }: { data: Vote[] }) {
                     <TooltipContent>Mark as in progress</TooltipContent>
                   </TooltipProvider>
                 </Tooltip>
-
+                {/* Mark as done */}
                 <Tooltip>
                   <TooltipProvider>
                     <TooltipTrigger asChild>
@@ -392,6 +529,8 @@ export function DataTable({ data }: { data: Vote[] }) {
                         size="icon"
                         variant="outline"
                         className="ring-input border-0 ring hover:bg-green-50 hover:text-green-700 hover:ring-green-600/20 dark:hover:bg-green-400/10 dark:hover:text-green-400 dark:hover:ring-green-400/20"
+                        onClick={() => setOpenDialog("completed")}
+                        disabled={isLoading === "update"}
                       >
                         <Archive className="opacity-60" />
                       </Button>
@@ -399,12 +538,17 @@ export function DataTable({ data }: { data: Vote[] }) {
                     <TooltipContent>Mark as done</TooltipContent>
                   </TooltipProvider>
                 </Tooltip>
-
-                <AlertDialog>
+                {/* Delete */}
+                <AlertDialog
+                  open={openDialog === "delete"}
+                  onOpenChange={(v) => setOpenDialog(v ? "delete" : null)}
+                >
                   <AlertDialogTrigger asChild>
                     <Button
                       className="ring-input border-0 ring hover:bg-red-50 hover:text-red-700 hover:ring-red-700/20 dark:hover:bg-red-400/10 dark:hover:text-red-400 dark:hover:ring-red-400/30"
                       variant="outline"
+                      onClick={() => setOpenDialog("delete")}
+                      disabled={isLoading === "delete"}
                     >
                       <Trash size={16} className="-ms-1 opacity-60" />
                       Delete
@@ -427,9 +571,124 @@ export function DataTable({ data }: { data: Vote[] }) {
                       </AlertDialogHeader>
                     </div>
                     <AlertDialogFooter>
+                      <AlertDialogCancel disabled={isLoading === "delete"}>
+                        Cancel
+                      </AlertDialogCancel>
+                      <AlertDialogAction asChild>
+                        <Button
+                          loading={isLoading === "delete"}
+                          onClick={handleBulkDelete}
+                          disabled={isLoading === "delete"}
+                        >
+                          Delete
+                        </Button>
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+                {/* Status update dialogs */}
+                <AlertDialog
+                  open={openDialog === "open"}
+                  onOpenChange={(v) => setOpenDialog(v ? "open" : null)}
+                >
+                  <AlertDialogContent>
+                    <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-full border">
+                        <CircleAlert size={16} className="opacity-80" />
+                      </div>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Mark as opened?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will mark {count} selected{" "}
+                          {count === 1 ? "row" : "rows"} as <b>opened</b>.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                    </div>
+                    <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleDeleteRows}>
-                        Delete
+                      <AlertDialogAction asChild>
+                        <Button
+                          loading={
+                            isLoading === "update" && openDialog === "open"
+                          }
+                          onClick={() => handleBulkStatusUpdate("open")}
+                          disabled={isLoading === "update"}
+                        >
+                          Update
+                        </Button>
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+                <AlertDialog
+                  open={openDialog === "in_progress"}
+                  onOpenChange={(v) => setOpenDialog(v ? "in_progress" : null)}
+                >
+                  <AlertDialogContent>
+                    <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-full border">
+                        <CircleAlert size={16} className="opacity-80" />
+                      </div>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Mark as in progress?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will mark {count} selected{" "}
+                          {count === 1 ? "row" : "rows"} as <b>in progress</b>.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                    </div>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel disabled={isLoading === "update"}>
+                        Cancel
+                      </AlertDialogCancel>
+                      <AlertDialogAction asChild>
+                        <Button
+                          loading={
+                            isLoading === "update" &&
+                            openDialog === "in_progress"
+                          }
+                          onClick={() => handleBulkStatusUpdate("in_progress")}
+                          disabled={isLoading === "update"}
+                        >
+                          Update
+                        </Button>
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+                <AlertDialog
+                  open={openDialog === "completed"}
+                  onOpenChange={(v) => setOpenDialog(v ? "completed" : null)}
+                >
+                  <AlertDialogContent>
+                    <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
+                      <div className="flex size-9 shrink-0 items-center justify-center rounded-full border">
+                        <CircleAlert size={16} className="opacity-80" />
+                      </div>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Mark as done?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will mark {count} selected{" "}
+                          {count === 1 ? "row" : "rows"} as <b>done</b>.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                    </div>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel disabled={isLoading === "update"}>
+                        Cancel
+                      </AlertDialogCancel>
+                      <AlertDialogAction asChild>
+                        <Button
+                          loading={
+                            isLoading === "update" && openDialog === "completed"
+                          }
+                          onClick={() => handleBulkStatusUpdate("completed")}
+                          disabled={isLoading === "update"}
+                        >
+                          Update
+                        </Button>
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
@@ -542,9 +801,7 @@ export function DataTable({ data }: { data: Vote[] }) {
           <Label className="max-sm:sr-only">Rows per page</Label>
           <Select
             value={table.getState().pagination.pageSize.toString()}
-            onValueChange={(value) => {
-              table.setPageSize(Number(value));
-            }}
+            onValueChange={(value) => handleRowsChange(Number(value))}
           >
             <SelectTrigger className="w-fit whitespace-nowrap">
               <SelectValue placeholder="Select number of results" />

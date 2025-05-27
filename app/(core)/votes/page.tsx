@@ -15,14 +15,19 @@ export default function VotesPage() {
       <PageTitle title="Votes" />
       <main className="container">
         <Suspense fallback={<div>Loading...</div>}>
-          <VotesTable />
+          <SuspensedTable />
         </Suspense>
       </main>
     </>
   );
 }
 
-async function VotesTable() {
+async function SuspensedTable() {
+  const votes = await getVotes();
+  return <DataTable data={votes} />;
+}
+
+async function getVotes() {
   "use server";
   const session = await auth.api.getSession({ headers: await headers() });
   const user = session?.user;
@@ -36,5 +41,5 @@ async function VotesTable() {
     .from(vote)
     .where(eq(vote.referenceId, user.id));
 
-  return <DataTable data={votes} />;
+  return votes;
 }
