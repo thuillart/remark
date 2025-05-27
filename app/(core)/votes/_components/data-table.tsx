@@ -14,7 +14,6 @@ import {
   Row,
   SortingState,
   useReactTable,
-  VisibilityState,
 } from "@tanstack/react-table";
 import { formatDistance, formatRelative } from "date-fns";
 import {
@@ -26,11 +25,9 @@ import {
   ChevronUpIcon,
   CircleAlert,
   CircleX,
-  Columns3,
   EllipsisIcon,
-  FilterIcon,
+  Filter,
   ListFilter,
-  PlusIcon,
   TrashIcon,
 } from "lucide-react";
 import React from "react";
@@ -51,11 +48,9 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuPortal,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
@@ -96,6 +91,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { VoteStatus } from "@/lib/schema";
 import { capitalizeFirstLetter, cn } from "@/lib/utils";
 import { Vote } from "@/votes/lib/schema";
 import { getStatus } from "@/votes/lib/utils";
@@ -207,8 +203,6 @@ export function DataTable({ data }: { data: Vote[] }) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     [],
   );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
   const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -216,29 +210,15 @@ export function DataTable({ data }: { data: Vote[] }) {
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   const [sorting, setSorting] = React.useState<SortingState>([
-    {
-      id: "subject",
-      desc: false,
-    },
+    { id: "subject", desc: false },
   ]);
 
-  const [filteredData, setFilteredData] = React.useState<Vote[]>(data);
-
-  React.useEffect(() => {
-    setFilteredData(data);
-  }, [data]);
-
   const handleDeleteRows = () => {
-    const selectedRows = table.getSelectedRowModel().rows;
-    const updatedData = data.filter(
-      (item) => !selectedRows.some((row) => row.original.id === item.id),
-    );
-    setFilteredData(updatedData);
     table.resetRowSelection();
   };
 
   const table = useReactTable({
-    data: filteredData,
+    data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -247,25 +227,21 @@ export function DataTable({ data }: { data: Vote[] }) {
     getPaginationRowModel: getPaginationRowModel(),
     onPaginationChange: setPagination,
     onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
     getFilteredRowModel: getFilteredRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     state: {
       sorting,
       pagination,
       columnFilters,
-      columnVisibility,
     },
+    filterFns: undefined,
   });
 
   // Get unique status values
   const uniqueStatusValues = React.useMemo(() => {
     const statusColumn = table.getColumn("status");
-
     if (!statusColumn) return [];
-
     const values = Array.from(statusColumn.getFacetedUniqueValues().keys());
-
     return values.sort();
   }, [table]);
 
@@ -276,13 +252,13 @@ export function DataTable({ data }: { data: Vote[] }) {
     return statusColumn.getFacetedUniqueValues();
   }, [table]);
 
-  const selectedStatuses = React.useMemo(() => {
-    const filterValue = table.getColumn("status")?.getFilterValue() as string[];
-    return filterValue ?? [];
-  }, [table]);
+  const selectedStatuses = (table.getColumn("status")?.getFilterValue() ??
+    []) as string[];
 
-  const handleStatusChange = (checked: boolean, value: string) => {
-    const filterValue = table.getColumn("status")?.getFilterValue() as string[];
+  const handleStatusChange = (checked: boolean, value: VoteStatus) => {
+    const filterValue = table
+      .getColumn("status")
+      ?.getFilterValue() as VoteStatus[];
     const newFilterValue = filterValue ? [...filterValue] : [];
 
     if (checked) {
@@ -305,7 +281,7 @@ export function DataTable({ data }: { data: Vote[] }) {
       <div className="flex items-center justify-between gap-3 max-sm:flex-wrap">
         <div className="flex gap-3 sm:grid sm:w-1/2 sm:grid-cols-4">
           {/* Filter by subject */}
-          <div className="relative col-span-2">
+          <div className="relative col-span-3">
             <Input
               id={`${id}-input`}
               ref={inputRef}
@@ -346,11 +322,7 @@ export function DataTable({ data }: { data: Vote[] }) {
           <Popover>
             <PopoverTrigger asChild>
               <Button variant="outline">
-                <FilterIcon
-                  className="-ms-1 opacity-60"
-                  size={16}
-                  aria-hidden="true"
-                />
+                <Filter size={16} className="-ms-1 opacity-60" />
                 Status
                 {selectedStatuses.length > 0 && (
                   <span className="bg-background text-muted-foreground/70 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
@@ -365,113 +337,77 @@ export function DataTable({ data }: { data: Vote[] }) {
                   Filters
                 </div>
                 <div className="space-y-3">
-                  {uniqueStatusValues.map((value, i) => (
-                    <div key={value} className="flex items-center gap-2">
-                      <Checkbox
-                        id={`${id}-${i}`}
-                        checked={selectedStatuses.includes(value)}
-                        onCheckedChange={(checked: boolean) =>
-                          handleStatusChange(checked, value)
-                        }
-                      />
-                      <Label
-                        htmlFor={`${id}-${i}`}
-                        className="flex grow justify-between gap-2 font-normal"
-                      >
-                        {value}{" "}
-                        <span className="text-muted-foreground ms-2 text-xs">
-                          {statusCounts.get(value)}
-                        </span>
-                      </Label>
-                    </div>
-                  ))}
+                  {uniqueStatusValues.map((value: VoteStatus, i: number) => {
+                    const { label } = getStatus(value);
+                    return (
+                      <div key={value} className="flex items-center gap-2">
+                        <Checkbox
+                          id={`${id}-${i}`}
+                          checked={selectedStatuses.includes(value)}
+                          onCheckedChange={(checked: boolean) =>
+                            handleStatusChange(checked, value)
+                          }
+                        />
+                        <Label
+                          htmlFor={`${id}-${i}`}
+                          className="flex grow justify-between gap-2 font-normal"
+                        >
+                          {label}{" "}
+                          <span className="text-muted-foreground ms-2 text-xs">
+                            {statusCounts.get(value)}
+                          </span>
+                        </Label>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </PopoverContent>
           </Popover>
-          {/* Toggle columns visibility */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline">
-                <Columns3 size={16} className="-ms-1 opacity-60" />
-                View
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
-              {table
-                .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className="capitalize"
-                      checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
-                        column.toggleVisibility(!!value)
-                      }
-                      onSelect={(event) => event.preventDefault()}
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
-        <div className="flex items-center gap-3">
-          {/* Delete button */}
-          {table.getSelectedRowModel().rows.length > 0 && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button className="ml-auto" variant="outline">
-                  <TrashIcon
-                    className="-ms-1 opacity-60"
-                    size={16}
-                    aria-hidden="true"
-                  />
-                  Delete
-                  <span className="bg-background text-muted-foreground/70 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
-                    {table.getSelectedRowModel().rows.length}
-                  </span>
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
-                  <div className="flex size-9 shrink-0 items-center justify-center rounded-full border">
-                    <CircleAlert size={16} className="opacity-80" />
-                  </div>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      Are you absolutely sure?
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete{" "}
-                      {table.getSelectedRowModel().rows.length} selected{" "}
-                      {table.getSelectedRowModel().rows.length === 1
-                        ? "row"
-                        : "rows"}
-                      .
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                </div>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDeleteRows}>
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          )}
 
-          {/* Add user button */}
-          <Button className="ml-auto" variant="outline">
-            <PlusIcon size={16} className="-ms-1 opacity-60" />
-            Add user
-          </Button>
-        </div>
+        {/* Delete button */}
+        {table.getSelectedRowModel().rows.length > 0 && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button className="ml-auto" variant="outline">
+                <TrashIcon
+                  className="-ms-1 opacity-60"
+                  size={16}
+                  aria-hidden="true"
+                />
+                Delete
+                <span className="bg-background text-muted-foreground/70 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
+                  {table.getSelectedRowModel().rows.length}
+                </span>
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-full border">
+                  <CircleAlert size={16} className="opacity-80" />
+                </div>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete{" "}
+                    {table.getSelectedRowModel().rows.length} selected{" "}
+                    {table.getSelectedRowModel().rows.length === 1
+                      ? "row"
+                      : "rows"}
+                    .
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+              </div>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDeleteRows}>
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
       </div>
 
       {/* Table */}
@@ -731,8 +667,14 @@ function RowActions({ row }: { row: Row<Vote> }) {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>Share</DropdownMenuItem>
-          <DropdownMenuItem>Add to favorites</DropdownMenuItem>
+          <DropdownMenuItem>
+            <span>Share</span>
+            <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <span>Add to favorites</span>
+            <DropdownMenuShortcut>⌘F</DropdownMenuShortcut>
+          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="text-destructive focus:text-destructive">
