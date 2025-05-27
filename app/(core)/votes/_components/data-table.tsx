@@ -190,7 +190,6 @@ const columns: ColumnDef<Vote>[] = [
 ];
 
 export function DataTable({ data }: { data: Vote[] }) {
-  console.log("DataTable received data", data);
   const id = React.useId();
   const router = useRouter();
   const [isLoading, setIsLoading] = React.useState<null | "delete" | "update">(
@@ -322,11 +321,6 @@ export function DataTable({ data }: { data: Vote[] }) {
     },
     filterFns: undefined,
   });
-
-  console.log(
-    "Table row data",
-    table.getRowModel().rows.map((r) => r.original),
-  );
 
   // Always show all possible statuses
   const allStatusValues = voteStatusSchema.options;
