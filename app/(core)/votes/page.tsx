@@ -35,5 +35,7 @@ async function SuspensedTable() {
     .from(vote)
     .where(eq(vote.referenceId, user.id));
 
-  return <DataTable data={[...votes]} />;
+  return (
+    <DataTable key={JSON.stringify(votes.map((v) => v.id))} data={[...votes]} />
+  );
 }

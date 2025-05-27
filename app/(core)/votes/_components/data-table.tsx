@@ -841,7 +841,10 @@ export function DataTable({ data }: { data: Vote[] }) {
 
       {/* Table */}
       <div className="bg-background overflow-hidden rounded-md border">
-        <Table className="table-fixed">
+        <Table
+          key={JSON.stringify(data.map((v) => v.id))}
+          className="table-fixed"
+        >
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="hover:bg-transparent">
