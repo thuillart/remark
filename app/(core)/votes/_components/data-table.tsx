@@ -38,6 +38,7 @@ import {
   Filter,
   ListFilter,
   Trash,
+  VoteIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
@@ -89,6 +90,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { EmptyState } from "@/core/components/empty-state";
 import { VoteStatus, voteStatusSchema } from "@/lib/schema";
 import { capitalizeFirstLetter, cn, toast } from "@/lib/utils";
 import { Vote } from "@/votes/lib/schema";
@@ -424,6 +426,18 @@ export function DataTable({ data }: { data: Vote[] }) {
         setIsLoading(null);
       }
     });
+  }
+
+  const hasRows = data.length > 0;
+
+  if (!hasRows) {
+    return (
+      <EmptyState
+        title="You don't have any votes yet"
+        icons={[VoteIcon, VoteIcon, VoteIcon]}
+        description="If you received any feedbacks, they'll appear here in less than 24 hours."
+      />
+    );
   }
 
   return (
