@@ -47,7 +47,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -539,57 +538,60 @@ export function DataTable({ data }: { data: Vote[] }) {
                   </TooltipProvider>
                 </Tooltip>
                 {/* Delete */}
-                <AlertDialog
-                  open={openDialog === "delete"}
-                  onOpenChange={(v) => setOpenDialog(v ? "delete" : null)}
-                >
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      className="ring-input border-0 ring hover:bg-red-50 hover:text-red-700 hover:ring-red-700/20 dark:hover:bg-red-400/10 dark:hover:text-red-400 dark:hover:ring-red-400/30"
-                      variant="outline"
-                      onClick={() => setOpenDialog("delete")}
-                      disabled={isLoading === "delete"}
-                    >
-                      <Trash size={16} className="-ms-1 opacity-60" />
-                      Delete
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
-                      <div className="flex size-9 shrink-0 items-center justify-center rounded-full border">
-                        <CircleAlert size={16} className="opacity-80" />
+                <>
+                  <Button
+                    className="ring-input border-0 ring hover:bg-red-50 hover:text-red-700 hover:ring-red-700/20 dark:hover:bg-red-400/10 dark:hover:text-red-400 dark:hover:ring-red-400/30"
+                    variant="outline"
+                    onClick={() => setOpenDialog("delete")}
+                    disabled={isLoading === "delete"}
+                  >
+                    <Trash size={16} className="-ms-1 opacity-60" />
+                    Delete
+                  </Button>
+                  <AlertDialog
+                    open={openDialog === "delete"}
+                    onOpenChange={() => {}}
+                  >
+                    <AlertDialogContent>
+                      <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
+                        <div className="flex size-9 shrink-0 items-center justify-center rounded-full border">
+                          <CircleAlert size={16} className="opacity-80" />
+                        </div>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>
+                            Are you absolutely sure?
+                          </AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently
+                            delete {count} selected{" "}
+                            {count === 1 ? "row" : "rows"}.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
                       </div>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          Are you absolutely sure?
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This action cannot be undone. This will permanently
-                          delete {count} selected {count === 1 ? "row" : "rows"}
-                          .
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                    </div>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel disabled={isLoading === "delete"}>
-                        Cancel
-                      </AlertDialogCancel>
-                      <AlertDialogAction asChild>
-                        <Button
-                          loading={isLoading === "delete"}
-                          onClick={handleBulkDelete}
+                      <AlertDialogFooter>
+                        <AlertDialogCancel
                           disabled={isLoading === "delete"}
+                          onClick={() => setOpenDialog(null)}
                         >
-                          Delete
-                        </Button>
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                          Cancel
+                        </AlertDialogCancel>
+                        <AlertDialogAction asChild>
+                          <Button
+                            loading={isLoading === "delete"}
+                            onClick={handleBulkDelete}
+                            disabled={isLoading === "delete"}
+                          >
+                            Delete
+                          </Button>
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </>
                 {/* Status update dialogs */}
                 <AlertDialog
                   open={openDialog === "open"}
-                  onOpenChange={(v) => setOpenDialog(v ? "open" : null)}
+                  onOpenChange={() => {}}
                 >
                   <AlertDialogContent>
                     <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
@@ -605,7 +607,9 @@ export function DataTable({ data }: { data: Vote[] }) {
                       </AlertDialogHeader>
                     </div>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogCancel onClick={() => setOpenDialog(null)}>
+                        Cancel
+                      </AlertDialogCancel>
                       <AlertDialogAction asChild>
                         <Button
                           loading={
@@ -622,7 +626,7 @@ export function DataTable({ data }: { data: Vote[] }) {
                 </AlertDialog>
                 <AlertDialog
                   open={openDialog === "in_progress"}
-                  onOpenChange={(v) => setOpenDialog(v ? "in_progress" : null)}
+                  onOpenChange={() => {}}
                 >
                   <AlertDialogContent>
                     <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
@@ -640,7 +644,10 @@ export function DataTable({ data }: { data: Vote[] }) {
                       </AlertDialogHeader>
                     </div>
                     <AlertDialogFooter>
-                      <AlertDialogCancel disabled={isLoading === "update"}>
+                      <AlertDialogCancel
+                        onClick={() => setOpenDialog(null)}
+                        disabled={isLoading === "update"}
+                      >
                         Cancel
                       </AlertDialogCancel>
                       <AlertDialogAction asChild>
@@ -660,7 +667,7 @@ export function DataTable({ data }: { data: Vote[] }) {
                 </AlertDialog>
                 <AlertDialog
                   open={openDialog === "completed"}
-                  onOpenChange={(v) => setOpenDialog(v ? "completed" : null)}
+                  onOpenChange={() => {}}
                 >
                   <AlertDialogContent>
                     <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
@@ -676,7 +683,10 @@ export function DataTable({ data }: { data: Vote[] }) {
                       </AlertDialogHeader>
                     </div>
                     <AlertDialogFooter>
-                      <AlertDialogCancel disabled={isLoading === "update"}>
+                      <AlertDialogCancel
+                        disabled={isLoading === "update"}
+                        onClick={() => setOpenDialog(null)}
+                      >
                         Cancel
                       </AlertDialogCancel>
                       <AlertDialogAction asChild>
