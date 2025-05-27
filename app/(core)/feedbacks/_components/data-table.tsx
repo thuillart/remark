@@ -655,10 +655,6 @@ export function DataTable({ data }: { data: Feedback[] }) {
             : row.original.tags;
         return filterValue.every((tag) => tags.includes(tag));
       },
-      status: (row, _columnId, filterValue) => {
-        const status = row.original.status;
-        return filterValue === "all" ? true : status === filterValue;
-      },
     },
     manualPagination: true, // Important: manually control pagination
     enableColumnFilters: true,
