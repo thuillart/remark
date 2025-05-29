@@ -55,7 +55,7 @@ export function HeroCanvas() {
     });
 
     renderer.setSize(width, height);
-    renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 1);
+    renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 2);
     containerRef.current.appendChild(renderer.domElement);
 
     const handleResize = () => {
