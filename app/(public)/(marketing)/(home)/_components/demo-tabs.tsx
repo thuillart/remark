@@ -88,7 +88,8 @@ export function DemoTabs() {
     <>
       <div className="relative mb-12 h-56 w-full pt-6 pb-0 md:h-112">
         <div className="bg-background after:from-background relative size-full overflow-hidden rounded-2xl border p-4 after:pointer-events-none after:absolute after:inset-0 after:top-auto after:h-2/3 after:bg-gradient-to-t after:to-transparent md:p-6 md:pb-0">
-          <div className="relative hidden size-full rounded-2xl rounded-t-lg rounded-b-none border border-b-0 px-12 pt-16 pb-0 shadow-xs md:block">
+          {/* Desktop */}
+          <div className="relative size-full rounded-2xl rounded-t-lg rounded-b-none border-b-0 shadow-xs md:border md:px-6 md:pt-8 lg:px-12 lg:pt-16">
             <SearchAndFilters />
             <div className="bg-background mb-4 size-full rounded-t-md border border-b-0">
               <DataTable selectedTabId={tab} />
@@ -147,7 +148,7 @@ export function DemoTabs() {
 
 function SearchAndFilters() {
   return (
-    <div className="mb-4 grid grid-cols-1 flex-col gap-3 sm:grid-cols-2 sm:gap-2">
+    <div className="mb-4 hidden grid-cols-1 flex-col gap-3 md:grid md:grid-cols-2 md:gap-2">
       <div className="relative">
         <Input
           type="email"
