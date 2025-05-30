@@ -21,7 +21,7 @@ export function Hero() {
               Ship faster, build better
             </h1>
             <p className="text-muted-foreground text-lg md:text-xl">
-              Collect feedback, iterate and ship products people love.
+              Collect feedback, iterate and ship what your users want.
             </p>
           </div>
         </div>

@@ -1,12 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-
-import { AppIconLink } from "@/components/app-icon";
-import { Button } from "@/components/ui/button";
-import { DesktopDropdownMenu } from "@/core/components/desktop-dropdown-menu";
-import { cn } from "@/lib/utils";
 import {
   Inbox,
   KeyRound,
@@ -15,6 +8,13 @@ import {
   UserRound,
   Vote,
 } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+import { Logo } from "@/components/logo";
+import { Button } from "@/components/ui/button";
+import { DesktopDropdownMenu } from "@/core/components/desktop-dropdown-menu";
+import { cn } from "@/lib/utils";
 
 export interface Item {
   href: string;
@@ -76,8 +76,10 @@ export function Sidebar() {
   return (
     <aside className="border-border bg-sidebar hidden h-screen w-3xs shrink-0 flex-col justify-between border-r p-4 md:flex">
       <div className="flex flex-col gap-8">
-        <div className="ml-2.5 flex h-8 items-center">
-          <AppIconLink />
+        <div className="ml-2 flex h-8 items-center">
+          <Link href="/">
+            <Logo.Remark height={24} />
+          </Link>
         </div>
 
         <ul className="flex flex-col gap-2">
