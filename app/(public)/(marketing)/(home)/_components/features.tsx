@@ -5,8 +5,8 @@ import {
   TypeIcon,
 } from "lucide-react";
 
-import { AppIcon } from "@/components/app-icon";
 import { CodeExample, ts } from "@/components/code-example";
+import { Logo } from "@/components/logo";
 import { FeaturesButton } from "@/home/components/features-button";
 import { APP_NAME } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -90,7 +90,7 @@ function DocsCard() {
       </h3>
       <div className="from-background absolute inset-0 -z-1 bg-gradient-to-t from-20% to-transparent" />
       <div className="-z-2 flex flex-col items-start gap-6 overflow-hidden rounded-xl border border-b-0 px-6 pt-4 shadow-xs select-none md:inset-8 md:px-8 md:pt-7">
-        <AppIcon className="-ml-1.75 scale-80" />
+        <Logo.Remark height={20} className="shrink-0" />
         <div className="grid w-full grid-cols-[1fr_3fr] gap-2">
           <div className="flex h-full flex-col gap-2">
             {[70, 90, 50, 80, 60].map((width) => (

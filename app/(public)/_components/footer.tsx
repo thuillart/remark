@@ -1,6 +1,5 @@
 import Link from "next/link";
 
-import { AppIconLink } from "@/components/app-icon";
 import { Logo } from "@/components/logo";
 import {
   DISCORD_URL,
@@ -9,15 +8,15 @@ import {
   X_URL,
   YOUTUBE_URL,
 } from "@/lib/constants";
-import { FooterArtwork } from "@/public/components/footer-artwork";
 
 export function Footer() {
   return (
-    <footer className="relative mt-12 pt-24 pb-12">
-      <FooterArtwork />
+    <footer className="relative pt-24 pb-12">
       <div className="container">
         <div className="flex flex-wrap justify-between gap-x-24 gap-y-12">
-          <AppIconLink />
+          <Link href="/" className="h-fit transition-opacity hover:opacity-80">
+            <Logo.Remark height={24} />
+          </Link>
           <FooterMenu />
         </div>
         <div className="mt-16 flex flex-wrap-reverse items-center justify-between gap-x-12 gap-y-6">
@@ -64,10 +63,11 @@ function FooterCopyright() {
 function FooterSocial() {
   return (
     <ul className="flex items-center gap-x-6">
-      {socialItems.map(({ label, href, Icon }) => (
+      {socialItems.map(({ label, href = "", Icon }) => (
         <li key={label}>
           <Link
             href={href}
+            target="_blank"
             className="group text-muted-foreground transition-colors"
           >
             <span className="sr-only">{label}</span>
@@ -87,7 +87,7 @@ const menuItems = [
     label: "Developers",
     items: [
       {
-        label: "Documentation",
+        label: "Docs",
         href: "/docs",
       },
     ],
@@ -96,11 +96,7 @@ const menuItems = [
     label: "Resources",
     items: [
       {
-        label: "News",
-        href: "/news",
-      },
-      {
-        label: "Q&A",
+        label: "FAQs",
         href: "/home#faqs",
       },
     ],

@@ -50,9 +50,7 @@ export function HeroCanvas() {
     camera.position.set(0, 100, 0);
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
-    const renderer = new THREE.WebGLRenderer({
-      alpha: true,
-    });
+    const renderer = new THREE.WebGLRenderer({ alpha: true });
 
     renderer.setSize(width, height);
     renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 2);
