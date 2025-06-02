@@ -119,5 +119,12 @@ export const feedbackMetadataSchema = feedbackEnrichmentMetadataSchema
   .optional();
 export type FeedbackMetadata = z.infer<typeof feedbackMetadataSchema>;
 
-export const voteStatusSchema = z.enum(["open", "in_progress", "completed"]);
+export const voteStatusSchema = z.enum([
+  "pending",
+  "reviewing",
+  "planned",
+  "in_progress",
+  "completed",
+  "closed",
+]);
 export type VoteStatus = z.infer<typeof voteStatusSchema>;

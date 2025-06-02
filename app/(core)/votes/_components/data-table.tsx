@@ -1,68 +1,43 @@
 "use client";
 
 import {
-  archiveVote,
-  deleteVote,
-  unarchiveVote,
-  updateVote,
-} from "@/lib/db/actions";
-import {
   ColumnDef,
-  ColumnFiltersState,
-  FilterFn,
   flexRender,
   getCoreRowModel,
-  getFacetedUniqueValues,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   PaginationState,
-  SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import { formatDistance, formatRelative } from "date-fns";
 import {
-  Archive,
-  BadgeAlert,
-  BadgeCheck,
-  ChevronDownIcon,
-  ChevronFirstIcon,
-  ChevronLastIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  ChevronUpIcon,
-  CircleAlert,
-  CircleX,
-  Clock3,
-  Construction,
-  Filter,
-  ListFilter,
-  Trash,
-  VoteIcon,
+  ArrowLeft,
+  ArrowRight,
+  Calendar,
+  Funnel,
+  MessageSquare,
+  X,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useQueryState } from "nuqs";
 import React from "react";
 
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Pagination,
   PaginationContent,
+  PaginationEllipsis,
   PaginationItem,
+  usePagination,
 } from "@/components/ui/pagination";
 import {
   Popover,
@@ -87,972 +62,872 @@ import {
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { EmptyState } from "@/core/components/empty-state";
-import { VoteStatus, voteStatusSchema } from "@/lib/schema";
-import { capitalizeFirstLetter, cn, toast } from "@/lib/utils";
-import { Vote } from "@/votes/lib/schema";
-import { getStatus } from "@/votes/lib/utils";
+import { capitalizeFirstLetter, cn } from "@/lib/utils";
+import { Vote, VoteImpact } from "@/votes/lib/schema";
 
-// Custom filter function for multi-column searching
-const multiColumnFilterFn: FilterFn<Vote> = (row, _columnId, filterValue) => {
-  const searchableRowContent = `${row.original.subject}`.toLowerCase();
-  const searchTerm = (filterValue ?? "").toLowerCase();
-  return searchableRowContent.includes(searchTerm);
-};
+// --- Tag and Impact helpers (adapted from feedbacks/_lib/utils) ---
+import { type BadgeProps } from "@/components/ui/badge";
+import {
+  Braces,
+  Bug,
+  CreditCard,
+  Gauge,
+  Heart,
+  Languages,
+  Lightbulb,
+  LucideIcon,
+  PersonStanding,
+  Receipt,
+  Scale,
+  Shield,
+  SwatchBook,
+  Workflow,
+} from "lucide-react";
 
-const statusFilterFn: FilterFn<Vote> = (
-  row,
-  columnId,
-  filterValue: string[],
-) => {
-  if (!filterValue?.length) return true;
-  const status = row.getValue(columnId) as string;
-  return filterValue.includes(status);
-};
+type VoteTag =
+  | "bug"
+  | "feature_request"
+  | "ui"
+  | "ux"
+  | "speed"
+  | "security"
+  | "pricing"
+  | "billing"
+  | "dx"
+  | "i18n"
+  | "compliance"
+  | "a11y"
+  | "kudos";
 
-const columns: ColumnDef<Vote>[] = [
+interface TagProps {
+  Icon: LucideIcon;
+  label: string;
+  variant: BadgeProps["variant"];
+}
+
+function getTag(tag: VoteTag): TagProps {
+  switch (tag) {
+    case "bug":
+      return { Icon: Bug, label: "Bug", variant: "destructive" };
+    case "feature_request":
+      return { Icon: Lightbulb, label: "Feature Request", variant: "yellow" };
+    case "ui":
+      return { Icon: SwatchBook, label: "UI", variant: "pink" };
+    case "ux":
+      return { Icon: Workflow, label: "UX", variant: "orange" };
+    case "speed":
+      return { Icon: Gauge, label: "Speed", variant: "blue" };
+    case "security":
+      return { Icon: Shield, label: "Security", variant: "destructive" };
+    case "pricing":
+      return { Icon: Receipt, label: "Pricing", variant: "green" };
+    case "billing":
+      return { Icon: CreditCard, label: "Billing", variant: "green" };
+    case "dx":
+      return { Icon: Braces, label: "DX", variant: "indigo" };
+    case "i18n":
+      return { Icon: Languages, label: "i18n", variant: "blue" };
+    case "compliance":
+      return { Icon: Scale, label: "Compliance", variant: "purple" };
+    case "a11y":
+      return { Icon: PersonStanding, label: "A11y", variant: "blue" };
+    case "kudos":
+      return { Icon: Heart, label: "Kudos", variant: "teal" };
+    default:
+      return { Icon: Heart, label: tag, variant: "secondary" };
+  }
+}
+
+interface ImpactProps {
+  label: string;
+  variant: BadgeProps["variant"];
+  description: string;
+  tooltipWidth: string;
+}
+
+function getImpact(impact: VoteImpact): ImpactProps {
+  switch (impact) {
+    case "critical":
+      return {
+        label: "Critical",
+        variant: "destructive",
+        description: "Needs attention now before it gets worse",
+        tooltipWidth: "w-24",
+      };
+    case "major":
+      return {
+        label: "Major",
+        variant: "warning",
+        description: "Could become serious if not fixed soon",
+        tooltipWidth: "w-24",
+      };
+    case "minor":
+      return {
+        label: "Minor",
+        variant: "secondary",
+        description: "Can wait but worth checking soon",
+        tooltipWidth: "w-24",
+      };
+    default:
+      return {
+        label: impact,
+        variant: "secondary",
+        description: impact,
+        tooltipWidth: "w-24",
+      };
+  }
+}
+
+// --- Helper functions ---
+function parsePgArray(str: string): string[] {
+  if (!str) return [];
+  return str
+    .slice(1, -1) // remove {}
+    .split(/","|",?/) // split on "," or ,
+    .map((s) => s.replace(/^"|"$/g, "")) // remove leading/trailing quotes
+    .filter(Boolean);
+}
+
+// --- Table columns ---
+export const columns: ColumnDef<Vote>[] = [
   {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || table.getIsSomePageRowsSelected()
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    size: 40,
-    enableSorting: false,
-    enableHiding: false,
+    header: "Title",
+    accessorKey: "title",
+    cell: ({ row }) => row.original.title,
   },
-
   {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const { Icon, label, variant } = getStatus(row.getValue("status"));
-      return (
-        <Badge variant={variant}>
-          <Icon />
-          {label}
-        </Badge>
-      );
-    },
-    size: 100,
-    filterFn: statusFilterFn,
-  },
-
-  {
+    header: "Votes",
     accessorKey: "count",
-    header: "Voters",
-    cell: ({ row }) => (
-      <div className="font-medium">{row.getValue("count")}</div>
-    ),
-    size: 100,
+    cell: ({ row }) => row.original.count,
   },
-
   {
-    accessorKey: "subject",
-    header: "Subject",
-    size: 220,
-    filterFn: multiColumnFilterFn,
-  },
-
-  {
-    accessorKey: "createdAt",
-    header: "Created at",
+    header: "Impact",
+    accessorKey: "impact",
+    filterFn: "impact",
     cell: ({ row }) => {
-      const exactDate = formatRelative(row.original.createdAt, new Date());
-      const displayDate = formatDistance(row.original.createdAt, new Date(), {
-        addSuffix: true,
-      }).replace("about ", "");
-
+      const meta = getImpact(row.original.impact);
       return (
         <Tooltip>
-          <TooltipTrigger className="decoration-muted-foreground cursor-pointer underline underline-offset-5 transition-[text-decoration-color] duration-150 ease-in-out hover:decoration-current">
-            {capitalizeFirstLetter(displayDate)}
+          <TooltipTrigger asChild className="cursor-pointer">
+            <Badge variant={meta.variant}>{meta.label}</Badge>
           </TooltipTrigger>
-          <TooltipContent>{capitalizeFirstLetter(exactDate)}</TooltipContent>
+          <TooltipContent className="max-w-66 px-2 py-1">
+            {meta.description}
+          </TooltipContent>
         </Tooltip>
       );
     },
-    size: 150,
+  },
+  {
+    header: "Tags",
+    accessorKey: "tags",
+    cell: ({ row }) => {
+      const tags = Array.isArray(row.original.tags)
+        ? row.original.tags
+        : parsePgArray(row.original.tags as string);
+      const [firstTag, ...otherTags] = tags;
+      const hasMore = otherTags.length > 0;
+      return (
+        <div className="flex flex-nowrap gap-2">
+          {firstTag && (
+            <Badge
+              variant={getTag(firstTag as VoteTag).variant}
+              className="relative cursor-pointer"
+            >
+              {React.createElement(getTag(firstTag as VoteTag).Icon, {
+                size: 16,
+              })}
+              {getTag(firstTag as VoteTag).label}
+            </Badge>
+          )}
+          {hasMore && (
+            <HoverCard openDelay={0} closeDelay={100}>
+              <HoverCardTrigger asChild>
+                <Badge variant="outline">+{otherTags.length}</Badge>
+              </HoverCardTrigger>
+              <HoverCardContent side="top" className="w-fit p-1 shadow-none">
+                <div className="flex flex-wrap gap-1">
+                  {otherTags.map((tag) => {
+                    const tagMeta = getTag(tag as VoteTag);
+                    return (
+                      <Badge key={tag} variant={tagMeta.variant}>
+                        {React.createElement(tagMeta.Icon, { size: 16 })}
+                        {tagMeta.label}
+                      </Badge>
+                    );
+                  })}
+                </div>
+              </HoverCardContent>
+            </HoverCard>
+          )}
+        </div>
+      );
+    },
+  },
+  {
+    header: "Created",
+    accessorKey: "createdAt",
+    filterFn: "timeRange",
+    cell: ({ row }) => (
+      <Tooltip>
+        <TooltipTrigger className="decoration-muted-foreground cursor-pointer underline underline-offset-5 transition-[text-decoration-color] duration-150 ease-in-out hover:decoration-current">
+          {capitalizeFirstLetter(
+            formatDistance(row.original.createdAt, new Date(), {
+              addSuffix: true,
+            }).replace("about ", ""),
+          )}
+        </TooltipTrigger>
+        <TooltipContent>
+          {capitalizeFirstLetter(
+            formatRelative(row.original.createdAt, new Date()),
+          )}
+          .
+        </TooltipContent>
+      </Tooltip>
+    ),
   },
 ];
 
-export function DataTable({ data }: { data: Vote[] }) {
-  const id = React.useId();
-  const router = useRouter();
-  const [isLoading, setIsLoading] = React.useState<null | "delete" | "update">(
-    null,
-  );
+// --- Filter types and options ---
+type TimeRange =
+  | "24-hours"
+  | "3-days"
+  | "7-days"
+  | "15-days"
+  | "30-days"
+  | "all";
 
-  // --- nuqs state management ---
-  // Pagination: rows per page
-  const [rows, setRows] = useQueryState<number>("rows", {
-    parse: (v) => Number(v) || 10,
-    serialize: (v) => (v === 10 ? null : String(v)),
-    defaultValue: 10,
-  });
-  // Page index
-  const [page, setPage] = useQueryState<number>("page", {
-    parse: (v) => Number(v) || 0,
-    serialize: (v) => (v === 0 ? null : String(v)),
-    defaultValue: 0,
-  });
-  // Status filter
-  const [status, setStatus] = useQueryState<string[]>("status", {
-    parse: (v) => (v ? v.split(",") : []),
-    serialize: (v) => (v.length ? v.join(",") : null),
-    defaultValue: voteStatusSchema.options.filter((s) => s !== "completed"),
-  });
-  // Subject search
-  const [search, setSearch] = useQueryState<string>("search", {
-    parse: (v) => v || "",
-    serialize: (v) => (v ? v : null),
+type Impact = "all" | VoteImpact;
+
+const timeRanges: { value: TimeRange; label: string }[] = [
+  { value: "24-hours", label: "Last 24 hours" },
+  { value: "3-days", label: "Last 3 days" },
+  { value: "7-days", label: "Last 7 days" },
+  { value: "15-days", label: "Last 15 days" },
+  { value: "30-days", label: "Last 30 days" },
+  { value: "all", label: "All time" },
+];
+
+const impacts: { value: Impact; label: string; dotBgColor: string }[] = [
+  { value: "critical", label: "Critical", dotBgColor: "bg-red-400" },
+  { value: "major", label: "Major", dotBgColor: "bg-amber-400" },
+  { value: "minor", label: "Minor", dotBgColor: "bg-muted-foreground" },
+  { value: "all", label: "All", dotBgColor: "bg-muted" },
+];
+
+// --- Search and Filters component ---
+function SearchAndFilters({ data }: { data: Vote[] }) {
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const id = React.useId();
+
+  const [search, setSearch] = useQueryState("search", {
+    parse: (v) => v,
+    serialize: (v) => v || null,
     defaultValue: "",
   });
-  // Sorting (subject only)
-  const [sort, setSort] = useQueryState<string>("sort", {
-    parse: (v) => v || "ascending",
-    serialize: (v) => (v === "ascending" ? null : v),
-    defaultValue: "ascending",
-  });
-  // Archived filter
-  const [showArchived, setShowArchived] = useQueryState<boolean>("archived", {
-    parse: (v) => v === "true",
-    serialize: (v) => (v ? "true" : null),
-    defaultValue: false,
-  });
 
-  // --- Handlers to update URL state ---
-  function handlePageChange(newPage: number) {
-    setPage(newPage);
-  }
-  function handleRowsChange(newRows: number) {
-    setRows(newRows);
-    setPage(0); // reset to first page
-  }
-  function handleStatusChange(checked: boolean, value: VoteStatus) {
-    let newStatus = status ? [...status] : [];
-    if (checked) {
-      newStatus.push(value);
-    } else {
-      newStatus = newStatus.filter((s) => s !== value);
-    }
-    setStatus(
-      newStatus.length
-        ? newStatus
-        : voteStatusSchema.options.filter((s) => s !== "completed"),
-    );
-    setPage(0);
-  }
-  function handleSearchChange(value: string) {
-    setSearch(value);
-    setPage(0);
-  }
-  function handleSortChange(desc: boolean) {
-    setSort(desc ? "descending" : "ascending");
+  function handleSearchClear() {
+    setSearch("");
+    inputRef.current?.focus();
   }
 
-  // --- Table instance ---
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    onSortingChange: (updater) => {
-      let next: SortingState;
-      if (typeof updater === "function") {
-        next = updater([{ id: "subject", desc: sort === "descending" }]);
-      } else {
-        next = updater;
-      }
-      if (next.length && next[0].id === "subject") {
-        handleSortChange(next[0].desc);
-      }
-    },
-    enableSortingRemoval: false,
-    getPaginationRowModel: getPaginationRowModel(),
-    onPaginationChange: (updater) => {
-      let next: PaginationState;
-      if (typeof updater === "function") {
-        next = updater({ pageIndex: page, pageSize: rows });
-      } else {
-        next = updater;
-      }
-      handlePageChange(next.pageIndex);
-      if (next.pageSize !== rows) handleRowsChange(next.pageSize);
-    },
-    onColumnFiltersChange: (updater) => {
-      let next: ColumnFiltersState;
-      if (typeof updater === "function") {
-        next = updater([
-          { id: "status", value: status },
-          { id: "subject", value: search },
-        ]);
-      } else {
-        next = updater;
-      }
-      const statusFilter = next.find((f) => f.id === "status");
-      const subjectFilter = next.find((f) => f.id === "subject");
-      if (statusFilter) setStatus(statusFilter.value as string[]);
-      if (subjectFilter) setSearch(subjectFilter.value as string);
-      setPage(0);
-    },
-    getFilteredRowModel: getFilteredRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
-    state: {
-      sorting: [{ id: "subject", desc: sort === "descending" }],
-      pagination: { pageIndex: page, pageSize: rows },
-      columnFilters: [
-        { id: "status", value: status },
-        { id: "subject", value: search },
-      ],
-    },
-    filterFns: undefined,
+  const [timeRange, setTimeRange] = useQueryState<TimeRange>("days", {
+    parse: (v) => getTimeRangeFromNumber(Number(v)),
+    serialize: (v) => String(getTimeRangeNumber(v)),
+    defaultValue: "7-days",
   });
 
-  // Always show all possible statuses
-  const allStatusValues = voteStatusSchema.options;
+  const [impact, setImpact] = useQueryState<Impact>("impact", {
+    parse: (v) => v as Impact,
+    serialize: (v) => v,
+    defaultValue: "all",
+  });
 
-  // Get counts for each status
-  const statusColumn = table.getColumn("status");
-  const statusCounts = !statusColumn
-    ? new Map()
-    : statusColumn.getFacetedUniqueValues();
+  const [selectedTags, setSelectedTags] = useQueryState<string[]>("tags", {
+    parse: (v) => (v ? v.split(",") : []),
+    serialize: (v) => (v.length ? v.join(",") : null),
+    defaultValue: [],
+  });
 
-  const selectedStatuses = (table.getColumn("status")?.getFilterValue() ??
-    []) as string[];
-
-  // --- Bulk mutation handlers ---
-  const selectedRows = table.getSelectedRowModel().rows;
-  const selectedIds = selectedRows.map((row) => row.original.id);
-
-  function handleBulkStatusUpdate(status: VoteStatus) {
-    if (!selectedIds.length) return;
-    setIsLoading("update");
-    updateVote({ voteIds: selectedIds, status }).then((result) => {
-      if (result?.data?.failure) {
-        toast({
-          Icon: BadgeAlert,
-          title: "Failed to update votes",
-          variant: "destructive",
-          description: result?.data?.failure,
-        });
-        setIsLoading(null);
-        return;
-      }
-      if (result?.data?.success) {
-        router.refresh();
-        table.resetRowSelection();
-        setIsLoading(null);
+  // Get unique tags from data
+  const uniqueTags = React.useMemo(() => {
+    const tags = new Set<string>();
+    data.forEach((item) => {
+      if (typeof item.tags === "string") {
+        parsePgArray(item.tags).forEach((tag) => tags.add(tag));
+      } else if (Array.isArray(item.tags)) {
+        item.tags.forEach((tag) => tags.add(tag));
       }
     });
-  }
+    return Array.from(tags).sort();
+  }, [data]);
 
-  function handleBulkDelete() {
-    if (!selectedIds.length) return;
-    setIsLoading("delete");
-    deleteVote({ voteIds: selectedIds }).then((result) => {
-      if (result?.data?.failure) {
-        toast({
-          Icon: BadgeAlert,
-          title: "Failed to delete votes",
-          variant: "destructive",
-          description: result?.data?.failure,
-        });
-        setIsLoading(null);
-        return;
-      }
-      if (result?.data?.success) {
-        router.refresh();
-        table.resetRowSelection();
-        setIsLoading(null);
-      }
+  // Get tag counts
+  const tagCounts = React.useMemo(() => {
+    const counts = new Map<string, number>();
+    data.forEach((item) => {
+      const tags =
+        typeof item.tags === "string" ? parsePgArray(item.tags) : item.tags;
+      tags.forEach((tag) => {
+        counts.set(tag, (counts.get(tag) || 0) + 1);
+      });
     });
-  }
+    return counts;
+  }, [data]);
 
-  function handleBulkArchive() {
-    if (!selectedIds.length) return;
-    setIsLoading("update");
-    archiveVote({ voteIds: selectedIds }).then((result) => {
-      if (result?.data?.failure) {
-        toast({
-          Icon: BadgeAlert,
-          title: "Failed to archive votes",
-          variant: "destructive",
-          description: result?.data?.failure,
-        });
-        setIsLoading(null);
-        return;
-      }
-      if (result?.data?.success) {
-        router.refresh();
-        table.resetRowSelection();
-        setIsLoading(null);
-      }
-    });
-  }
+  const handleTagChange = (checked: boolean, value: string) => {
+    const newTags = checked
+      ? [...selectedTags, value]
+      : selectedTags.filter((tag) => tag !== value);
+    setSelectedTags(newTags);
+  };
 
-  function handleBulkUnarchive() {
-    if (!selectedIds.length) return;
-    setIsLoading("update");
-    unarchiveVote({ voteIds: selectedIds }).then((result) => {
-      if (result?.data?.failure) {
-        toast({
-          Icon: BadgeAlert,
-          title: "Failed to unarchive votes",
-          variant: "destructive",
-          description: result?.data?.failure,
-        });
-        setIsLoading(null);
-        return;
-      }
-      if (result?.data?.success) {
-        router.refresh();
-        table.resetRowSelection();
-        setIsLoading(null);
-      }
-    });
-  }
-
-  const hasRows = data.length > 0;
-
-  if (!hasRows) {
-    return (
-      <EmptyState
-        title="You don't have any votes yet"
-        icons={[VoteIcon, VoteIcon, VoteIcon]}
-        description="If you received any feedbacks, they'll appear here in less than 24 hours."
-      />
-    );
-  }
+  const hasSelectedTags = selectedTags.length > 0;
 
   return (
-    <div className="space-y-4">
-      {/* Filters */}
-      <div className="flex items-center justify-between gap-3 max-sm:flex-wrap">
-        <div className="flex gap-3 sm:grid sm:w-1/2 sm:grid-cols-4">
-          {/* Filter by subject */}
-          <div className="relative col-span-3">
-            <Input
-              id={`${id}-input`}
-              className={cn(
-                "peer ps-9",
-                Boolean(table.getColumn("subject")?.getFilterValue()) && "pe-9",
-              )}
-              value={
-                (table.getColumn("subject")?.getFilterValue() ?? "") as string
-              }
-              onChange={(e) => handleSearchChange(e.target.value)}
-              type="text"
-              aria-label="Filter by subject"
-              placeholder="Filter by subject..."
-            />
-            <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
-              <ListFilter size={16} aria-hidden="true" />
-            </div>
-            {Boolean(table.getColumn("subject")?.getFilterValue()) && (
-              <button
-                className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-[3px] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
-                aria-label="Clear filter"
-                onClick={() => {
-                  table.getColumn("subject")?.setFilterValue("");
-                }}
-              >
-                <CircleX size={16} />
-              </button>
-            )}
-          </div>
-
-          {/* Filter by status */}
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline">
-                <Filter size={16} className="-ms-1 opacity-60" />
-                Status
-                {selectedStatuses.length > 0 && (
-                  <span className="bg-background text-muted-foreground/70 -me-1 inline-flex h-5 max-h-full items-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
-                    {selectedStatuses.length}
-                  </span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto min-w-36 p-3" align="start">
-              <div className="space-y-3">
-                <div className="text-muted-foreground text-xs font-medium">
-                  Filters
-                </div>
-                <div className="space-y-3">
-                  {allStatusValues.map((value: VoteStatus, i: number) => {
-                    const { label } = getStatus(value);
-                    return (
-                      <div key={value} className="flex items-center gap-2">
-                        <Checkbox
-                          id={`${id}-${i}`}
-                          checked={selectedStatuses.includes(value)}
-                          onCheckedChange={(checked: boolean) =>
-                            handleStatusChange(checked, value)
-                          }
-                        />
-                        <Label
-                          htmlFor={`${id}-${i}`}
-                          className="flex grow justify-between gap-2 font-normal"
-                        >
-                          {label}{" "}
-                          <span className="text-muted-foreground ms-2 text-xs">
-                            {statusCounts.get(value) ?? 0}
-                          </span>
-                        </Label>
-                      </div>
-                    );
-                  })}
-
-                  {/* Archived filter checkbox */}
-                  <div className="mt-2 flex items-center gap-2 border-t pt-2">
-                    <Checkbox
-                      id={`${id}-archived`}
-                      checked={showArchived}
-                      onCheckedChange={(checked: boolean) =>
-                        setShowArchived(!!checked)
-                      }
-                    />
-                    <Label
-                      htmlFor={`${id}-archived`}
-                      className="flex grow justify-between gap-2 font-normal"
-                    >
-                      Archived
-                      <span className="text-muted-foreground ms-2 text-xs">
-                        {data.filter((vote) => vote.archived).length}
-                      </span>
-                    </Label>
-                  </div>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
+    <div className="mb-4 grid grid-cols-1 flex-col gap-3 sm:grid-cols-2 sm:gap-2">
+      {/* Search bar */}
+      <div className="relative">
+        <Input
+          ref={inputRef}
+          type="text"
+          value={search ?? ""}
+          onChange={(e) => setSearch(e.target.value)}
+          className="peer ps-9"
+          placeholder="Filter by title..."
+        />
+        <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
+          <Funnel size={16} />
         </div>
-
-        {/* Bulk action buttons */}
-        {selectedRows.length > 0 &&
-          (() => {
-            const count = selectedRows.length;
-            const allArchived = selectedRows.every(
-              (row) => row.original.archived,
-            );
-            return (
-              <div className="flex items-center gap-3">
-                {/* Mark as opened */}
-                <Tooltip>
-                  <TooltipProvider>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <TooltipTrigger asChild>
-                          <Button size="icon" variant="outline">
-                            <Clock3 className="opacity-60" />
-                          </Button>
-                        </TooltipTrigger>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Mark as opened?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This will mark {count} selected{" "}
-                            {count === 1 ? "row" : "rows"} as opened.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <Button
-                            onClick={() => handleBulkStatusUpdate("open")}
-                            loading={isLoading === "update"}
-                          >
-                            Update
-                          </Button>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                    <TooltipContent>Mark as opened</TooltipContent>
-                  </TooltipProvider>
-                </Tooltip>
-
-                {/* Mark as in progress */}
-                <Tooltip>
-                  <TooltipProvider>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <TooltipTrigger asChild>
-                          <Button size="icon" variant="outline">
-                            <Construction className="opacity-60" />
-                          </Button>
-                        </TooltipTrigger>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Mark as done?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This will mark {count} selected{" "}
-                            {count === 1 ? "row" : "rows"} as in progress.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <Button
-                            onClick={() =>
-                              handleBulkStatusUpdate("in_progress")
-                            }
-                            loading={isLoading === "update"}
-                          >
-                            Update
-                          </Button>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                    <TooltipContent>Mark as in progress</TooltipContent>
-                  </TooltipProvider>
-                </Tooltip>
-
-                {/* Mark as done */}
-                <Tooltip>
-                  <TooltipProvider>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <TooltipTrigger asChild>
-                          <Button size="icon" variant="outline">
-                            <BadgeCheck className="opacity-60" />
-                          </Button>
-                        </TooltipTrigger>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Mark as done?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This will mark {count} selected{" "}
-                            {count === 1 ? "row" : "rows"} as done.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <Button
-                            onClick={() => handleBulkStatusUpdate("completed")}
-                            loading={isLoading === "update"}
-                          >
-                            Update
-                          </Button>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                    <TooltipContent>Mark as done</TooltipContent>
-                  </TooltipProvider>
-                </Tooltip>
-
-                {/* Archive/Unarchive */}
-                {allArchived ? (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="outline">
-                        <Archive className="-ms-1 opacity-60" />
-                        Unarchive
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Unarchive selected?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This will unarchive {count} selected{" "}
-                          {count === 1 ? "row" : "rows"}.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <Button
-                          onClick={handleBulkUnarchive}
-                          loading={isLoading === "update"}
-                        >
-                          Unarchive
-                        </Button>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                ) : (
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="outline">
-                        <Archive className="-ms-1 opacity-60" />
-                        Archive
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Archive selected?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This will archive {count} selected{" "}
-                          {count === 1 ? "row" : "rows"}. You can unarchive them
-                          later if needed.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <Button
-                          onClick={handleBulkArchive}
-                          loading={isLoading === "update"}
-                        >
-                          Archive
-                        </Button>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                )}
-
-                {/* Delete */}
-                <>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        variant="outline"
-                        disabled={isLoading === "delete"}
-                      >
-                        <Trash className="-ms-1 opacity-60" />
-                        Delete
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
-                        <div className="flex size-9 shrink-0 items-center justify-center rounded-full border">
-                          <CircleAlert size={16} className="opacity-80" />
-                        </div>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            Are you absolutely sure?
-                          </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This action cannot be undone. This will permanently
-                            delete {count} selected{" "}
-                            {count === 1 ? "row" : "rows"}.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                      </div>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel disabled={isLoading === "delete"}>
-                          Cancel
-                        </AlertDialogCancel>
-
-                        <Button
-                          loading={isLoading === "delete"}
-                          onClick={handleBulkDelete}
-                          disabled={isLoading === "delete"}
-                        >
-                          Delete
-                        </Button>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </>
-                {/* Status update dialogs */}
-                <AlertDialog>
-                  <AlertDialogContent>
-                    <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
-                      <div className="flex size-9 shrink-0 items-center justify-center rounded-full border">
-                        <CircleAlert size={16} className="opacity-80" />
-                      </div>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Mark as opened?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This will mark {count} selected{" "}
-                          {count === 1 ? "row" : "rows"} as <b>opened</b>.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                    </div>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-
-                      <Button
-                        loading={isLoading === "update"}
-                        onClick={() => handleBulkStatusUpdate("open")}
-                        disabled={isLoading === "update"}
-                      >
-                        Update
-                      </Button>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-                <AlertDialog>
-                  <AlertDialogContent>
-                    <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
-                      <div className="flex size-9 shrink-0 items-center justify-center rounded-full border">
-                        <CircleAlert size={16} className="opacity-80" />
-                      </div>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          Mark as in progress?
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This will mark {count} selected{" "}
-                          {count === 1 ? "row" : "rows"} as <b>in progress</b>.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                    </div>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-
-                      <Button
-                        onClick={() => handleBulkStatusUpdate("in_progress")}
-                        loading={isLoading === "update"}
-                      >
-                        Update
-                      </Button>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-                <AlertDialog>
-                  <AlertDialogContent>
-                    <div className="flex flex-col gap-2 max-sm:items-center sm:flex-row sm:gap-4">
-                      <div className="flex size-9 shrink-0 items-center justify-center rounded-full border">
-                        <CircleAlert size={16} className="opacity-80" />
-                      </div>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Mark as done?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This will mark {count} selected{" "}
-                          {count === 1 ? "row" : "rows"} as <b>done</b>.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                    </div>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-
-                      <Button
-                        loading={isLoading === "update"}
-                        onClick={() => handleBulkStatusUpdate("completed")}
-                      >
-                        Update
-                      </Button>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </div>
-            );
-          })()}
-      </div>
-
-      {/* Table */}
-      <div className="bg-background overflow-hidden rounded-md border">
-        <Table
-          key={JSON.stringify(data.map((v) => v.id))}
-          className="table-fixed"
-        >
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id} className="hover:bg-transparent">
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead
-                      key={header.id}
-                      style={{ width: `${header.getSize()}px` }}
-                      className="h-11"
-                    >
-                      {header.isPlaceholder ? null : header.column.getCanSort() ? (
-                        <div
-                          className={cn(
-                            header.column.getCanSort() &&
-                              "flex h-full cursor-pointer items-center justify-between gap-2 select-none",
-                          )}
-                          onClick={header.column.getToggleSortingHandler()}
-                          onKeyDown={(e) => {
-                            // Enhanced keyboard handling for sorting
-                            if (
-                              header.column.getCanSort() &&
-                              (e.key === "Enter" || e.key === " ")
-                            ) {
-                              e.preventDefault();
-                              header.column.getToggleSortingHandler()?.(e);
-                            }
-                          }}
-                          tabIndex={header.column.getCanSort() ? 0 : undefined}
-                        >
-                          {flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                          {{
-                            asc: (
-                              <ChevronUpIcon
-                                className="shrink-0 opacity-60"
-                                size={16}
-                                aria-hidden="true"
-                              />
-                            ),
-                            desc: (
-                              <ChevronDownIcon
-                                className="shrink-0 opacity-60"
-                                size={16}
-                                aria-hidden="true"
-                              />
-                            ),
-                          }[header.column.getIsSorted() as string] ?? null}
-                        </div>
-                      ) : (
-                        flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )
-                      )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id} className="last:py-0">
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-
-      {/* Pagination */}
-      <div className="flex items-center justify-between gap-8">
-        {/* Results per page */}
-        <div className="flex items-center gap-3">
-          <Label className="max-sm:sr-only">Rows per page</Label>
-          <Select
-            value={table.getState().pagination.pageSize.toString()}
-            onValueChange={(value) => handleRowsChange(Number(value))}
+        {Boolean(search) && (
+          <button
+            onClick={handleSearchClear}
+            className="text-muted-foreground/80 hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-0 end-0 flex h-full w-9 items-center justify-center rounded-e-md transition-[color,box-shadow] outline-none focus:z-10 focus-visible:ring-3 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50"
+            aria-label="Clear filter"
           >
-            <SelectTrigger className="w-fit whitespace-nowrap">
-              <SelectValue placeholder="Select number of results" />
+            <X size={16} />
+          </button>
+        )}
+      </div>
+      {/* Filters */}
+      <div className="grid grid-cols-3 gap-2">
+        {/* Time range selector */}
+        <div className="group relative">
+          <Select
+            value={timeRange}
+            onValueChange={(value: TimeRange) => setTimeRange(value)}
+          >
+            <SelectTrigger className="relative ps-9">
+              <div className="text-muted-foreground/80 pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 group-has-[select[disabled]]:opacity-50">
+                <Calendar size={16} />
+              </div>
+              <SelectValue />
             </SelectTrigger>
-            <SelectContent className="[&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2">
-              {[5, 10, 25, 50].map((pageSize) => (
-                <SelectItem key={pageSize} value={pageSize.toString()}>
-                  {pageSize}
+            <SelectContent>
+              {timeRanges.map(({ value, label }) => (
+                <SelectItem key={value} value={value}>
+                  {label}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
-        {/* Page number information */}
-        <div className="text-muted-foreground flex grow justify-end text-sm whitespace-nowrap">
-          <p
-            className="text-muted-foreground text-sm whitespace-nowrap"
-            aria-live="polite"
-          >
-            <span className="text-foreground">
-              {table.getState().pagination.pageIndex *
-                table.getState().pagination.pageSize +
-                1}
-              -
-              {Math.min(
-                Math.max(
-                  table.getState().pagination.pageIndex *
-                    table.getState().pagination.pageSize +
-                    table.getState().pagination.pageSize,
-                  0,
-                ),
-                table.getRowCount(),
+        {/* Tag filter */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" className="justify-between">
+              <div className="flex items-center gap-2">
+                <Funnel size={16} className="-ms-1 opacity-60" />
+                Tags
+              </div>
+              {hasSelectedTags && (
+                <span className="bg-background text-muted-foreground/70 -me-1 inline-flex h-5 max-h-full w-4.5 items-center justify-center rounded border px-1 font-[inherit] text-[0.625rem] font-medium">
+                  {selectedTags.length}
+                </span>
               )}
-            </span>{" "}
-            of{" "}
-            <span className="text-foreground">
-              {table.getRowCount().toString()}
-            </span>
-          </p>
-        </div>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-39 p-3" align="start">
+            <div className="space-y-3">
+              <div className="text-muted-foreground text-xs font-medium">
+                Filter by tags
+              </div>
+              <div className="space-y-3">
+                {uniqueTags.map((tag, i) => {
+                  const tagMeta = getTag(tag as VoteTag);
+                  return (
+                    <div key={tag} className="flex items-center gap-2">
+                      <Checkbox
+                        id={`${id}-tag-${i}`}
+                        checked={selectedTags.includes(tag)}
+                        onCheckedChange={(checked: boolean) =>
+                          handleTagChange(checked, tag)
+                        }
+                      />
+                      <Label
+                        htmlFor={`${id}-tag-${i}`}
+                        className="flex grow justify-between gap-2 font-normal"
+                      >
+                        {tagMeta.label}
+                        <span className="text-muted-foreground ms-2 text-xs">
+                          {tagCounts.get(tag)}
+                        </span>
+                      </Label>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
+        {/* Impact selector */}
+        <Select
+          value={impact}
+          onValueChange={(value: Impact) => setImpact(value)}
+        >
+          <SelectTrigger className="[&>span]:flex [&>span]:items-center [&>span]:gap-2 [&>span_svg]:shrink-0">
+            <SelectValue placeholder="Select impact" />
+          </SelectTrigger>
+          <SelectContent className="[&_*[role=option]>span>svg]:text-muted-foreground/80 [&_*[role=option]]:ps-2 [&_*[role=option]]:pe-8 [&_*[role=option]>span]:start-auto [&_*[role=option]>span]:end-2 [&_*[role=option]>span]:flex [&_*[role=option]>span]:items-center [&_*[role=option]>span]:gap-2 [&_*[role=option]>span>svg]:shrink-0">
+            {impacts.map(({ value, label, dotBgColor }) => (
+              <SelectItem key={value} value={value}>
+                <span className="flex items-center gap-2">
+                  <div className={cn("size-2 rounded-full", dotBgColor)} />
+                  <span className="truncate">{label}</span>
+                </span>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
+  );
+}
 
-        {/* Pagination buttons */}
-        <div>
-          <Pagination>
-            <PaginationContent>
-              {/* First page button */}
-              <PaginationItem>
-                <Button
-                  size="icon"
-                  variant="outline"
-                  className="disabled:pointer-events-none disabled:opacity-50"
-                  onClick={() => table.firstPage()}
-                  disabled={!table.getCanPreviousPage()}
-                  aria-label="Go to first page"
+// --- Pagination helpers ---
+type RowsCount = "5-rows" | "10-rows" | "25-rows" | "50-rows";
+
+function getRowsCountNumber(rowsCount: RowsCount) {
+  switch (rowsCount) {
+    case "5-rows":
+      return 5;
+    case "10-rows":
+      return 10;
+    case "25-rows":
+      return 25;
+    case "50-rows":
+      return 50;
+  }
+}
+
+function getTimeRangeNumber(timeRange: TimeRange) {
+  switch (timeRange) {
+    case "24-hours":
+      return 1;
+    case "3-days":
+      return 3;
+    case "7-days":
+      return 7;
+    case "15-days":
+      return 15;
+    case "30-days":
+      return 30;
+    case "all":
+      return 0;
+  }
+}
+
+function getTimeRangeFromNumber(number: number): TimeRange {
+  switch (number) {
+    case 1:
+      return "24-hours";
+    case 3:
+      return "3-days";
+    case 7:
+      return "7-days";
+    case 15:
+      return "15-days";
+    case 30:
+      return "30-days";
+    default:
+      return "all";
+  }
+}
+
+function getDateFromTimeRange(timeRange: TimeRange): Date | null {
+  const now = new Date();
+  const hoursInMs = 60 * 60 * 1000;
+  switch (timeRange) {
+    case "24-hours":
+      return new Date(now.getTime() - 24 * hoursInMs);
+    case "3-days":
+      return new Date(now.getTime() - 3 * 24 * hoursInMs);
+    case "7-days":
+      return new Date(now.getTime() - 7 * 24 * hoursInMs);
+    case "15-days":
+      return new Date(now.getTime() - 15 * 24 * hoursInMs);
+    case "30-days":
+      return new Date(now.getTime() - 30 * 24 * hoursInMs);
+    case "all":
+      return null;
+    default:
+      return null;
+  }
+}
+
+// --- Main DataTable ---
+export function DataTable({ data }: { data: Vote[] }) {
+  // State from URL parameters
+  const [rowsCount, setRowsCount] = useQueryState<RowsCount>("rows", {
+    parse: (v) => `${v}-rows` as RowsCount,
+    serialize: (v) => (v === "5-rows" ? null : v.replace("-rows", "")),
+    defaultValue: "5-rows",
+  });
+  const [activePage, setActivePage] = useQueryState<number>("page", {
+    parse: (v) => Number(v) || 0,
+    serialize: (v) => (v === 0 ? null : String(v)),
+    defaultValue: 0,
+  });
+  const [searchValue] = useQueryState("search", {
+    parse: (v) => v,
+    serialize: (v) => v || null,
+    defaultValue: "",
+  });
+  const [selectedImpact] = useQueryState<Impact>("impact", {
+    parse: (v) => v as Impact,
+    serialize: (v) => v,
+    defaultValue: "all",
+  });
+  const [selectedTimeRange] = useQueryState<TimeRange>("days", {
+    parse: (v) => getTimeRangeFromNumber(Number(v)),
+    serialize: (v) => String(getTimeRangeNumber(v)),
+    defaultValue: "7-days",
+  });
+  const [selectedTags] = useQueryState<string[]>("tags", {
+    parse: (v) => (v ? v.split(",") : []),
+    serialize: (v) => (v.length ? v.join(",") : null),
+    defaultValue: [],
+  });
+  // Memoize table meta
+  const tableMeta = React.useMemo(
+    () => ({
+      pageSize: getRowsCountNumber(rowsCount),
+      pageIndex: activePage,
+    }),
+    [rowsCount, activePage],
+  );
+  React.useEffect(() => {
+    tableMeta.pageSize = getRowsCountNumber(rowsCount);
+    tableMeta.pageIndex = activePage;
+  }, [tableMeta, rowsCount, activePage]);
+  // Table instance
+  const table = useReactTable<Vote>({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    state: {
+      pagination: {
+        pageSize: tableMeta.pageSize,
+        pageIndex: tableMeta.pageIndex,
+      },
+      globalFilter: searchValue,
+      columnFilters: [
+        { id: "impact", value: selectedImpact },
+        { id: "createdAt", value: selectedTimeRange },
+        { id: "tags", value: selectedTags },
+      ],
+    },
+    filterFns: {
+      impact: (row, columnId, filterValue: Impact) => {
+        const impact = row.getValue(columnId) as VoteImpact;
+        return filterValue === "all" ? true : impact === filterValue;
+      },
+      timeRange: (row, columnId, filterValue: TimeRange) => {
+        const date = row.getValue(columnId) as Date;
+        const startDate = getDateFromTimeRange(filterValue);
+        return startDate ? date.getTime() >= startDate.getTime() : true;
+      },
+      tags: (row, _columnId, filterValue: string[]) => {
+        if (!filterValue?.length) return true;
+        const tags =
+          typeof row.original.tags === "string"
+            ? parsePgArray(row.original.tags)
+            : row.original.tags;
+        return filterValue.every((tag) => tags.includes(tag));
+      },
+    },
+    manualPagination: true,
+    enableColumnFilters: true,
+    onPaginationChange: (updater) => {
+      let newPagination: PaginationState;
+      if (typeof updater === "function") {
+        newPagination = updater({
+          pageIndex: tableMeta.pageIndex,
+          pageSize: tableMeta.pageSize,
+        });
+      } else {
+        newPagination = updater;
+      }
+      setActivePage(newPagination.pageIndex);
+      tableMeta.pageIndex = newPagination.pageIndex;
+      if (newPagination.pageSize !== tableMeta.pageSize) {
+        const newRowsCount = `${newPagination.pageSize}-rows` as RowsCount;
+        if (
+          ["5-rows", "10-rows", "25-rows", "50-rows"].includes(newRowsCount)
+        ) {
+          setRowsCount(newRowsCount);
+          tableMeta.pageSize = newPagination.pageSize;
+        }
+      }
+    },
+  });
+  // Filtered data
+  const filteredData = data.filter((item) => {
+    if (selectedImpact !== "all" && item.impact !== selectedImpact)
+      return false;
+    const startDate = getDateFromTimeRange(selectedTimeRange);
+    if (startDate && item.createdAt.getTime() < startDate.getTime())
+      return false;
+    if (
+      searchValue &&
+      !item.title.toLowerCase().includes(searchValue.toLowerCase())
+    )
+      return false;
+    if (selectedTags.length > 0) {
+      const itemTags =
+        typeof item.tags === "string" ? parsePgArray(item.tags) : item.tags;
+      if (!selectedTags.every((tag) => itemTags.includes(tag))) return false;
+    }
+    return true;
+  });
+  // Reset to first page if filters change and page is out of bounds
+  React.useEffect(() => {
+    const maxPageIndex = Math.max(
+      0,
+      Math.ceil(filteredData.length / tableMeta.pageSize) - 1,
+    );
+    if (tableMeta.pageIndex > maxPageIndex) {
+      setActivePage(0);
+      tableMeta.pageIndex = 0;
+    }
+  }, [
+    selectedImpact,
+    selectedTimeRange,
+    searchValue,
+    selectedTags,
+    filteredData.length,
+    tableMeta,
+    setActivePage,
+  ]);
+  // Pagination
+  const startIndex = tableMeta.pageIndex * tableMeta.pageSize;
+  const paginatedData = filteredData.slice(
+    startIndex,
+    startIndex + tableMeta.pageSize,
+  );
+  const pagesCount = Math.max(
+    1,
+    Math.ceil(filteredData.length / tableMeta.pageSize),
+  );
+  const currentPage = Math.min(tableMeta.pageIndex + 1, pagesCount);
+  const canPreviousPage = tableMeta.pageIndex > 0;
+  const canNextPage = startIndex + tableMeta.pageSize < filteredData.length;
+  const { pages, showLeftEllipsis, showRightEllipsis } = usePagination({
+    totalPages: pagesCount,
+    currentPage: currentPage,
+    paginationItemsToDisplay: 5,
+  });
+  const hasRows = data.length > 0;
+  const hasFilter = selectedTimeRange !== "7-days" || selectedImpact !== "all";
+  const hasSearchQuery = searchValue !== "";
+  if (!hasRows && !hasFilter && !hasSearchQuery) {
+    return (
+      <div className="container">
+        <EmptyState
+          title="You have not received any votes yet"
+          icons={[MessageSquare, MessageSquare, MessageSquare]}
+          description="Any sent votes will appear here once received."
+        />
+      </div>
+    );
+  }
+  return (
+    <div className="container">
+      <div className="flex flex-col gap-4">
+        <SearchAndFilters data={data} />
+        {/* Table */}
+        <div className="w-full overflow-hidden">
+          <div className="bg-background mb-4 rounded-md border">
+            <Table className="shrink-0">
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow
+                    key={headerGroup.id}
+                    className="hover:bg-transparent"
+                  >
+                    {headerGroup.headers.map((header) => (
+                      <TableHead
+                        key={header.id}
+                        className={cn("text-muted-foreground")}
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {paginatedData.length === 0 && (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="text-muted-foreground h-24 text-center"
+                    >
+                      {searchValue ? (
+                        <>
+                          No results found for: &quot;
+                          <span className="text-foreground">{searchValue}</span>
+                          &quot;.
+                        </>
+                      ) : (
+                        "No results found."
+                      )}
+                    </TableCell>
+                  </TableRow>
+                )}
+                {paginatedData.length > 0 &&
+                  table.getRowModel().rows.map((tableRow) => (
+                    <TableRow key={tableRow.id}>
+                      {tableRow.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext(),
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+              </TableBody>
+            </Table>
+          </div>
+          {/* Pagination */}
+          <div className="flex items-center justify-between gap-3 max-sm:flex-col">
+            {/* Page number information */}
+            <p
+              className="text-muted-foreground flex-1 text-sm whitespace-nowrap"
+              aria-live="polite"
+            >
+              Page <span className="text-foreground">{currentPage}</span> of{" "}
+              <span className="text-foreground">{pagesCount}</span>
+            </p>
+            {/* Pagination buttons */}
+            <div className="grow">
+              <Pagination>
+                <PaginationContent>
+                  {/* Previous page button */}
+                  <PaginationItem>
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      className="disabled:pointer-events-none disabled:opacity-50"
+                      onClick={() => {
+                        if (canPreviousPage) {
+                          table.previousPage();
+                        }
+                      }}
+                      disabled={!canPreviousPage}
+                      aria-label="Go to previous page"
+                    >
+                      <ArrowLeft size={16} />
+                    </Button>
+                  </PaginationItem>
+                  {/* Left ellipsis (...) */}
+                  {showLeftEllipsis && (
+                    <PaginationItem>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  )}
+                  {/* Page number buttons */}
+                  {pages.map((page) => {
+                    const isActive = page === currentPage;
+                    return (
+                      <PaginationItem key={page}>
+                        <Button
+                          size="icon"
+                          variant={`${isActive ? "outline" : "ghost"}`}
+                          onClick={() => {
+                            table.setPageIndex(page - 1);
+                          }}
+                          aria-current={isActive ? "page" : undefined}
+                        >
+                          {page}
+                        </Button>
+                      </PaginationItem>
+                    );
+                  })}
+                  {/* Right ellipsis (...) */}
+                  {showRightEllipsis && (
+                    <PaginationItem>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  )}
+                  {/* Next page button */}
+                  <PaginationItem>
+                    <Button
+                      size="icon"
+                      variant="outline"
+                      onClick={() => {
+                        if (canNextPage) {
+                          table.nextPage();
+                        }
+                      }}
+                      disabled={!canNextPage}
+                      className="disabled:pointer-events-none disabled:opacity-50"
+                      aria-label="Go to next page"
+                    >
+                      <ArrowRight size={16} />
+                    </Button>
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+            {/* Results per page */}
+            <div className="flex flex-1 justify-end">
+              <Select
+                value={String(tableMeta.pageSize)}
+                onValueChange={(value) => {
+                  table.setPageSize(Number(value));
+                }}
+                aria-label="Results per page"
+              >
+                <SelectTrigger
+                  id="results-per-page"
+                  className="w-fit whitespace-nowrap"
                 >
-                  <ChevronFirstIcon size={16} aria-hidden="true" />
-                </Button>
-              </PaginationItem>
-              {/* Previous page button */}
-              <PaginationItem>
-                <Button
-                  size="icon"
-                  variant="outline"
-                  className="disabled:pointer-events-none disabled:opacity-50"
-                  onClick={() => table.previousPage()}
-                  disabled={!table.getCanPreviousPage()}
-                  aria-label="Go to previous page"
-                >
-                  <ChevronLeftIcon size={16} aria-hidden="true" />
-                </Button>
-              </PaginationItem>
-              {/* Next page button */}
-              <PaginationItem>
-                <Button
-                  size="icon"
-                  variant="outline"
-                  className="disabled:pointer-events-none disabled:opacity-50"
-                  onClick={() => table.nextPage()}
-                  disabled={!table.getCanNextPage()}
-                  aria-label="Go to next page"
-                >
-                  <ChevronRightIcon size={16} aria-hidden="true" />
-                </Button>
-              </PaginationItem>
-              {/* Last page button */}
-              <PaginationItem>
-                <Button
-                  size="icon"
-                  variant="outline"
-                  className="disabled:pointer-events-none disabled:opacity-50"
-                  onClick={() => table.lastPage()}
-                  disabled={!table.getCanNextPage()}
-                  aria-label="Go to last page"
-                >
-                  <ChevronLastIcon size={16} aria-hidden="true" />
-                </Button>
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+                  <SelectValue placeholder="Select number of results" />
+                </SelectTrigger>
+                <SelectContent>
+                  {[5, 10, 25, 50].map((pageSize) => (
+                    <SelectItem key={pageSize} value={String(pageSize)}>
+                      {pageSize} / page
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </div>
       </div>
     </div>
