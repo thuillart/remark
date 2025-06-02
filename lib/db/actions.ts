@@ -344,6 +344,7 @@ export const createVote = actionClient
     // Generate a merged subject and description using AI
     const { text: output } = await generateText({
       model: google("gemini-2.5-flash-preview-04-17"),
+      // Might improve it
       prompt: dedent`
         You are a ticket-classification engine. Your task is to analyze multiple similar feedback entries and create a single, clear vote that represents their common request or issue.
 
