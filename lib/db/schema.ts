@@ -11,7 +11,11 @@ import {
   ContactMetadata,
   FeedbackImpact,
   FeedbackMetadata,
+  FeedbackMetadataBrowser,
+  FeedbackMetadataDevice,
+  FeedbackMetadataOs,
   FeedbackTag,
+  VoteImpact,
   VoteStatus,
 } from "@/lib/schema";
 
@@ -113,43 +117,16 @@ export const passkey = pgTable("passkey", {
 
 export const feedback = pgTable("feedback", {
   id: text("id").primaryKey(),
-  /**
-   * Sender email address.
-   */
   from: text("from").notNull(),
-  /**
-   * The recipient user id.
-   */
   referenceId: text("reference_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  /**
-   * The feedback as-is.
-   */
   text: text("text").notNull(),
-  /**
-   * The impact it has on the user's experience.
-   */
   impact: text("impact").$type<FeedbackImpact>(),
-  /**
-   * The 1-6 words subject of the feedback.
-   */
   subject: text("subject"),
-  /**
-   * The embedding vector for the subject to find similar feedback
-   */
   embedding: text("embedding").notNull(),
-  /**
-   * A easy-to-read and clear summary of raw feedback.
-   */
   summary: text("summary").array(),
-  /**
-   * The categories into which it falls.
-   */
   tags: text("tags").$type<FeedbackTag[]>(),
-  /**
-   * Metadata about the feedback.
-   */
   metadata: jsonb("metadata").$type<FeedbackMetadata>(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
@@ -169,34 +146,21 @@ export const contact = pgTable("contact", {
 
 export const vote = pgTable("vote", {
   id: text("id").primaryKey(),
-  /**
-   * The subject of the vote (e.g., "Add dark mode", "Improve search")
-   */
-  subject: text("subject").notNull(),
-  /**
-   * The total number of votes/feedback grouped under this subject.
-   * A vote is only created when at least 2 similar feedback entries are found.
-   */
+  title: text("title").notNull(),
+  description: text("description").notNull(),
   count: integer("count").notNull(),
-  /**
-   * Our internal user, to which the vote belongs to.
-   */
+  browsers: text("browsers").$type<FeedbackMetadataBrowser[]>().notNull(),
+  operatingSystems: text("operating_systems")
+    .$type<FeedbackMetadataOs[]>()
+    .notNull(),
+  devices: text("devices").$type<FeedbackMetadataDevice[]>().notNull(),
+  tags: text("tags").$type<FeedbackTag[]>().notNull(),
+  impact: text("impact").$type<VoteImpact>().notNull(),
   referenceId: text("reference_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  /**
-   * The status of the vote.
-   */
-  status: text("status").$type<VoteStatus>().notNull().default("open"),
-  /**
-   * Array of feedback IDs that contributed to this vote.
-   * Used to track which feedbacks were grouped together and to avoid reprocessing.
-   */
+  status: text("status").$type<VoteStatus>().notNull().default("pending"),
   feedbackIds: text("feedback_ids").array().notNull(),
-  /**
-   * Whether the vote is archived (hidden from the main table)
-   */
-  archived: boolean("archived").notNull().default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

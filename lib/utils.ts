@@ -1,4 +1,3 @@
-import { type ToastProps, showToast } from "@/components/ui/sonner";
 import { type ClassValue, clsx } from "clsx";
 import {
   addMonths,
@@ -9,6 +8,8 @@ import {
   startOfMonth,
 } from "date-fns";
 import { twMerge } from "tailwind-merge";
+
+import { type ToastProps, showToast } from "@/components/ui/sonner";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

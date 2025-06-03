@@ -22,14 +22,21 @@ import {
 import {
   feedbackEnrichmentSchema,
   feedbackInputMetadataSchema,
+  feedbackMetadataBrowserSchema,
+  feedbackMetadataDeviceSchema,
+  feedbackMetadataOsSchema,
   feedbackMetadataSchema,
   SubscriptionSlugSchema,
   voteStatusSchema,
 } from "@/lib/schema";
 import { tryCatch } from "@/lib/utils";
 
+type FeedbackMetadataBrowser = z.infer<typeof feedbackMetadataBrowserSchema>;
+type FeedbackMetadataOs = z.infer<typeof feedbackMetadataOsSchema>;
+type FeedbackMetadataDevice = z.infer<typeof feedbackMetadataDeviceSchema>;
+
 export const createFeedback = authActionClient
-  .schema(
+  .inputSchema(
     z.object({
       text: z.string(),
       metadata: feedbackMetadataSchema,
@@ -79,7 +86,7 @@ export const createFeedback = authActionClient
   });
 
 export const enrichFeedback = actionClient
-  .schema(
+  .inputSchema(
     z.object({
       from: z.string().email(),
       text: z.string(),
@@ -178,7 +185,7 @@ export const enrichFeedback = actionClient
   });
 
 export const createApiKey = subscriptionActionClient
-  .schema(
+  .inputSchema(
     z.object({
       name: z.string().min(1).max(50).trim(),
       pathname: z.string(),
@@ -229,7 +236,7 @@ export const createApiKey = subscriptionActionClient
   );
 
 export const deleteApiKey = authActionClient
-  .schema(
+  .inputSchema(
     z.object({
       keyId: z.string(),
     }),
@@ -277,7 +284,7 @@ export const updateApiKey = authActionClient
   });
 
 export const updateApiKeysLimits = actionClient
-  .schema(
+  .inputSchema(
     z.object({
       newSlug: SubscriptionSlugSchema,
     }),
@@ -318,41 +325,160 @@ export const updateApiKeysLimits = actionClient
   });
 
 export const createVote = actionClient
-  .schema(
+  .inputSchema(
     z.object({
-      subjects: z.array(z.string()),
       groupsIds: z.array(z.string()),
       referenceId: z.string(),
     }),
   )
-  .action(async ({ parsedInput: { subjects, groupsIds, referenceId } }) => {
-    // Generate a merged subject using AI
-    const { text: subject } = await generateText({
+  .action(async ({ parsedInput: { groupsIds, referenceId } }) => {
+    // Get all feedbacks for the given IDs first so we can include their details in the prompt
+    const { data: feedbacks, error: feedbackError } = await tryCatch(
+      db.select().from(feedback).where(inArray(feedback.id, groupsIds)),
+    );
+
+    if (feedbackError) {
+      return { failure: feedbackError.message };
+    }
+
+    // Generate a merged subject and description using AI
+    const { text: output } = await generateText({
       model: google("gemini-2.5-flash-preview-04-17"),
+      // Might improve it
       prompt: dedent`
-        Given these similar feedback subjects from multiple users, create a single, concise subject (1-6 words) that captures their common request or suggestion.
+        You are a ticket-classification engine. Your task is to analyze multiple similar feedback entries and create a single, clear vote that represents their common request or issue.
 
-        Examples:
-        - "The app is too bright" + "Can we have a dark theme?" + "I need dark mode" → "Dark mode"
-        - "The app crashes when I click save" + "Save button doesn't work" + "Getting errors on save" → "Fix save button"
-        - "Add more colors" + "Need more theme options" + "Custom colors please" → "More color options"
+        Input feedbacks:
+        ${JSON.stringify(
+          feedbacks.map((f) => ({
+            subject: f.subject,
+            text: f.text,
+            impact: f.impact,
+            tags: f.tags,
+            metadata: f.metadata,
+          })),
+          null,
+          2,
+        )}
 
-        Feedback subjects:
-        ${subjects.join("\n")}
+        Instructions:
 
-        Create a clear, concise subject that represents what these users are asking for. Use simple, direct language.
+        1. Title (1-6 words):
+           - Write a natural, concise phrase
+           - Start with the most impactful issue
+           - Use present tense and active voice
+           - Connect issues with "and" instead of commas
+           Example: "Fix save button and improve performance"
+
+        2. Description:
+           - Write a detailed explanation of the request/issue
+           - Include context from the original feedbacks
+           - Keep the tone professional but friendly
+           - Use present tense and active voice
+           - Use contractions and informal verbs
+           - Avoid passive voice and formal terms
+           - Start with the most critical information
+           - Include any relevant technical details or user context
+           Example:
+           "Users are experiencing issues with the save functionality. The button appears to be unresponsive, and in some cases, the page freezes when attempting to save. This affects users across different browsers and devices, with the most severe impact on mobile users. The issue seems to be related to the recent update to the form handling system."
+
+        3. Tag (select ONE, maximum TWO if absolutely necessary):
+           - For issues, choose the most relevant from:
+             * bug: Technical issues or malfunctions
+             * feature_request: New functionality requests
+             * ui: Interface design issues
+             * ux: User experience problems
+             * speed: Performance issues
+             * security: Security concerns
+             * pricing: Pricing or billing issues
+             * billing: Payment processing problems
+             * dx: Developer experience issues
+             * i18n: Internationalization/localization
+             * compliance: Regulatory compliance
+             * a11y: Accessibility issues
+
+        4. Impact (select ONE):
+           - critical: Blocking issue that prevents core functionality
+           - major: Significant impact on user experience
+           - minor: Low impact or easily worked around
+
+        The output must be a valid JSON object matching this structure:
+        {
+          "title": "",
+          "description": "",
+          "tag": "",
+          "impact": ""
+        }
       `,
     });
 
+    // Strip markdown code block formatting if present
+    const cleanOutput = output.replace(/```json\n?|\n?```/g, "").trim();
+    const parsedOutput = z.string().parse(cleanOutput);
+
+    const voteData = z.object({
+      title: z.string(),
+      description: z.string(),
+      tag: z.enum([
+        "bug",
+        "feature_request",
+        "ui",
+        "ux",
+        "speed",
+        "security",
+        "pricing",
+        "billing",
+        "dx",
+        "i18n",
+        "compliance",
+        "a11y",
+      ]),
+      impact: z.enum(["critical", "major", "minor"]),
+    });
+
+    const { data: jsonData, error: jsonError } = await tryCatch(
+      Promise.resolve(JSON.parse(parsedOutput)),
+    );
+    if (jsonError) {
+      return { failure: "Failed to parse JSON from AI response" };
+    }
+
+    const result = voteData.safeParse(jsonData);
+    if (!result.success) {
+      return { failure: "Failed to parse vote data from AI response" };
+    }
+    const parsedVoteData = result.data;
+
     const count = groupsIds.length;
+
+    // Extract and merge metadata from all feedbacks
+    const browsers = new Set<FeedbackMetadataBrowser>();
+    const operatingSystems = new Set<FeedbackMetadataOs>();
+    const devices = new Set<FeedbackMetadataDevice>();
+
+    feedbacks.forEach((f) => {
+      if (f.metadata?.browser)
+        browsers.add(f.metadata.browser as FeedbackMetadataBrowser);
+      if (f.metadata?.os)
+        operatingSystems.add(f.metadata.os as FeedbackMetadataOs);
+      if (f.metadata?.device)
+        devices.add(f.metadata.device as FeedbackMetadataDevice);
+    });
 
     const { error } = await tryCatch(
       db.insert(vote).values({
         id: crypto.randomUUID(),
         count,
-        subject,
+        title: parsedVoteData.title,
+        description: parsedVoteData.description,
+        browsers: Array.from(browsers),
+        operatingSystems: Array.from(operatingSystems),
+        devices: Array.from(devices),
+        tags: [parsedVoteData.tag],
+        impact: parsedVoteData.impact,
         referenceId,
-        feedbackIds: groupsIds, // Store the feedback IDs
+        feedbackIds: groupsIds,
+        status: "pending",
       }),
     );
 
@@ -364,7 +490,7 @@ export const createVote = actionClient
   });
 
 export const updateVote = subscriptionActionClient
-  .schema(
+  .inputSchema(
     z.object({
       voteIds: z.array(z.string()).min(1),
       status: voteStatusSchema,
@@ -390,7 +516,7 @@ export const updateVote = subscriptionActionClient
   );
 
 export const deleteVote = subscriptionActionClient
-  .schema(
+  .inputSchema(
     z.object({
       voteIds: z.array(z.string()).min(1),
     }),
@@ -413,7 +539,7 @@ export const deleteVote = subscriptionActionClient
   });
 
 export const archiveVote = subscriptionActionClient
-  .schema(
+  .inputSchema(
     z.object({
       voteIds: z.array(z.string()).min(1),
     }),
@@ -424,7 +550,10 @@ export const archiveVote = subscriptionActionClient
     }
 
     const { error } = await tryCatch(
-      db.update(vote).set({ archived: true }).where(inArray(vote.id, voteIds)),
+      db
+        .update(vote)
+        .set({ status: "closed" })
+        .where(inArray(vote.id, voteIds)),
     );
 
     if (error) {
@@ -436,7 +565,7 @@ export const archiveVote = subscriptionActionClient
   });
 
 export const unarchiveVote = subscriptionActionClient
-  .schema(
+  .inputSchema(
     z.object({
       voteIds: z.array(z.string()).min(1),
     }),
@@ -447,7 +576,10 @@ export const unarchiveVote = subscriptionActionClient
     }
 
     const { error } = await tryCatch(
-      db.update(vote).set({ archived: false }).where(inArray(vote.id, voteIds)),
+      db
+        .update(vote)
+        .set({ status: "pending" })
+        .where(inArray(vote.id, voteIds)),
     );
 
     if (error) {

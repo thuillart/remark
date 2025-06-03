@@ -108,7 +108,6 @@ export async function GET(request: NextRequest) {
     console.log(`\nProcessing single feedback ${singleFeedback.id}`);
 
     const result = await createVote({
-      subjects: [singleFeedback.subject],
       groupsIds: [singleFeedback.id],
       referenceId: singleFeedback.referenceId,
     });
@@ -238,7 +237,6 @@ export async function GET(request: NextRequest) {
     );
 
     const result = await createVote({
-      subjects: groupFeedbacks.map((groupFeedback) => groupFeedback.subject),
       groupsIds: Array.from(ids),
       referenceId,
     });

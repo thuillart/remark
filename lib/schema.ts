@@ -119,5 +119,33 @@ export const feedbackMetadataSchema = feedbackEnrichmentMetadataSchema
   .optional();
 export type FeedbackMetadata = z.infer<typeof feedbackMetadataSchema>;
 
-export const voteStatusSchema = z.enum(["open", "in_progress", "completed"]);
+export const voteStatusSchema = z.enum([
+  "pending",
+  "reviewing",
+  "planned",
+  "in_progress",
+  "completed",
+  "closed",
+]);
 export type VoteStatus = z.infer<typeof voteStatusSchema>;
+
+export const voteImpactSchema = z.enum(["minor", "major", "critical"]);
+export type VoteImpact = z.infer<typeof voteImpactSchema>;
+
+export const voteSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  description: z.string(),
+  count: z.number(),
+  impact: voteImpactSchema,
+  browsers: z.array(feedbackMetadataBrowserSchema),
+  operatingSystems: z.array(feedbackMetadataOsSchema),
+  devices: z.array(feedbackMetadataDeviceSchema),
+  tags: z.array(feedbackTagSchema),
+  referenceId: z.string(),
+  status: voteStatusSchema,
+  feedbackIds: z.array(z.string()),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+export type Vote = z.infer<typeof voteSchema>;
