@@ -7,7 +7,6 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { AppIcon } from "@/components/app-icon";
 import { CircleArrow } from "@/components/circle-arrow";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
@@ -125,8 +124,8 @@ export function SignInSignUpForm({ mode }: { mode: Mode }) {
   return (
     <>
       <div className="flex flex-col items-center gap-2">
-        <div className="flex size-11 shrink-0 items-center justify-center rounded-full border select-none">
-          <AppIcon variant="icon" className="h-4.5 text-2xl" />
+        <div className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full border select-none">
+          <Logo.Remark size={24} variant="logomark" />
         </div>
         <div className="flex flex-col text-center">
           <h2 className="text-lg font-semibold tracking-tight">

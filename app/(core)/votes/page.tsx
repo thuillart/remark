@@ -28,9 +28,5 @@ async function Table() {
     .from(vote)
     .where(eq(vote.referenceId, user.id));
 
-  return (
-    <div className="container">
-      <DataTable data={votes} />
-    </div>
-  );
+  return <DataTable data={votes} />;
 }
