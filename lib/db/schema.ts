@@ -149,7 +149,10 @@ export const vote = pgTable("vote", {
   title: text("title").notNull(),
   description: text("description").notNull(),
   count: integer("count").notNull(),
-  browsers: text("browsers").$type<FeedbackMetadataBrowser[]>().notNull(),
+  browsers: text("browsers")
+    .array()
+    .$type<FeedbackMetadataBrowser[]>()
+    .notNull(),
   operatingSystems: text("operating_systems")
     .$type<FeedbackMetadataOs[]>()
     .notNull(),

@@ -457,17 +457,38 @@ export const createVote = actionClient
     const devices = new Set<FeedbackMetadataDevice>();
 
     feedbacks.forEach((f) => {
-      if (f.metadata?.browser)
-        browsers.add(f.metadata.browser as FeedbackMetadataBrowser);
-      if (f.metadata?.os)
-        operatingSystems.add(f.metadata.os as FeedbackMetadataOs);
-      if (f.metadata?.device)
-        devices.add(f.metadata.device as FeedbackMetadataDevice);
+      if (f.metadata?.browser) {
+        const browserResult = feedbackMetadataBrowserSchema.safeParse(
+          f.metadata.browser,
+        );
+        if (browserResult.success) {
+          browsers.add(browserResult.data);
+        }
+      }
+      if (f.metadata?.os) {
+        const osResult = feedbackMetadataOsSchema.safeParse(f.metadata.os);
+        if (osResult.success) {
+          operatingSystems.add(osResult.data);
+        }
+      }
+      if (f.metadata?.device) {
+        const deviceResult = feedbackMetadataDeviceSchema.safeParse(
+          f.metadata.device,
+        );
+        if (deviceResult.success) {
+          devices.add(deviceResult.data);
+        }
+      }
     });
+
+    // Ensure we have at least one valid value for each metadata type
+    if (browsers.size === 0) browsers.add("Chrome");
+    if (operatingSystems.size === 0) operatingSystems.add("Windows");
+    if (devices.size === 0) devices.add("desktop");
 
     const { error } = await tryCatch(
       db.insert(vote).values({
-        id: crypto.randomUUID(),
+        id: randomUUID(),
         count,
         title: parsedVoteData.title,
         description: parsedVoteData.description,

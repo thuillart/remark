@@ -21,16 +21,11 @@ export default function VotesPage() {
 
 async function Table() {
   const session = await auth.api.getSession({ headers: await headers() });
-  const user = session?.user;
 
   const votes = await db
     .select()
     .from(vote)
-    .where(eq(vote.referenceId, user.id));
+    .where(eq(vote.referenceId, session.user.id));
 
-  return (
-    <div className="container">
-      <DataTable data={votes} />
-    </div>
-  );
+  return <DataTable data={votes} />;
 }
