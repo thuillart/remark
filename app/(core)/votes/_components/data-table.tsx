@@ -619,13 +619,50 @@ export function DataTable({ data }: { data: Vote[] }) {
     }),
     [rowsCount, activePage],
   );
-  React.useEffect(() => {
-    tableMeta.pageSize = getRowsCountNumber(rowsCount);
-    tableMeta.pageIndex = activePage;
-  }, [tableMeta, rowsCount, activePage]);
+  // Filtered data
+  const filteredData = data.filter((item) => {
+    if (selectedImpact !== "all" && item.impact !== selectedImpact)
+      return false;
+    const startDate = getDateFromTimeRange(selectedTimeRange);
+    if (startDate && item.createdAt.getTime() < startDate.getTime())
+      return false;
+    if (
+      searchValue &&
+      !item.title.toLowerCase().includes(searchValue.toLowerCase())
+    )
+      return false;
+    if (selectedTags.length > 0) {
+      const itemTags =
+        typeof item.tags === "string" ? parsePgArray(item.tags) : item.tags;
+      if (!selectedTags.every((tag) => itemTags.includes(tag))) return false;
+    }
+    return true;
+  });
+  // Pagination
+  const startIndex = tableMeta.pageIndex * tableMeta.pageSize;
+  const paginatedData = filteredData.slice(
+    startIndex,
+    startIndex + tableMeta.pageSize,
+  );
+  const pagesCount = Math.max(
+    1,
+    Math.ceil(filteredData.length / tableMeta.pageSize),
+  );
+  const currentPage = Math.min(tableMeta.pageIndex + 1, pagesCount);
+  const canPreviousPage = tableMeta.pageIndex > 0;
+  const canNextPage = startIndex + tableMeta.pageSize < filteredData.length;
+  const { pages, showLeftEllipsis, showRightEllipsis } = usePagination({
+    totalPages: pagesCount,
+    currentPage: currentPage,
+    paginationItemsToDisplay: 5,
+  });
+  const hasRows = data.length > 0;
+  const hasFilter = selectedTimeRange !== "7-days" || selectedImpact !== "all";
+  const hasSearchQuery = searchValue !== "";
+
   // Table instance
   const table = useReactTable<Vote>({
-    data,
+    data: paginatedData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -687,65 +724,7 @@ export function DataTable({ data }: { data: Vote[] }) {
       }
     },
   });
-  // Filtered data
-  const filteredData = data.filter((item) => {
-    if (selectedImpact !== "all" && item.impact !== selectedImpact)
-      return false;
-    const startDate = getDateFromTimeRange(selectedTimeRange);
-    if (startDate && item.createdAt.getTime() < startDate.getTime())
-      return false;
-    if (
-      searchValue &&
-      !item.title.toLowerCase().includes(searchValue.toLowerCase())
-    )
-      return false;
-    if (selectedTags.length > 0) {
-      const itemTags =
-        typeof item.tags === "string" ? parsePgArray(item.tags) : item.tags;
-      if (!selectedTags.every((tag) => itemTags.includes(tag))) return false;
-    }
-    return true;
-  });
-  // Reset to first page if filters change and page is out of bounds
-  React.useEffect(() => {
-    const maxPageIndex = Math.max(
-      0,
-      Math.ceil(filteredData.length / tableMeta.pageSize) - 1,
-    );
-    if (tableMeta.pageIndex > maxPageIndex) {
-      setActivePage(0);
-      tableMeta.pageIndex = 0;
-    }
-  }, [
-    selectedImpact,
-    selectedTimeRange,
-    searchValue,
-    selectedTags,
-    filteredData.length,
-    tableMeta,
-    setActivePage,
-  ]);
-  // Pagination
-  const startIndex = tableMeta.pageIndex * tableMeta.pageSize;
-  const paginatedData = filteredData.slice(
-    startIndex,
-    startIndex + tableMeta.pageSize,
-  );
-  const pagesCount = Math.max(
-    1,
-    Math.ceil(filteredData.length / tableMeta.pageSize),
-  );
-  const currentPage = Math.min(tableMeta.pageIndex + 1, pagesCount);
-  const canPreviousPage = tableMeta.pageIndex > 0;
-  const canNextPage = startIndex + tableMeta.pageSize < filteredData.length;
-  const { pages, showLeftEllipsis, showRightEllipsis } = usePagination({
-    totalPages: pagesCount,
-    currentPage: currentPage,
-    paginationItemsToDisplay: 5,
-  });
-  const hasRows = data.length > 0;
-  const hasFilter = selectedTimeRange !== "7-days" || selectedImpact !== "all";
-  const hasSearchQuery = searchValue !== "";
+
   if (!hasRows && !hasFilter && !hasSearchQuery) {
     return (
       <div className="container">
@@ -757,6 +736,7 @@ export function DataTable({ data }: { data: Vote[] }) {
       </div>
     );
   }
+
   return (
     <div className="container">
       <div className="flex flex-col gap-4">
@@ -806,19 +786,18 @@ export function DataTable({ data }: { data: Vote[] }) {
                     </TableCell>
                   </TableRow>
                 )}
-                {paginatedData.length > 0 &&
-                  table.getRowModel().rows.map((tableRow) => (
-                    <TableRow key={tableRow.id}>
-                      {tableRow.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext(),
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))}
+                {table.getRowModel().rows.map((row) => (
+                  <TableRow key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </div>
