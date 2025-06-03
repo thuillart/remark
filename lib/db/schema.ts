@@ -15,6 +15,7 @@ import {
   FeedbackMetadataDevice,
   FeedbackMetadataOs,
   FeedbackTag,
+  VoteImpact,
   VoteStatus,
 } from "@/lib/schema";
 
@@ -116,43 +117,16 @@ export const passkey = pgTable("passkey", {
 
 export const feedback = pgTable("feedback", {
   id: text("id").primaryKey(),
-  /**
-   * Sender email address.
-   */
   from: text("from").notNull(),
-  /**
-   * The recipient user id.
-   */
   referenceId: text("reference_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  /**
-   * The feedback as-is.
-   */
   text: text("text").notNull(),
-  /**
-   * The impact it has on the user's experience.
-   */
   impact: text("impact").$type<FeedbackImpact>(),
-  /**
-   * The 1-6 words subject of the feedback.
-   */
   subject: text("subject"),
-  /**
-   * The embedding vector for the subject to find similar feedback
-   */
   embedding: text("embedding").notNull(),
-  /**
-   * A easy-to-read and clear summary of raw feedback.
-   */
   summary: text("summary").array(),
-  /**
-   * The categories into which it falls.
-   */
   tags: text("tags").$type<FeedbackTag[]>(),
-  /**
-   * Metadata about the feedback.
-   */
   metadata: jsonb("metadata").$type<FeedbackMetadata>(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
@@ -181,7 +155,7 @@ export const vote = pgTable("vote", {
     .notNull(),
   devices: text("devices").$type<FeedbackMetadataDevice[]>().notNull(),
   tags: text("tags").$type<FeedbackTag[]>().notNull(),
-  impact: text("impact").$type<FeedbackImpact>().notNull(),
+  impact: text("impact").$type<VoteImpact>().notNull(),
   referenceId: text("reference_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),

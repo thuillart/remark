@@ -11,7 +11,6 @@ import { nextCookies } from "better-auth/next-js";
 import { admin, apiKey, magicLink } from "better-auth/plugins";
 import { passkey } from "better-auth/plugins/passkey";
 import { eq } from "drizzle-orm";
-import { headers } from "next/headers";
 import React from "react";
 
 import { ChangeEmailTemplate } from "@/components/template/change-email";
@@ -96,17 +95,12 @@ export const auth = betterAuth({
         });
       },
       beforeDelete: async () => {
-        const response = await fetch(`${getBaseUrl()}/api/auth/state`, {
-          headers: await headers(),
-        });
-
-        const state = await response.json();
+        const { data: subscriptions } =
+          await authClient.customer.subscriptions.list({
+            query: { page: 1, limit: 10, active: true },
+          });
 
         // Find all active subscriptions
-        const subscriptions = state.activeSubscriptions.filter(
-          (subscription) => subscription.status === "active",
-        );
-
         for (const subscription of subscriptions) {
           await polarClient.subscriptions.revoke({
             id: subscription.id,

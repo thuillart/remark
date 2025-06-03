@@ -42,7 +42,11 @@
         "app/(core)/feedbacks/[id]/_components/*"
       ],
       "@/votes/components/*": ["app/(core)/votes/_components/*"],
-      "@/votes/lib/*": ["app/(core)/votes/_lib/*"]
+      "@/votes/lib/*": ["app/(core)/votes/_lib/*"],
+
+      // V2
+      "@/v2/components/*": ["app/(v2)/_components/*"],
+      "@/v2/landing/components/*": ["app/(v2)/landing/_components/*"]
     }
   },
   "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],

@@ -415,27 +415,39 @@ export const createVote = actionClient
     // Strip markdown code block formatting if present
     const cleanOutput = output.replace(/```json\n?|\n?```/g, "").trim();
     const parsedOutput = z.string().parse(cleanOutput);
-    const voteData = z
-      .object({
-        title: z.string(),
-        description: z.string(),
-        tag: z.enum([
-          "bug",
-          "feature_request",
-          "ui",
-          "ux",
-          "speed",
-          "security",
-          "pricing",
-          "billing",
-          "dx",
-          "i18n",
-          "compliance",
-          "a11y",
-        ]),
-        impact: z.enum(["critical", "major", "minor"]),
-      })
-      .parse(JSON.parse(parsedOutput));
+
+    const voteData = z.object({
+      title: z.string(),
+      description: z.string(),
+      tag: z.enum([
+        "bug",
+        "feature_request",
+        "ui",
+        "ux",
+        "speed",
+        "security",
+        "pricing",
+        "billing",
+        "dx",
+        "i18n",
+        "compliance",
+        "a11y",
+      ]),
+      impact: z.enum(["critical", "major", "minor"]),
+    });
+
+    const { data: jsonData, error: jsonError } = await tryCatch(
+      Promise.resolve(JSON.parse(parsedOutput)),
+    );
+    if (jsonError) {
+      return { failure: "Failed to parse JSON from AI response" };
+    }
+
+    const result = voteData.safeParse(jsonData);
+    if (!result.success) {
+      return { failure: "Failed to parse vote data from AI response" };
+    }
+    const parsedVoteData = result.data;
 
     const count = groupsIds.length;
 
@@ -457,13 +469,13 @@ export const createVote = actionClient
       db.insert(vote).values({
         id: crypto.randomUUID(),
         count,
-        title: voteData.title,
-        description: voteData.description,
+        title: parsedVoteData.title,
+        description: parsedVoteData.description,
         browsers: Array.from(browsers),
         operatingSystems: Array.from(operatingSystems),
         devices: Array.from(devices),
-        tags: [voteData.tag],
-        impact: voteData.impact,
+        tags: [parsedVoteData.tag],
+        impact: parsedVoteData.impact,
         referenceId,
         feedbackIds: groupsIds,
         status: "pending",

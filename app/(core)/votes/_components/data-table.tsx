@@ -65,8 +65,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { EmptyState } from "@/core/components/empty-state";
+import { Vote, VoteImpact } from "@/lib/schema";
 import { capitalizeFirstLetter, cn } from "@/lib/utils";
-import { Vote, VoteImpact } from "@/votes/lib/schema";
 
 // --- Tag and Impact helpers (adapted from feedbacks/_lib/utils) ---
 import { type BadgeProps } from "@/components/ui/badge";

@@ -1,7 +1,7 @@
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
-import { Borel, IBM_Plex_Mono, Inter } from "next/font/google";
+import { IBM_Plex_Mono, Inter } from "next/font/google";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "sonner";
 
@@ -13,12 +13,6 @@ import { cn } from "@/lib/utils";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
-});
-
-const borel = Borel({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-borel",
 });
 
 const plexMono = IBM_Plex_Mono({
@@ -34,7 +28,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn(inter.variable, borel.variable, plexMono.variable)}>
+      <body className={cn(inter.variable, plexMono.variable)}>
         <ThemeProvider>
           <NuqsAdapter>
             {children}
@@ -49,6 +43,7 @@ export default function RootLayout({
 }
 
 export const metadata: Metadata = {
-  title: APP_NAME,
-  description: "Get up and running with your users feedbacks.",
+  title: `${APP_NAME} — Feedback for product builders`,
+  description:
+    "If you're a developer or working on a startup, you're going to love Remark's approach to feedback.",
 };
