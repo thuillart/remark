@@ -8,7 +8,7 @@ type Handler = (request: NextRequest, context?: any) => Promise<Response>;
 
 export function withAuth(handler: Handler): Handler {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  return async (request, context) => {
+  return async (request, _context) => {
     const apiKey = request.headers.get("x-api-key");
 
     if (!apiKey) {

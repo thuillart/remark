@@ -36,7 +36,7 @@ type FeedbackMetadataOs = z.infer<typeof feedbackMetadataOsSchema>;
 type FeedbackMetadataDevice = z.infer<typeof feedbackMetadataDeviceSchema>;
 
 export const createFeedback = authActionClient
-  .schema(
+  .inputSchema(
     z.object({
       text: z.string(),
       metadata: feedbackMetadataSchema,
@@ -86,7 +86,7 @@ export const createFeedback = authActionClient
   });
 
 export const enrichFeedback = actionClient
-  .schema(
+  .inputSchema(
     z.object({
       from: z.string().email(),
       text: z.string(),
@@ -185,7 +185,7 @@ export const enrichFeedback = actionClient
   });
 
 export const createApiKey = subscriptionActionClient
-  .schema(
+  .inputSchema(
     z.object({
       name: z.string().min(1).max(50).trim(),
       pathname: z.string(),
@@ -236,7 +236,7 @@ export const createApiKey = subscriptionActionClient
   );
 
 export const deleteApiKey = authActionClient
-  .schema(
+  .inputSchema(
     z.object({
       keyId: z.string(),
     }),
@@ -284,7 +284,7 @@ export const updateApiKey = authActionClient
   });
 
 export const updateApiKeysLimits = actionClient
-  .schema(
+  .inputSchema(
     z.object({
       newSlug: SubscriptionSlugSchema,
     }),
@@ -325,7 +325,7 @@ export const updateApiKeysLimits = actionClient
   });
 
 export const createVote = actionClient
-  .schema(
+  .inputSchema(
     z.object({
       groupsIds: z.array(z.string()),
       referenceId: z.string(),
@@ -490,7 +490,7 @@ export const createVote = actionClient
   });
 
 export const updateVote = subscriptionActionClient
-  .schema(
+  .inputSchema(
     z.object({
       voteIds: z.array(z.string()).min(1),
       status: voteStatusSchema,
@@ -516,7 +516,7 @@ export const updateVote = subscriptionActionClient
   );
 
 export const deleteVote = subscriptionActionClient
-  .schema(
+  .inputSchema(
     z.object({
       voteIds: z.array(z.string()).min(1),
     }),
@@ -539,7 +539,7 @@ export const deleteVote = subscriptionActionClient
   });
 
 export const archiveVote = subscriptionActionClient
-  .schema(
+  .inputSchema(
     z.object({
       voteIds: z.array(z.string()).min(1),
     }),
@@ -565,7 +565,7 @@ export const archiveVote = subscriptionActionClient
   });
 
 export const unarchiveVote = subscriptionActionClient
-  .schema(
+  .inputSchema(
     z.object({
       voteIds: z.array(z.string()).min(1),
     }),

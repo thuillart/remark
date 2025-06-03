@@ -15,7 +15,7 @@ export const getSubscription = subscriptionActionClient.action(
 );
 
 export const getFeedbacks = authActionClient
-  .schema(
+  .inputSchema(
     z.object({
       cursor: z.string().optional(),
     }),
@@ -46,7 +46,7 @@ export const getFeedbacks = authActionClient
   });
 
 export const getFeedbackById = authActionClient
-  .schema(z.object({ id: z.string() }))
+  .inputSchema(z.object({ id: z.string() }))
   .action(async ({ parsedInput: { id }, ctx: { user } }) => {
     const { data, error } = await tryCatch(
       db
