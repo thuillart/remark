@@ -85,6 +85,9 @@ DATABASE_URL=your_postgres_connection_string
 # OAuth Providers
 GITHUB_CLIENT_ID=your_github_client_id
 GITHUB_CLIENT_SECRET=your_github_client_secret
+GITLAB_CLIENT_ID=your_gitlab_client_id
+GITLAB_CLIENT_SECRET=your_gitlab_client_secret
+GITLAB_ISSUER=https://gitlab.com
 
 # Email Service
 RESEND_API_KEY=your_resend_api_key
@@ -375,13 +378,13 @@ bun run build            # Builds to dist/ folder
 free: { 
   remaining: 250,           // Initial requests per month
   refillAmount: 250,        // Refill amount each month
-  refillInterval: 2592000,  // 30 days in seconds
+  refillInterval: 2592000,  // 30 days in seconds (60 * 60 * 24 * 30)
   rateLimitMax: 25,         // Max 25 requests per day
 }
 plus: { 
   remaining: 2500,          // Initial requests per month
   refillAmount: 2500,       // Refill amount each month
-  refillInterval: 2592000,  // 30 days in seconds
+  refillInterval: 2592000,  // 30 days in seconds (60 * 60 * 24 * 30)
   // No daily rate limit
 }
 pro: { 
