@@ -45,7 +45,7 @@ A web app where you can:
 
 - Node.js 18 or higher
 - PostgreSQL database
-- API keys from Google AI, Resend, and Polar (optional)
+- API keys from Google AI (Gemini), Resend (email), and Polar (billing, optional)
 
 ### How to install
 
