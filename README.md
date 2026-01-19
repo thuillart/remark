@@ -373,16 +373,16 @@ bun run build            # Builds to dist/ folder
 
 ```typescript
 free: { 
-  limit: 100,           // requests per month
-  refillInterval: 2592000000  // 30 days
+  limit: 250,           // requests per month
+  dailyLimit: 25,       // max requests per day
+  refillInterval: 2592000  // 30 days (in seconds)
 }
 plus: { 
-  limit: 1000,
-  refillInterval: 2592000000
+  limit: 2500,          // requests per month
+  refillInterval: 2592000  // no daily limit
 }
 pro: { 
-  limit: 10000,
-  refillInterval: 2592000000
+  limit: "unlimited"    // metered by middleware
 }
 ```
 
