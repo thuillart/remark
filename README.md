@@ -1,79 +1,76 @@
-# Remark - AI-Powered Feedback Management Platform
+# Remark
 
-> **Note:** This is my first-ever software/web application project, archived to showcase my early work in coding and software engineering.
+> **Note:** This is my first software project. I'm archiving it to show my early work.
 
-Remark is an intelligent feedback management platform that helps product teams collect, categorize, and prioritize user feedback automatically using AI. It transforms scattered user requests into actionable insights without manual effort.
+Remark helps teams manage user feedback with AI. When users submit feedback, AI reads it, tags it, and groups similar requests together. No manual sorting needed.
 
-## 🎯 Overview
+## What it does
 
-Remark offers two core products for developers:
+Remark has two parts:
 
-### 1. **Roadmap SDK** (`@remark-sh/sdk`)
-A TypeScript SDK that integrates into your application to automatically send user feedback to Remark's AI categorization engine.
+### 1. The SDK (`@remark-sh/sdk`)
+Add this to your TypeScript app. When users send feedback, it goes to Remark's AI for sorting.
 
-### 2. **Dashboard** (Web Application)
-A comprehensive web dashboard where you can:
-- View all user feedback categorized by AI-determined priority
-- See feedback labeled with predefined tags based on request type/purpose
-- Track duplicate requests - even when users phrase the same request differently
-- Let your users vote on features by automatically detecting similar feedback
-- Build your product roadmap based on real user demand
+### 2. The Dashboard
+A web app where you can:
+- See all feedback sorted by priority
+- View tags that AI adds (bug, feature request, UI issue, etc.)
+- Find duplicate requests, even when people say things differently
+- Track which features users want most
+- Build your roadmap from what users actually ask for
 
-## ✨ Key Features
+## Key features
 
-### Intelligent Feedback Processing
-- **AI Categorization**: Automatically tags feedback (bug, feature_request, ui, ux, speed, security, etc.)
-- **Impact Assessment**: Classifies feedback as critical, major, minor, or positive
-- **Smart Deduplication**: Uses vector embeddings to identify similar requests across different phrasings
-- **Automated Summarization**: Generates concise summaries of user feedback
+**AI does the work**
+- Tags feedback automatically (bug, feature request, UI, UX, speed, security, etc.)
+- Rates impact (critical, major, minor, or positive)
+- Finds similar requests using AI, even when worded differently
+- Writes short summaries of each piece of feedback
 
-### Priority-Based Roadmap
-- **Vote Aggregation**: Groups similar feedback into votes with automatic counting
-- **User Metadata**: Tracks browser, OS, and device information
-- **Status Management**: Track feedback from pending to completed
-- **Analytics Dashboard**: Visualize feedback trends and priority distribution
+**Vote system**
+- Groups similar feedback together
+- Counts how many users want each feature
+- Tracks browser, OS, and device info
+- Shows status (pending, in progress, done)
 
-### Developer-Friendly SDK
+**Easy to use SDK**
 - Simple TypeScript API
-- Automatic metadata collection
-- Built-in error handling
-- Rate limiting support
+- Collects metadata automatically
+- Handles errors
+- Includes rate limiting
 
-## 🚀 Getting Started
+## Getting started
 
-### Prerequisites
+### What you need
 
 - Node.js 18 or higher
 - PostgreSQL database
-- API keys for:
-  - Google AI (Gemini)
-  - Resend (email service)
-  - Polar (billing, optional)
+- API keys from Google AI, Resend, and Polar (optional)
 
-### Installation
+### How to install
 
-#### 1. Clone the Repository
+**1. Clone the repo**
 
 ```bash
 git clone https://github.com/thuillart/roadmap.git
 cd roadmap
 ```
 
-#### 2. Install Dependencies
+**2. Install packages**
 
 ```bash
 bun install
 ```
 
-#### 3. Configure Environment Variables
+**3. Set up environment variables**
 
-Copy the environment template and fill in your credentials:
+Copy the template and add your API keys:
 
 ```bash
 cp .env.template .env
 ```
 
-Required variables:
+Fill in these values:
 ```env
 # Authentication
 BETTER_AUTH_SECRET=your_secret_key
@@ -82,47 +79,47 @@ BETTER_AUTH_URL=http://localhost:3000
 # Database
 DATABASE_URL=your_postgres_connection_string
 
-# OAuth Providers
+# OAuth
 GITHUB_CLIENT_ID=your_github_client_id
 GITHUB_CLIENT_SECRET=your_github_client_secret
 GITLAB_CLIENT_ID=your_gitlab_client_id
 GITLAB_CLIENT_SECRET=your_gitlab_client_secret
 GITLAB_ISSUER=https://gitlab.com
 
-# Email Service
+# Email
 RESEND_API_KEY=your_resend_api_key
 RESEND_FROM_EMAIL=noreply@yourdomain.com
 
-# AI Processing
+# AI
 GOOGLE_GENERATIVE_AI_API_KEY=your_google_ai_key
 
-# Cron Jobs
+# Cron jobs
 CRON_SECRET=your_cron_secret
 
-# Billing (Optional)
+# Billing (optional)
 POLAR_ACCESS_TOKEN=your_polar_token
 POLAR_WEBHOOK_SECRET=your_webhook_secret
 POLAR_PLUS_PRODUCT_ID=your_plus_product_id
 POLAR_PRO_PRODUCT_ID=your_pro_product_id
 ```
 
-#### 4. Setup Database
+**4. Set up the database**
 
 ```bash
 bun run db:push
 ```
 
-#### 5. Start Development Server
+**5. Start the dev server**
 
 ```bash
 bun run dev
 ```
 
-The application will be available at `http://localhost:3000`
+Open `http://localhost:3000` in your browser.
 
-## 📦 Using the SDK
+## Using the SDK
 
-### Installation
+### Install it
 
 ```bash
 npm install @remark-sh/sdk
@@ -130,18 +127,18 @@ npm install @remark-sh/sdk
 bun add @remark-sh/sdk
 ```
 
-### Basic Usage
+### Send feedback
 
 ```typescript
 import { Remark } from "@remark-sh/sdk";
 
-// Initialize with your API key
+// Start with your API key
 const remark = new Remark("your_api_key");
 
-// Create a feedback
+// Send feedback
 const result = await remark.feedbacks.create({
   from: "user@example.com",
-  text: "The dashboard loads really slowly on mobile devices. It takes about 30 seconds to load.",
+  text: "The dashboard loads really slowly on mobile. Takes about 30 seconds.",
   metadata: {
     os: "iOS",
     device: "mobile",
@@ -151,31 +148,27 @@ const result = await remark.feedbacks.create({
 });
 
 if (result.error) {
-  console.error("Failed to submit feedback:", result.error);
+  console.error("Failed:", result.error);
 } else {
-  console.log("Feedback submitted:", result.data);
+  console.log("Sent:", result.data);
 }
 ```
 
-### Managing Contacts
+### Manage contacts
 
 ```typescript
-// Create a contact
+// Add a contact
 await remark.contacts.create({
   name: "John Doe",
   email: "john@example.com",
-  metadata: {
-    tier: "premium"
-  }
+  metadata: { tier: "premium" }
 });
 
 // Update a contact
 await remark.contacts.update({
   email: "john@example.com",
   name: "John Smith",
-  metadata: {
-    tier: "enterprise"
-  }
+  metadata: { tier: "enterprise" }
 });
 
 // Delete a contact
@@ -184,57 +177,54 @@ await remark.contacts.delete({
 });
 ```
 
-## 🏗️ Technical Architecture
+## How it works
 
-### Tech Stack
+### What I used
 
-**Frontend:**
-- Next.js 15 (App Router)
+**Frontend**
+- Next.js 15
 - React 19
 - TypeScript
 - Tailwind CSS
-- Radix UI Components
+- Radix UI
 - TanStack Table
-- Motion (Framer Motion)
 
-**Backend:**
+**Backend**
 - Next.js API Routes
-- Better Auth (Authentication)
+- Better Auth
 - Drizzle ORM
-- PostgreSQL with pgvector extension
+- PostgreSQL with pgvector
 - Server Actions
 
-**AI/ML:**
-- Google Gemini 2.5 Flash (Text generation)
-- Google Text Embedding 004 (Vector embeddings)
-- Semantic similarity matching
+**AI**
+- Google Gemini 2.5 Flash (reads and tags feedback)
+- Google Text Embedding 004 (finds similar feedback)
 
-**Infrastructure:**
-- Vercel (Hosting)
-- Neon/PostgreSQL (Database)
-- Resend (Email service)
-- Polar (Subscription management)
+**Other services**
+- Vercel (hosting)
+- Neon (database)
+- Resend (emails)
+- Polar (billing)
 
-### Key Components
+### AI enrichment
 
-#### AI-Powered Feedback Enrichment
+When feedback comes in, AI does this:
+1. Reads the feedback
+2. Adds tags (bug, feature request, etc.)
+3. Rates the impact
+4. Writes a short subject line
+5. Creates a summary
+6. Cleans up the metadata
 
-The `enrichFeedback` function uses Google's Gemini AI to:
-1. Classify feedback into appropriate tags
-2. Assess the impact level
-3. Generate a concise subject line
-4. Create a detailed summary
-5. Normalize metadata (OS, browser, device)
-
+Example output:
 ```typescript
-// Example AI enrichment result
 {
   "tags": ["speed", "ui"],
   "impact": "major",
   "subject": "Slow dashboard load on mobile",
   "summary": [
-    "User reports the dashboard takes 30 seconds to load on their iPhone.",
-    "The issue specifically affects mobile Safari users."
+    "User says the dashboard takes 30 seconds to load on their iPhone.",
+    "The issue affects mobile Safari users."
   ],
   "metadata": {
     "os": "iOS",
@@ -244,169 +234,151 @@ The `enrichFeedback` function uses Google's Gemini AI to:
 }
 ```
 
-#### Vector-Based Similarity Detection
+### Finding similar feedback
 
-Remark uses vector embeddings to find similar feedback:
+Remark finds duplicate requests like this:
 
-1. Generate embedding from feedback subject using Google's text-embedding-004
-2. Store embedding in PostgreSQL with pgvector extension
-3. Use cosine similarity to find related feedback (threshold: 0.8)
-4. Group similar feedback into votes automatically
+1. Turns the feedback subject into numbers (embedding)
+2. Saves it in PostgreSQL
+3. Compares with other feedback using math (cosine similarity)
+4. Groups similar feedback together if they're 80% similar or more
 
-#### Cron Job for Vote Aggregation
+### Vote system
 
-The `/api/group-similar-feedback` endpoint runs periodically to:
-- Process new feedback from paid users
-- Find similar feedback using vector similarity
-- Create or update vote records
-- Aggregate metadata across similar requests
+A background job runs every so often and:
+- Looks at new feedback from paying users
+- Finds similar feedback
+- Groups them into votes
+- Counts how many users want each thing
 
-### Database Schema
+### Database tables
 
-**Key Tables:**
-- `user` - User accounts and authentication
-- `feedback` - Individual feedback submissions with AI enrichment
-- `vote` - Aggregated feedback representing feature requests
-- `contact` - Contact information and metadata
-- `apikey` - API keys for SDK integration
+Main tables:
+- `user` for accounts
+- `feedback` for submissions with AI tags
+- `vote` for grouped feature requests
+- `contact` for contact info
+- `apikey` for SDK access
 
-## 🔐 Security Features
+## Security
 
-- API key authentication with rate limiting
-- OAuth integration (GitHub, GitLab)
+- API keys with rate limits
+- GitHub and GitLab login
 - Email verification
-- Passkey support
+- Passkeys
 - Session management
-- CORS protection
-- Input validation with Zod schemas
+- Input validation
 
-## 📊 Dashboard Features
+## Dashboard
 
-### Feedbacks View
-- Sortable table with all user feedback
-- Filter by tags, impact, and date
-- Search functionality
-- Pagination
-- Detailed feedback view with metadata
+**Feedback page**
+- Sort and filter all feedback
+- Search by keyword
+- See tags, impact, and details
 
-### Votes View
-- Aggregated feature requests
-- Vote count and priority
-- Status tracking (pending, in progress, completed)
-- Browser/OS/Device breakdown
-- Related feedback grouping
+**Votes page**
+- See grouped feature requests
+- View vote counts
+- Track status (pending, in progress, done)
+- See which browsers and devices users have
 
-### API Keys Management
-- Create and manage API keys
-- Rate limiting configuration
-- Usage statistics
-- Key permissions
+**API keys page**
+- Make new API keys
+- Set rate limits
+- Check usage stats
 
-## 🧪 Development
+## Development
 
-### Project Structure
+### Folder structure
 
 ```
 roadmap/
-├── app/                    # Next.js app directory
-│   ├── (auth)/            # Authentication pages
-│   ├── (core)/            # Main application pages
-│   │   ├── feedbacks/     # Feedback management
-│   │   ├── votes/         # Vote aggregation
-│   │   ├── api-keys/      # API key management
-│   │   └── ...
-│   └── api/               # API routes
-├── components/            # Reusable React components
-├── lib/                   # Shared utilities
-│   ├── db/               # Database queries and actions
-│   ├── configs/          # Configuration files
-│   └── auth.ts           # Authentication setup
+├── app/                # Next.js pages
+│   ├── (auth)/        # Login pages
+│   ├── (core)/        # Main app
+│   │   ├── feedbacks/ # Feedback page
+│   │   ├── votes/     # Votes page
+│   │   └── api-keys/  # API keys page
+│   └── api/           # API endpoints
+├── components/        # React components
+├── lib/               # Utilities
+│   ├── db/           # Database code
+│   ├── configs/      # Settings
+│   └── auth.ts       # Auth setup
 ├── packages/
-│   └── node/             # SDK package
-│       └── src/          # SDK source code
-└── public/               # Static assets
+│   └── node/         # SDK code
+└── public/           # Images and files
 ```
 
-### Available Scripts
+### Commands
 
 ```bash
-# Development
-bun run dev              # Start dev server with Turbopack
-
-# Building
-bun run build            # Build for production
-
-# Database
-bun run db:push          # Push schema changes
-bun run db:generate      # Generate migrations
-
-# Linting
-bun run lint             # Run ESLint
+bun run dev        # Start dev server
+bun run build      # Build for production
+bun run db:push    # Update database
+bun run db:generate # Make migrations
+bun run lint       # Check code style
 ```
 
-### Building the SDK
+### Build the SDK
 
 ```bash
 cd packages/node
-bun run build            # Builds to dist/ folder
+bun run build     # Creates dist/ folder
 ```
 
-## 🤝 API Endpoints
-
-### Public Endpoints
+## API
 
 **POST `/api/feedbacks`**
-- Submit new feedback
-- Requires API key authentication
-- Rate limited based on subscription tier
+- Send feedback
+- Needs API key
+- Has rate limits
 
 **GET `/api/group-similar-feedback`**
-- Cron job endpoint for vote aggregation
-- Requires bearer token authentication
+- Groups similar feedback (cron job)
+- Needs auth token
 
-## 📈 Subscription Tiers
+## Pricing
 
-- **Free**: 250 requests per month, 25 requests per day maximum
-- **Plus**: 2,500 requests per month, no daily limit
-- **Pro**: Unlimited requests and priority support
+- **Free**: 250 requests/month, max 25/day
+- **Plus**: 2,500 requests/month, no daily limit
+- **Pro**: Unlimited
 
-## 🔧 Configuration
+## Rate limits
 
-### API Key Limits (lib/configs/api-key.ts)
+Code from `lib/configs/api-key.ts`:
 
 ```typescript
 free: { 
-  remaining: 250,           // Initial requests per month
-  refillAmount: 250,        // Refill amount each month
-  refillInterval: 2592000,  // 30 days in seconds (60 * 60 * 24 * 30)
-  rateLimitMax: 25,         // Max 25 requests per day
+  remaining: 250,        // Requests per month
+  refillAmount: 250,     // Refill each month
+  refillInterval: 2592000, // 30 days
+  rateLimitMax: 25,      // Max per day
 }
 plus: { 
-  remaining: 2500,          // Initial requests per month
-  refillAmount: 2500,       // Refill amount each month
-  refillInterval: 2592000,  // 30 days in seconds (60 * 60 * 24 * 30)
-  // No daily rate limit
+  remaining: 2500,       // Requests per month
+  refillAmount: 2500,    // Refill each month
+  refillInterval: 2592000, // 30 days
 }
 pro: { 
-  // Unlimited - no limits specified
-  // Metered by middleware
+  // No limits
 }
 ```
 
-## 📝 License
+## License
 
-MIT License
+MIT
 
-## 🙏 Acknowledgments
+## What I learned
 
-This project was built as a learning experience and showcases:
-- Full-stack TypeScript development
-- AI/ML integration with LLMs
-- Vector database usage for semantic search
-- Real-time feedback aggregation
-- Subscription-based SaaS architecture
-- Modern React patterns with Next.js
+This was my first big project. I learned:
+- Full-stack TypeScript
+- How to use AI and LLMs
+- Vector databases and similarity search
+- Real-time data processing
+- Building a SaaS product
+- Modern React with Next.js
 
 ---
 
-**Built with ❤️ as my first major software project**
+Built as my first software project.
