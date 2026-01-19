@@ -363,8 +363,8 @@ bun run build            # Builds to dist/ folder
 
 ## 📈 Subscription Tiers
 
-- **Free**: Basic feedback collection
-- **Plus**: Advanced analytics and higher rate limits
+- **Free**: 250 requests per month, 25 requests per day maximum
+- **Plus**: 2,500 requests per month, no daily limit
 - **Pro**: Unlimited requests and priority support
 
 ## 🔧 Configuration
@@ -373,16 +373,20 @@ bun run build            # Builds to dist/ folder
 
 ```typescript
 free: { 
-  limit: 250,           // requests per month
-  dailyLimit: 25,       // max requests per day
-  refillInterval: 2592000  // 30 days (in seconds)
+  remaining: 250,           // Initial requests per month
+  refillAmount: 250,        // Refill amount each month
+  refillInterval: 2592000,  // 30 days in seconds
+  rateLimitMax: 25,         // Max 25 requests per day
 }
 plus: { 
-  limit: 2500,          // requests per month
-  refillInterval: 2592000  // no daily limit
+  remaining: 2500,          // Initial requests per month
+  refillAmount: 2500,       // Refill amount each month
+  refillInterval: 2592000,  // 30 days in seconds
+  // No daily rate limit
 }
 pro: { 
-  limit: "unlimited"    // metered by middleware
+  // Unlimited - no limits specified
+  // Metered by middleware
 }
 ```
 
