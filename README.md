@@ -13,12 +13,12 @@ When someone sends feedback, AI reads it and:
 
 ## Features
 
-- [ ] AI-powered feedback categorization and deduplication
-- [ ] TypeScript SDK for collecting user feedback
-- [ ] Dashboard to view and manage feedback
-- [ ] Automatic vote counting for feature requests
-- [ ] Priority scoring based on user demand
-- [ ] Similar request detection using vector embeddings
+- [x] AI-powered feedback categorization and deduplication
+- [x] TypeScript SDK for collecting user feedback
+- [x] Dashboard to view and manage feedback
+- [x] Automatic vote counting for feature requests
+- [x] Priority scoring based on user demand
+- [x] Similar request detection using vector embeddings
 
 ## Running the app
 
