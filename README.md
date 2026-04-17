@@ -30,8 +30,8 @@ When someone sends feedback, AI reads it and:
 **Setup**
 
 ```bash
-git clone https://github.com/thuillart/roadmap.git
-cd roadmap
+git clone https://github.com/thuillart/remark.git
+cd remark
 bun install
 cp .env.template .env
 # Fill in your API keys in .env
